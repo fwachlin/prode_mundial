@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Prode Mundial{% endblock %}
+
+{% block content %}
+<div style="text-align: center;">
+    <h1>Bienvenido a Prode Mundial 2026</h1>
+    
+    <!-- Contador regresivo del Mundial -->
+    <div id="worldcup-counter" style="background-color: #f0f0f0; padding: 30px; border-radius: 8px; margin: 30px 0; border: 2px solid #007bff;">
+        <h2>⏳ Falta para el inicio del Mundial</h2>
+        <div id="countdown" style="font-size: 2.5em; font-weight: bold; color: #007bff; margin: 20px 0;">
+            Cargando...
+        </div>
+    </div>
+    
+    {% if current_user.is_authenticated %}
+        {% if current_user.is_admin %}
+            <p style="font-size: 1.1em; margin: 20px 0;">
+                Hola, <strong>{{ current_user.name }}</strong> (Administrador)
+            </p>
+            
+            <a href="{{ url_for('admin.dashboard') }}" style="display: inline-block; padding: 12px 24px; background-color: #f39c12; color: white; text-decoration: none; border-radius: 4px; margin: 10px;">
+                Ir al Panel de Admin
+            </a>
+        {% else %}
+            <p style="font-size: 1.1em; margin: 20px 0;">
+                Hola, <strong>{{ current_user.name }}</strong>
+            </p>
+            
+            <a href="{{ url_for('main.predictions') }}" style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; margin: 10px;">
+                Ver Mis Pronósticos
+            </a>
+        {% endif %}
+    {% else %}
+        <p style="font-size: 1.1em; margin: 30px 0;">
+            Inicia sesión para hacer tus pronósticos del Mundial 2026
+        </p>
+        
+        <a href="{{ url_for('auth.login') }}" style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; margin: 10px;">
+            Iniciar Sesión
+        </a>
+        
+        <a href="{{ url_for('auth.register') }}" style="display: inline-block; padding: 12px 24px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px; margin: 10px;">
+            Registrarse
+        </a>
+    {% endif %}
+</div>
+
+<script>
+// Fecha de inicio del Mundial 2026 (12 de junio de 2026 a las 12:00 UTC)
+const WORLDCUP_START = new Date('2026-06-12T12:00:00Z');
+
+function updateCountdown() {
+    const now = new Date();
+    const diff = WORLDCUP_START - now;
+    
+    const countdownDiv = document.getElementById('countdown');
+    const worldcupCounter = document.getElementById('worldcup-counter');
+    
+    // Si el mundial ya comenzó
+    if (diff <= 0) {
+        countdownDiv.textContent = '¡El Mundial 2026 ya ha comenzado!';
+        countdownDiv.style.color = '#28a745';
+        return;
+    }
+    
+    // Calcular días, horas, minutos y segundos
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    // Mostrar con palabras completas en el contador grande
+    countdownDiv.textContent = `${days} días, ${hours} horas, ${minutes} minutos, ${seconds} segundos`;
+}
+
+// Actualizar el contador al cargar la página
+updateCountdown();
+
+// Actualizar cada segundo
+setInterval(updateCountdown, 1000);
+</script>
+{% endblock %}

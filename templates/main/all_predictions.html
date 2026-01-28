@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Todos los Pronósticos - Prode Mundial{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+    <a href="{{ url_for('main.index') }}" style="color: #007bff; text-decoration: none;">← Volver</a>
+    
+    <h1>📊 Todos los Pronósticos</h1>
+    
+    <p style="margin: 20px 0; color: #666;">
+        Aquí puedes ver todos los pronósticos de todos los participantes para cada partido.
+    </p>
+    
+    <!-- Pronósticos por Fase -->
+    {% for phase in phases %}
+        {% set phase_matches = [] %}
+        {% for match, predictions in predictions_by_match.items() %}
+            {% if match.phase_id == phase.id %}
+                {% if phase_matches.append(match) %}{% endif %}
+            {% endif %}
+        {% endfor %}
+        
+        {% if phase_matches %}
+            <h2 style="margin-top: 40px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
+                📅 {{ phase.name }}
+            </h2>
+            
+            {% for match in phase_matches %}
+                <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                    
+                    <!-- Encabezado del partido -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div>
+                            <h3 style="margin: 0;">
+                                {{ match.home_team }} vs {{ match.away_team }}
+                            </h3>
+                            <small style="color: #666;">
+                                {{ match.kickoff_at.strftime('%d/%m/%Y %H:%M') }} UTC
+                            </small>
+                        </div>
+                        
+                        <!-- Resultado Real -->
+                        {% if match.home_goals is not none %}
+                            <div style="text-align: right;">
+                                <p style="margin: 0; font-size: 0.9em; color: #666;">Resultado Real</p>
+                                <p style="margin: 5px 0; font-size: 1.5em; font-weight: bold; color: #007bff;">
+                                    {{ match.home_goals }} - {{ match.away_goals }}
+                                </p>
+                            </div>
+                        {% else %}
+                            <div style="text-align: right; color: #999;">
+                                <p style="margin: 0;">Sin resultado</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Tabla de Pronósticos del Partido -->
+                    {% set match_predictions = predictions_by_match.get(match, []) %}
+                    {% if match_predictions %}
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                            <thead>
+                                <tr style="background-color: #e8e8e8; border-bottom: 2px solid #007bff;">
+                                    <th style="padding: 10px; text-align: left; border: 1px solid #ddd; font-size: 0.9em;">Participante</th>
+                                    <th style="padding: 10px; text-align: center; border: 1px solid #ddd; font-size: 0.9em;">Pronóstico</th>
+                                    {% if match.home_goals is not none %}
+                                        <th style="padding: 10px; text-align: center; border: 1px solid #ddd; font-size: 0.9em;">Acierto</th>
+                                        <th style="padding: 10px; text-align: center; border: 1px solid #ddd; font-size: 0.9em; color: #007bff; font-weight: bold;">Puntos</th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pred in match_predictions %}
+                                    {% if match.home_goals is not none %}
+                                        {% set user_result = pred._get_result(pred.home_goals, pred.away_goals) %}
+                                        {% set match_result = pred._get_result(match.home_goals, match.away_goals) %}
+                                        {% set acertó_ganador = user_result == match_result %}
+                                        {% set acertó_exacto = (pred.home_goals == match.home_goals) and (pred.away_goals == match.away_goals) %}
+                                    {% else %}
+                                        {% set acertó_exacto = false %}
+                                        {% set acertó_ganador = false %}
+                                    {% endif %}
+                                    
+                                    <tr style="border-bottom: 1px solid #ddd; {% if acertó_exacto %}background-color: #e8f5e9;{% elif acertó_ganador %}background-color: #fff9e6;{% endif %}">
+                                        <td style="padding: 10px; border: 1px solid #ddd; font-size: 0.9em;">
+                                            <strong>{{ pred.user.name }}</strong>
+                                        </td>
+                                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: bold;">
+                                            {{ pred.home_goals }} - {{ pred.away_goals }}
+                                        </td>
+                                        {% if match.home_goals is not none %}
+                                            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 0.9em;">
+                                                {% if acertó_exacto %}
+                                                    <span style="background-color: #4caf50; color: white; padding: 3px 6px; border-radius: 3px;">✅ EXACTO</span>
+                                                {% elif acertó_ganador %}
+                                                    <span style="background-color: #ff9800; color: white; padding: 3px 6px; border-radius: 3px;">✓ GANADOR</span>
+                                                {% else %}
+                                                    <span style="background-color: #f44336; color: white; padding: 3px 6px; border-radius: 3px;">✗ ERRADO</span>
+                                                {% endif %}
+                                            </td>
+                                            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: bold; color: #007bff;">
+                                                {{ pred.points_awarded or 0 }}
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p style="color: #999; margin: 10px 0;">No hay pronósticos para este partido</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+    
+    {% if not predictions_by_match %}
+        <p style="text-align: center; color: #666; margin-top: 40px;">
+            No hay pronósticos disponibles
+        </p>
+    {% endif %}
+</div>
+{% endblock %}

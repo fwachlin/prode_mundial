@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - {{ user.name }}{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <a href="{{ url_for('admin.manage_users') }}" style="color: #007bff; text-decoration: none;">← Volver a usuarios</a>
+    
+    <h1>{{ user.name }}</h1>
+    
+    <div class="user-info-card">
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Admin:</strong> {% if user.is_admin %}✓ Sí{% else %}✗ No{% endif %}</p>
+        <p><strong>Habilitado:</strong> {% if user.is_enabled %}✓ Sí{% else %}✗ No{% endif %}</p>
+        <p><strong>Total de pronósticos:</strong> {{ predictions|length }}</p>
+    </div>
+    
+    <h2>Pronósticos de {{ user.name }}</h2>
+    
+    {% if predictions %}
+        <table class="predictions-table">
+            <thead>
+                <tr>
+                    <th>Partido</th>
+                    <th>Pronóstico</th>
+                    <th>Resultado</th>
+                    <th>Puntos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pred in predictions %}
+                <tr>
+                    <td>{{ pred.match.home_team }} vs {{ pred.match.away_team }}</td>
+                    <td>{{ pred.home_goals }} - {{ pred.away_goals }}</td>
+                    <td>
+                        {% if pred.match.home_goals is not none and pred.match.away_goals is not none %}
+                            {{ pred.match.home_goals }} - {{ pred.match.away_goals }}
+                        {% else %}
+                            <em style="color: #999;">Sin cargar</em>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if pred.points_awarded is not none %}
+                            <strong>{{ pred.points_awarded }}</strong>
+                        {% else %}
+                            <em style="color: #999;">-</em>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Este usuario no ha hecho ningún pronóstico.</p>
+    {% endif %}
+</div>
+
+<style>
+    .admin-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .user-info-card {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        margin: 20px 0;
+    }
+    
+    .user-info-card p {
+        margin: 10px 0;
+    }
+    
+    .predictions-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .predictions-table th,
+    .predictions-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .predictions-table th {
+        background-color: #f5f5f5;
+        font-weight: bold;
+    }
+    
+    .predictions-table tr:hover {
+        background-color: #f9f9f9;
+    }
+</style>
+{% endblock %}

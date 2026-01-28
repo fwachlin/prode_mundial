@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Rankings - Prode Mundial{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <h1>🏆 Rankings General</h1>
+    
+    <p style="margin: 20px 0; text-align: center;">
+        <strong>Puntuación acumulada de todas las fechas</strong>
+    </p>
+    
+    <!-- Links a rankings por fecha -->
+    <div style="margin: 30px 0; text-align: center;">
+        <a href="{{ url_for('main.rankings') }}" style="display: inline-block; padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; margin: 5px; font-weight: bold;">
+            📊 General
+        </a>
+        
+        {% for phase_num in [1, 2, 3, 4] %}
+            <a href="{{ url_for('main.rankings_by_phase', phase_id=phase_num) }}" style="display: inline-block; padding: 10px 15px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px; margin: 5px;">
+                Fecha {{ phase_num }}
+            </a>
+        {% endfor %}
+    </div>
+    
+    {% if user_stats %}
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+                <tr style="background-color: #f0f0f0; border-bottom: 2px solid #007bff;">
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">#</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Participante</th>
+                    <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Pronósticos</th>
+                    <th style="padding: 12px; text-align: center; border: 1px solid #ddd; color: #007bff; font-weight: bold;">Puntos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in user_stats %}
+                    <tr style="border-bottom: 1px solid #ddd; {% if loop.index == 1 %}background-color: #fff9e6;{% endif %}">
+                        <td style="padding: 12px; border: 1px solid #ddd;">
+                            {% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% elif loop.index == 3 %}🥉{% else %}{{ loop.index }}{% endif %}
+                        </td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">
+                            <strong>{{ stat.name }}</strong>
+                            <br>
+                            <small style="color: #666;">{{ stat.email }}</small>
+                        </td>
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">
+                            {{ stat.total_predictions or 0 }}
+                        </td>
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold; color: #007bff; font-size: 1.2em;">
+                            {{ stat.total_points or 0 }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="text-align: center; color: #666; margin-top: 30px;">
+            No hay datos de ranking disponibles
+        </p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Gestionar Partidos{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>Gestionar Partidos</h1>
+
+    <a href="{{ url_for('admin.create_match') }}" class="btn btn-primary" style="display: inline-block; margin-bottom: 20px;">
+        ➕ Crear Nuevo Partido
+    </a>
+    
+    <div class="matches-list">
+        {% if matches %}
+            <table class="matches-table">
+                <thead>
+                    <tr>
+                        <th>Partido</th>
+                        <th>Kickoff (UTC)</th>
+                        <th>Cierre (UTC)</th>
+                        <th>Resultado</th>
+                        <th>Pronósticos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for match in matches %}
+                    <tr>
+                        <td><strong>{{ match.home_team }}</strong> vs <strong>{{ match.away_team }}</strong></td>
+                        <td>{{ match.kickoff_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ match.closes_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            {% if match.home_goals is not none and match.away_goals is not none %}
+                                <span class="result-badge">{{ match.home_goals }} - {{ match.away_goals }}</span>
+                            {% else %}
+                                <span class="result-badge pending">Pendiente</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ match.predictions|length }}</td>
+                        <td class="actions">
+                            <a href="{{ url_for('admin.edit_match', match_id=match.id) }}" class="btn btn-small btn-info">Editar</a>
+                            
+                            {% if match.home_goals is none or match.away_goals is none %}
+                                {% if not match.has_started %}
+                                    <button class="btn btn-small btn-success" disabled style="opacity: 0.5; cursor: not-allowed;" 
+                                            title="El partido aún no ha comenzado">
+                                        Cargar resultado (En {{ match.minutes_until_start }} min)
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-small btn-success" onclick="showResultForm({{ match.id }})">
+                                        Cargar resultado
+                                    </button>
+                                {% endif %}
+                            {% endif %}
+                            
+                            <form method="POST" action="{{ url_for('admin.delete_match', match_id=match.id) }}" 
+                                  style="display: inline;" 
+                                  onsubmit="return confirm('¿Estás seguro de que quieres eliminar este partido?\n\n' + 
+                                                           '{{ match.home_team }} vs {{ match.away_team }}\n\n' +
+                                                           'Se eliminarán todos los pronósticos asociados.\n\n' +
+                                                           'Esta acción no se puede deshacer.');">
+                                <button type="submit" class="btn btn-small btn-danger">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No hay partidos cargados.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal para cargar resultado -->
+<div id="resultModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeResultForm()">&times;</span>
+        <h2>Cargar Resultado</h2>
+        <form id="resultForm" method="POST">
+            <div class="form-group">
+                <label for="home_goals">Goles Local:</label>
+                <input type="number" id="home_goals" name="home_goals" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="away_goals">Goles Visitante:</label>
+                <input type="number" id="away_goals" name="away_goals" min="0" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Resultado</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .admin-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .matches-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    
+    .matches-table th,
+    .matches-table td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .matches-table th {
+        background-color: #f5f5f5;
+        font-weight: bold;
+    }
+    
+    .matches-table tr:hover {
+        background-color: #f9f9f9;
+    }
+    
+    .result-badge {
+        padding: 5px 10px;
+        border-radius: 4px;
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .result-badge.pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    
+    .actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn {
+        padding: 8px 12px;
+        text-decoration: none;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9em;
+    }
+    
+    .btn-small {
+        padding: 6px 10px;
+        font-size: 0.85em;
+    }
+    
+    .btn-info {
+        background-color: #17a2b8;
+        color: white;
+    }
+    
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    .btn:hover {
+        opacity: 0.9;
+    }
+    
+    .modal {
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+    
+    .modal-content {
+        background-color: #fefefe;
+        margin: 10% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 400px;
+        border-radius: 8px;
+    }
+    
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    
+    .close:hover {
+        color: black;
+    }
+    
+    .form-group {
+        margin: 15px 0;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    
+    .form-group input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+</style>
+
+<script>
+function showResultForm(matchId) {
+    const modal = document.getElementById('resultModal');
+    const form = document.getElementById('resultForm');
+    form.action = `/admin/matches/${matchId}/result`;
+    modal.style.display = 'block';
+}
+
+function closeResultForm() {
+    document.getElementById('resultModal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('resultModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

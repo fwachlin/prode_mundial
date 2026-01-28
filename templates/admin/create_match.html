@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Crear Partido{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <a href="{{ url_for('admin.list_matches') }}" style="color: #007bff; text-decoration: none;">← Volver a partidos</a>
+    
+    <h1>Crear Nuevo Partido</h1>
+    
+    <form method="POST" class="edit-form">
+        <div class="form-group">
+            <label for="phase_id">Fecha del Mundial:</label>
+            <select id="phase_id" name="phase_id" required>
+                <option value="">-- Seleccionar fecha --</option>
+                {% for phase in phases %}
+                    <option value="{{ phase.id }}">{{ phase.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="home_team">Equipo Local:</label>
+            <input type="text" id="home_team" name="home_team" placeholder="ej: Argentina" required autofocus>
+        </div>
+        
+        <div class="form-group">
+            <label for="away_team">Equipo Visitante:</label>
+            <input type="text" id="away_team" name="away_team" placeholder="ej: Brasil" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="kickoff_at">Fecha y Hora de Kickoff (UTC):</label>
+            <input type="datetime-local" id="kickoff_at" name="kickoff_at" required>
+            <small>Formato: YYYY-MM-DDTHH:MM</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="closes_at">Fecha y Hora de Cierre (UTC):</label>
+            <input type="datetime-local" id="closes_at" name="closes_at" required>
+            <small>Se actualiza automáticamente a 10 minutos antes del kickoff</small>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Crear Partido</button>
+            <a href="{{ url_for('admin.list_matches') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .admin-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .edit-form {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+    
+    .form-group {
+        margin: 20px 0;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+    
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1em;
+    }
+    
+    .form-group small {
+        display: block;
+        margin-top: 5px;
+        color: #666;
+        font-size: 0.9em;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 30px;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 1em;
+        display: inline-block;
+    }
+    
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+    
+    .btn:hover {
+        opacity: 0.9;
+    }
+</style>
+
+<script>
+// Cuando cambia la hora de kickoff, actualizar automáticamente la hora de cierre
+document.getElementById('kickoff_at').addEventListener('change', function() {
+    const kickoffInput = this.value;
+    
+    if (kickoffInput) {
+        const kickoffDate = new Date(kickoffInput + ':00Z');
+        const closesDate = new Date(kickoffDate.getTime() - 10 * 60 * 1000);
+        const closesValue = closesDate.toISOString().slice(0, 16);
+        
+        document.getElementById('closes_at').value = closesValue;
+    }
+});
+</script>
+{% endblock %}
