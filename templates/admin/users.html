@@ -3,155 +3,56 @@
 {% block title %}Admin - Gestionar Usuarios{% endblock %}
 
 {% block content %}
-<div class="admin-container">
-    <h1>Gestionar Usuarios</h1>
-    
-    <p style="margin-bottom: 20px;">Total de usuarios: <strong>{{ users|length }}</strong></p>
-    
-    {% if users %}
-        <table class="users-table">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Habilitado</th>
-                    <th>Pronósticos</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>
-                        {% if user.is_enabled %}
-                            <span class="badge badge-success">✓ Habilitado</span>
-                        {% else %}
-                            <span class="badge badge-danger">✗ Deshabilitado</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ user.predictions|length }}</td>
-                    <td class="actions">
-                        <a href="{{ url_for('admin.view_user', user_id=user.id) }}" class="btn btn-small btn-info">Ver</a>
-                        
-                        <form method="POST" action="{{ url_for('admin.toggle_user', user_id=user.id) }}" 
-                              style="display: inline;"
-                              onsubmit="return confirm('¿{{ 'Deshabilitar' if user.is_enabled else 'Habilitar' }} a {{ user.name }}?');">
-                            <button type="submit" class="btn btn-small {% if user.is_enabled %}btn-danger{% else %}btn-success{% endif %}">
-                                {% if user.is_enabled %}Deshabilitar{% else %}Habilitar{% endif %}
-                            </button>
-                        </form>
-                        
-                        <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}" 
-                              style="display: inline;"
-                              onsubmit="return confirm('⚠️ ADVERTENCIA: ¿Eliminar a {{ user.name }}?\n\n' + 
-                                                       'Email: {{ user.email }}\n' +
-                                                       'Pronósticos: {{ user.predictions|length }}\n\n' +
-                                                       'Se eliminarán todos los datos asociados.\n' +
-                                                       'Esta acción NO SE PUEDE DESHACER.');">
-                            <button type="submit" class="btn btn-small btn-danger" style="background-color: #dc3545; opacity: 0.8;">
-                                Eliminar
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>No hay usuarios registrados.</p>
-    {% endif %}
-</div>
+<h1>Gestionar Usuarios</h1>
 
-<style>
-    .admin-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-    
-    .users-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        background: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    .users-table th,
-    .users-table td {
-        padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
-    
-    .users-table th {
-        background-color: #f5f5f5;
-        font-weight: bold;
-    }
-    
-    .users-table tr:hover {
-        background-color: #f9f9f9;
-    }
-    
-    .badge {
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 0.85em;
-        font-weight: bold;
-    }
-    
-    .badge-success {
-        background-color: #d4edda;
-        color: #155724;
-    }
-    
-    .badge-danger {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-    
-    .actions {
-        display: flex;
-        gap: 5px;
-        flex-wrap: wrap;
-    }
-    
-    .btn {
-        padding: 6px 10px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.85em;
-        text-decoration: none;
-        display: inline-block;
-    }
-    
-    .btn-small {
-        padding: 5px 8px;
-        font-size: 0.8em;
-    }
-    
-    .btn-info {
-        background-color: #17a2b8;
-        color: white;
-    }
-    
-    .btn-success {
-        background-color: #28a745;
-        color: white;
-    }
-    
-    .btn-danger {
-        background-color: #dc3545;
-        color: white;
-    }
-    
-    .btn:hover {
-        opacity: 0.9;
-    }
-</style>
+<p style="margin-bottom: 20px;">Total de usuarios: <strong>{{ users|length }}</strong></p>
+
+{% if users %}
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Habilitado</th>
+                <th>Pronósticos</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    {% if user.is_enabled %}
+                        <span class="badge badge-success">✓ Habilitado</span>
+                    {% else %}
+                        <span class="badge badge-danger">✗ Deshabilitado</span>
+                    {% endif %}
+                </td>
+                <td>{{ user.predictions|length }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-secondary">✏️ Editar</a>
+                    
+                    <form method="POST" action="{{ url_for('admin.toggle_user', user_id=user.id) }}" 
+                          style="display: inline;"
+                          onsubmit="return confirm('¿{{ 'Deshabilitar' if user.is_enabled else 'Habilitar' }} a {{ user.name }}?');">
+                        <button type="submit" class="btn {% if user.is_enabled %}btn-danger{% else %}btn-success{% endif %}">
+                            {% if user.is_enabled %}Deshabilitar{% else %}Habilitar{% endif %}
+                        </button>
+                    </form>
+                    
+                    <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}" 
+                          style="display: inline;"
+                          onsubmit="return confirm('⚠️ ADVERTENCIA: ¿Eliminar a {{ user.name }}?\n\nEmail: {{ user.email }}\nPronósticos: {{ user.predictions|length }}\n\nSe eliminarán todos los datos asociados.\nEsta acción NO SE PUEDE DESHACER.');">
+                        <button type="submit" class="btn btn-danger">🗑️ Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hay usuarios registrados.</p>
+{% endif %}
 {% endblock %}

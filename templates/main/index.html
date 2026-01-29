@@ -1,84 +1,111 @@
 {% extends "base.html" %}
 
-{% block title %}Inicio - Prode Mundial{% endblock %}
+{% block title %}Inicio - Prode Mundial 2026{% endblock %}
 
 {% block content %}
-<div style="text-align: center;">
-    <h1>Bienvenido a Prode Mundial 2026</h1>
-    
-    <!-- Contador regresivo del Mundial -->
-    <div id="worldcup-counter" style="background-color: #f0f0f0; padding: 30px; border-radius: 8px; margin: 30px 0; border: 2px solid #007bff;">
-        <h2>⏳ Falta para el inicio del Mundial</h2>
-        <div id="countdown" style="font-size: 2.5em; font-weight: bold; color: #007bff; margin: 20px 0;">
-            Cargando...
-        </div>
+<h1>⚽ Prode Mundial 2026</h1>
+
+<!-- Cuenta regresiva general hasta el inicio del mundial -->
+{% if next_matches and next_matches|length > 0 %}
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 30px; margin: 30px 0; text-align: center; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+    <h2 style="margin: 0 0 10px; font-size: 1.8em; color: white;">🏆 El Mundial comienza en:</h2>
+    <div id="mundial-countdown" style="font-size: 3em; font-weight: 900; margin: 20px 0; text-shadow: 2px 2px 8px rgba(0,0,0,0.3);">
+        ⏳ Calculando...
     </div>
+    <p style="margin: 10px 0 0; font-size: 1.1em; opacity: 0.95;">Primer partido: {{ next_matches[0].home_team }} vs {{ next_matches[0].away_team }}</p>
+</div>
+{% endif %}
+
+<p>Bienvenido al Prode del Obser. Realiza tus pronósticos y compite con tus amigos.</p>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+    <a href="{{ url_for('main.rankings') }}" class="card" style="padding: 20px; text-align: center; text-decoration: none;">
+        <h3>🏆 Rankings</h3>
+        <p>Ve cómo vas en el torneo</p>
+    </a>
     
-    {% if current_user.is_authenticated %}
-        {% if current_user.is_admin %}
-            <p style="font-size: 1.1em; margin: 20px 0;">
-                Hola, <strong>{{ current_user.name }}</strong> (Administrador)
-            </p>
-            
-            <a href="{{ url_for('admin.dashboard') }}" style="display: inline-block; padding: 12px 24px; background-color: #f39c12; color: white; text-decoration: none; border-radius: 4px; margin: 10px;">
-                Ir al Panel de Admin
-            </a>
-        {% else %}
-            <p style="font-size: 1.1em; margin: 20px 0;">
-                Hola, <strong>{{ current_user.name }}</strong>
-            </p>
-            
-            <a href="{{ url_for('main.predictions') }}" style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; margin: 10px;">
-                Ver Mis Pronósticos
-            </a>
-        {% endif %}
-    {% else %}
-        <p style="font-size: 1.1em; margin: 30px 0;">
-            Inicia sesión para hacer tus pronósticos del Mundial 2026
-        </p>
-        
-        <a href="{{ url_for('auth.login') }}" style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; margin: 10px;">
-            Iniciar Sesión
-        </a>
-        
-        <a href="{{ url_for('auth.register') }}" style="display: inline-block; padding: 12px 24px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px; margin: 10px;">
-            Registrarse
-        </a>
-    {% endif %}
+    <a href="{{ url_for('main.all_predictions') }}" class="card" style="padding: 20px; text-align: center; text-decoration: none;">
+        <h3>⚽ Todos los Pronósticos</h3>
+        <p>Compara tus pronósticos</p>
+    </a>
 </div>
 
-<script>
-// Fecha de inicio del Mundial 2026 (12 de junio de 2026 a las 12:00 UTC)
-const WORLDCUP_START = new Date('2026-06-12T12:00:00Z');
+<!-- Próximos partidos -->
+{% if next_matches and next_matches|length > 0 %}
+<div style="margin-top: 40px;">
+    <h3>⚽ Próximos Partidos</h3>
+    
+    {% for match in next_matches[:3] %}
+    <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+        <p style="margin: 0; font-weight: 600; font-size: 1.1em;">{{ match.home_team }} vs {{ match.away_team }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
-function updateCountdown() {
-    const now = new Date();
-    const diff = WORLDCUP_START - now;
+<!-- Vista previa del tablón -->
+{% if recent_comments %}
+<div style="margin-top: 40px;">
+    <h3>📢 Últimos comentarios del tablón
+        <a href="{{ url_for('main.tablon') }}" style="font-size: 0.9em; color: var(--primary);">Ver todos →</a>
+    </h3>
     
-    const countdownDiv = document.getElementById('countdown');
-    const worldcupCounter = document.getElementById('worldcup-counter');
+    {% for comment in recent_comments %}
+    <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+        <p style="margin: 0 0 8px; font-weight: 600;">{{ comment.user.name }}</p>
+        <p style="margin: 0 0 8px; color: var(--text);">{{ comment.content[:100] }}{% if comment.content|length > 100 %}...{% endif %}</p>
+        <small style="color: #6b7280;">{{ comment.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<script>
+const firstMatchDate = "{{ next_matches[0].kickoff_at if next_matches else '' }}";
+
+function updateMundialCountdown() {
+    if (!firstMatchDate) return;
     
-    // Si el mundial ya comenzó
-    if (diff <= 0) {
-        countdownDiv.textContent = '¡El Mundial 2026 ya ha comenzado!';
-        countdownDiv.style.color = '#28a745';
-        return;
+    const kickoffTime = new Date(firstMatchDate).getTime();
+    const now = new Date().getTime();
+    const distance = kickoffTime - now;
+    
+    const element = document.getElementById("mundial-countdown");
+    
+    if (element) {
+        if (distance > 0) {
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            element.innerHTML = `
+                <span style="display: inline-block; margin: 0 10px;">
+                    <span style="font-size: 1.2em;">${days}</span>
+                    <span style="font-size: 0.5em; display: block;">días</span>
+                </span>
+                <span style="display: inline-block; margin: 0 10px;">
+                    <span style="font-size: 1.2em;">${hours}</span>
+                    <span style="font-size: 0.5em; display: block;">horas</span>
+                </span>
+                <span style="display: inline-block; margin: 0 10px;">
+                    <span style="font-size: 1.2em;">${minutes}</span>
+                    <span style="font-size: 0.5em; display: block;">min</span>
+                </span>
+                <span style="display: inline-block; margin: 0 10px;">
+                    <span style="font-size: 1.2em;">${seconds}</span>
+                    <span style="font-size: 0.5em; display: block;">seg</span>
+                </span>
+            `;
+        } else {
+            element.textContent = "🎉 ¡Ya comenzó!";
+            element.style.fontSize = "2.5em";
+        }
     }
-    
-    // Calcular días, horas, minutos y segundos
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
-    // Mostrar con palabras completas en el contador grande
-    countdownDiv.textContent = `${days} días, ${hours} horas, ${minutes} minutos, ${seconds} segundos`;
 }
 
-// Actualizar el contador al cargar la página
-updateCountdown();
-
 // Actualizar cada segundo
-setInterval(updateCountdown, 1000);
+updateMundialCountdown();
+setInterval(updateMundialCountdown, 1000);
 </script>
 {% endblock %}

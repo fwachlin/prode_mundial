@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Moderación de Comentarios{% endblock %}
+
+{% block content %}
+<h2>📢 Moderación del Tablón</h2>
+
+<p style="margin-bottom: 20px;">Total de comentarios: <strong>{{ comments|length }}</strong></p>
+
+{% if comments %}
+    {% for comment in comments %}
+    <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div style="flex: 1;">
+                <p style="margin: 0 0 8px; font-weight: 600;">{{ comment.user.name }} 
+                    <span style="color: #6b7280; font-weight: normal; font-size: 0.9em;">({{ comment.user.email }})</span>
+                </p>
+                <p style="margin: 0 0 8px; color: var(--text); line-height: 1.5; background: #f9fafb; padding: 12px; border-radius: 8px;">
+                    {{ comment.content }}
+                </p>
+                <small style="color: #6b7280;">{{ comment.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+            </div>
+            
+            <form method="POST" action="{{ url_for('admin.delete_comment', comment_id=comment.id) }}" 
+                  style="display: inline;"
+                  onsubmit="return confirm('¿Eliminar este comentario?');">
+                <button type="submit" class="btn btn-danger" style="margin-left: 12px;">🗑️ Eliminar</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <p style="text-align: center; color: #6b7280;">No hay comentarios</p>
+{% endif %}
+{% endblock %}

@@ -4,14 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Prode Mundial{% endblock %}</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding-top: 60px; background: #f5f5f5; }
-        nav { position: fixed; top: 0; left: 0; right: 0; background: #333; color: #fff; padding: 12px 0; z-index: 1000; }
-        .navbar { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
-        .navbar a { color: white; text-decoration: none; margin-right: 12px; }
-        .navbar a.admin-btn { color: #f39c12; font-weight: bold; }
-        .container { max-width: 1200px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -20,12 +13,11 @@
             <a href="{{ url_for('main.index') }}">⚽ Prode Mundial 2026</a>
             <div>
                 <a href="{{ url_for('main.rankings') }}">Rankings</a>
+                <a href="{{ url_for('main.tablon') }}">📢 Tablón</a>
                 <a href="{{ url_for('main.all_predictions') }}">Todos los Pronósticos</a>
-                <a href="{{ url_for('main.reglamento') }}">📜 Reglamento</a>
-                
                 {% if current_user.is_authenticated %}
                     {% if current_user.is_admin %}
-                        <a href="{{ url_for('admin.dashboard') }}" class="admin-btn">⚙️ Admin</a>
+                        <a href="{{ url_for('admin.dashboard') }}">⚙️ Admin</a>
                     {% endif %}
                     <a href="{{ url_for('auth.logout') }}">Cerrar Sesión</a>
                 {% else %}
@@ -37,6 +29,22 @@
     </nav>
 
     <div class="container">
+        <!-- Mostrar mensajes flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div style="margin-bottom:20px;">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" style="padding:12px; border-radius:8px; margin-bottom:10px;
+                             {% if category == 'success' %}background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0;
+                             {% elif category == 'error' %}background:#fef2f2; color:#991b1b; border:1px solid #fecaca;
+                             {% else %}background:#f3f4f6; color:#374151; border:1px solid #d1d5db;{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         {% block content %}{% endblock %}
     </div>
 </body>

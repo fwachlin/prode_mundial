@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from models import db, Match, Prediction, User, Phase
+from models import db, Match, Prediction, User, Phase, Comment
 from sqlalchemy import func
 from datetime import datetime, timezone
 
@@ -9,7 +9,34 @@ main_bp = Blueprint('main', __name__, url_prefix='')
 @main_bp.route('/')
 def index():
     """Página de inicio"""
-    return render_template('main/index.html')
+    # Obtener últimos 5 comentarios
+    recent_comments = Comment.query.order_by(Comment.created_at.desc()).limit(5).all()
+    recent_comments.reverse()
+    
+    # Obtener próximos 5 partidos sin resultado
+    now = datetime.now(timezone.utc)
+    next_matches = Match.query.filter(
+        Match.home_goals == None,
+        Match.away_goals == None,
+        Match.kickoff_at >= now
+    ).order_by(Match.kickoff_at).limit(5).all()
+    
+    # Convertir a dict para pasar a JS
+    matches_data = []
+    for match in next_matches:
+        kickoff = match.kickoff_at
+        if kickoff.tzinfo is None:
+            kickoff = kickoff.replace(tzinfo=timezone.utc)
+        matches_data.append({
+            'id': match.id,
+            'home_team': match.home_team,
+            'away_team': match.away_team,
+            'kickoff_at': kickoff.isoformat()
+        })
+    
+    return render_template('main/index.html', 
+                         recent_comments=recent_comments,
+                         next_matches=matches_data)
 
 @main_bp.route('/predictions', methods=['GET', 'POST'])
 @login_required
@@ -134,39 +161,69 @@ def rankings_by_match(match_id):
     
     # Obtener pronósticos de este partido ordenados por puntos (SIN ADMINS)
     predictions = Prediction.query.join(User)\
-                                   .filter(Prediction.match_id == match_id,
-                                          User.is_admin == False)\
-                                   .order_by(Prediction.points_awarded.desc())\
-                                   .all()
+                               .filter(Prediction.match_id == match_id,
+                                      User.is_admin == False)\
+                               .order_by(Prediction.points_awarded.desc())\
+                               .all()
     
     return render_template('main/rankings_match.html', 
-                         match=match, 
-                         predictions=predictions)
+                     match=match, 
+                     predictions=predictions)
 
 @main_bp.route('/all-predictions')
 def all_predictions():
-    """Ver todos los pronósticos de todos los partidos y usuarios"""
-    # Obtener fases con sus partidos
+    """Ver todos los pronósticos en tabla por fase"""
     phases = Phase.query.order_by(Phase.order).all()
-    
-    # Obtener todos los pronósticos agrupados por partido
-    predictions_by_match = {}
+    users = User.query.filter(User.is_admin == False).order_by(User.name).all()
+
+    # precargar pronósticos
+    predictions = Prediction.query.all()
+    pred_map = {(p.user_id, p.match_id): p for p in predictions}
+
+    phase_data = []
     for phase in phases:
         matches = Match.query.filter_by(phase_id=phase.id).order_by(Match.kickoff_at).all()
-        for match in matches:
-            predictions = Prediction.query.join(User)\
-                                          .filter(Prediction.match_id == match.id,
-                                                 User.is_admin == False)\
-                                          .order_by(Prediction.points_awarded.desc())\
-                                          .all()
-            if predictions:
-                predictions_by_match[match] = predictions
-    
-    return render_template('main/all_predictions.html',
-                         phases=phases,
-                         predictions_by_match=predictions_by_match)
+        if not matches:
+            continue
+
+        phase_data.append({
+            'phase': phase,
+            'matches': matches,
+            'users': users,
+            'pred_map': pred_map
+        })
+
+    return render_template('main/all_predictions.html', phase_data=phase_data)
 
 @main_bp.route('/reglamento')
 def reglamento():
     """Reglamento del Prode Mundial 2026"""
     return render_template('main/reglamento.html')
+
+@main_bp.route('/tablon', methods=['GET', 'POST'])
+@login_required
+def tablon():
+    """Página del tablón de comentarios"""
+    if request.method == 'POST':
+        content = request.form.get('content', '').strip()
+        
+        if not content:
+            flash('El comentario no puede estar vacío', 'error')
+            return redirect(url_for('main.tablon'))
+        
+        if len(content) > 500:
+            flash('El comentario no puede exceder 500 caracteres', 'error')
+            return redirect(url_for('main.tablon'))
+        
+        comment = Comment(user_id=current_user.id, content=content)
+        db.session.add(comment)
+        db.session.commit()
+        
+        flash('Comentario publicado', 'success')
+        return redirect(url_for('main.tablon'))
+    
+    # Obtener últimos 10 comentarios
+    comments = Comment.query.order_by(Comment.created_at.desc()).limit(10).all()
+    comments.reverse()  # Mostrar más antiguos primero
+    
+    return render_template('main/tablon.html', comments=comments)

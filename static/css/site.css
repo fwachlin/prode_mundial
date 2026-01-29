@@ -1,0 +1,108 @@
+:root{
+  --bg:#f6f7fb;
+  --card:#ffffff;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --primary:#2563eb;
+  --primary-2:#1d4ed8;
+  --success:#10b981;
+  --danger:#ef4444;
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  font-family: "Inter", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Layout */
+.container{
+  max-width:1200px;
+  margin:24px auto;
+  padding:24px;
+}
+
+/* Navbar */
+nav{
+  position: sticky;
+  top:0;
+  z-index:1000;
+  background: #ffffff;
+  border-bottom:1px solid var(--border);
+}
+.navbar{
+  max-width:1200px;
+  margin:0 auto;
+  padding:14px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.navbar a{
+  color: var(--text);
+  text-decoration:none;
+  margin-right:12px;
+  font-weight:600;
+}
+.navbar a:hover{ color: var(--primary); }
+
+/* Cards */
+.card{
+  background: var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+}
+
+/* Tables */
+table{
+  width:100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border-radius:12px;
+  overflow:hidden;
+  border:1px solid var(--border);
+}
+th, td{
+  padding:12px;
+  border-bottom:1px solid var(--border);
+}
+th{
+  text-align:left;
+  color: var(--muted);
+  background:#fafafa;
+}
+
+/* Buttons */
+.btn{
+  display:inline-block;
+  padding:10px 12px;
+  border-radius:10px;
+  font-weight:600;
+  text-decoration:none;
+  border:none;
+  cursor:pointer;
+}
+.btn-primary{ background: var(--primary); color:white; }
+.btn-primary:hover{ background: var(--primary-2); }
+.btn-secondary{ background:#f3f4f6; color:var(--text); border:1px solid var(--border); }
+.btn-success{ background: var(--success); color:white; }
+.btn-danger{ background: var(--danger); color:white; }
+
+/* Badges */
+.badge{
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:.75rem;
+  font-weight:700;
+}
+.badge-success{ background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+.badge-danger{ background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
+
+/* Headings */
+h1, h2, h3{ color: var(--text); }

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Editar Usuario{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 40px auto;">
+    <h2>Editar Usuario</h2>
+    
+    <form method="POST">
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Nombre:</label>
+            <input type="text" name="name" value="{{ user.name }}" required 
+                   style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #d1d5db;">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Email:</label>
+            <input type="email" name="email" value="{{ user.email }}" required 
+                   style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #d1d5db;">
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Guardar cambios</button>
+            <a href="{{ url_for('admin.manage_users') }}" class="btn btn-secondary" style="flex: 1; text-align: center;">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from admin.decorators import admin_required
-from models import db, Match, Prediction, User
+from models import db, Match, Prediction, User, Comment
 from datetime import datetime, timezone
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
@@ -139,7 +139,7 @@ def edit_match(match_id):
 @admin_required
 def delete_match(match_id):
     """Eliminar un partido"""
-    match = Match.query.get_or_404(match_id)
+    match = Match.query.get_or_400(match_id)
     
     # Guardar nombre del partido antes de eliminarlo
     match_name = f"{match.home_team} vs {match.away_team}"
@@ -160,29 +160,38 @@ def delete_match(match_id):
 def set_result(match_id):
     """Cargar resultado de un partido y calcular puntos"""
     match = Match.query.get_or_404(match_id)
-    
+
+    # Bloquear carga si el partido aún no comenzó
+    now = datetime.now(timezone.utc)
+    kickoff = match.kickoff_at
+    if kickoff.tzinfo is None:
+        kickoff = kickoff.replace(tzinfo=timezone.utc)
+
+    if now < kickoff:
+        flash('No puedes cargar el resultado antes del kickoff', 'error')
+        return redirect(url_for('admin.list_matches'))
+
     try:
         home_goals = int(request.form.get('home_goals', 0))
         away_goals = int(request.form.get('away_goals', 0))
     except ValueError:
         flash('Goles inválidos', 'error')
         return redirect(url_for('admin.list_matches'))
-    
+
     if home_goals < 0 or away_goals < 0:
         flash('Los goles no pueden ser negativos', 'error')
         return redirect(url_for('admin.list_matches'))
-    
+
     match.home_goals = home_goals
     match.away_goals = away_goals
     db.session.commit()
-    
-    # Calcular puntos SOLO para pronósticos que existen
+
     predictions = Prediction.query.filter_by(match_id=match_id).all()
     for prediction in predictions:
         prediction.points_awarded = prediction.calculate_points()
-    
+
     db.session.commit()
-    
+
     flash(f'Resultado: {match.home_team} {home_goals} - {away_goals} {match.away_team}. Puntos calculados.', 'success')
     return redirect(url_for('admin.list_matches'))
 
@@ -251,3 +260,62 @@ def delete_user(user_id):
     
     flash(f'Usuario {user.name} eliminado', 'success')
     return redirect(url_for('admin.manage_users'))
+
+@admin_bp.route('/users/<int:user_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_user(user_id):
+    """Editar información del usuario"""
+    user = User.query.get_or_404(user_id)
+    
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        email = request.form.get('email', '').strip()
+        
+        if not name:
+            flash('El nombre es requerido', 'error')
+            return redirect(url_for('admin.edit_user', user_id=user_id))
+        
+        if not email:
+            flash('El email es requerido', 'error')
+            return redirect(url_for('admin.edit_user', user_id=user_id))
+        
+        # Verificar si el email ya existe (excepto el del usuario actual)
+        existing = User.query.filter_by(email=email).filter(User.id != user_id).first()
+        if existing:
+            flash('Este email ya está registrado', 'error')
+            return redirect(url_for('admin.edit_user', user_id=user_id))
+        
+        user.name = name
+        user.email = email
+        db.session.commit()
+        
+        flash(f'Usuario {name} actualizado correctamente', 'success')
+        return redirect(url_for('admin.manage_users'))
+    
+    return render_template('admin/edit_user.html', user=user)
+
+# ==================== RUTAS DE COMENTARIOS ====================
+
+@admin_bp.route('/comments')
+@login_required
+@admin_required
+def manage_comments():
+    """Gestionar comentarios del tablón"""
+    comments = Comment.query.order_by(Comment.created_at.desc()).all()
+    return render_template('admin/comments.html', comments=comments)
+
+@admin_bp.route('/comments/<int:comment_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_comment(comment_id):
+    """Eliminar comentario"""
+    comment = Comment.query.get_or_404(comment_id)
+    user_name = comment.user.name
+    
+    db.session.delete(comment)
+    db.session.commit()
+    
+    flash(f'Comentario de {user_name} eliminado', 'success')
+    return redirect(url_for('admin.manage_comments'))
+

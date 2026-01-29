@@ -190,3 +190,16 @@ class Prediction(db.Model):
             return 'away'
         else:
             return 'draw'
+
+class Comment(db.Model):
+    __tablename__ = 'comment'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user = db.relationship('User', backref='comments')
+    
+    def __repr__(self):
+        return f'<Comment {self.id}>'
