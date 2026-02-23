@@ -3,63 +3,132 @@
 {% block title %}Inicio - Prode Mundial 2026{% endblock %}
 
 {% block content %}
-<h1>⚽ Prode Mundial 2026</h1>
 
-<!-- Cuenta regresiva general hasta el inicio del mundial -->
+<!-- Hero Section con countdown -->
 {% if next_matches and next_matches|length > 0 %}
-<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 30px; margin: 30px 0; text-align: center; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-    <h2 style="margin: 0 0 10px; font-size: 1.8em; color: white;">🏆 El Mundial comienza en:</h2>
-    <div id="mundial-countdown" style="font-size: 3em; font-weight: 900; margin: 20px 0; text-shadow: 2px 2px 8px rgba(0,0,0,0.3);">
-        ⏳ Calculando...
+<div class="hero-section hero-with-bg mb-4">
+    <!-- 🖼️ AQUÍ puedes poner imagen de fondo editando .hero-with-bg en site.css -->
+    <h1><i class="bi bi-trophy-fill text-warning"></i> Prode Mundial 2026</h1>
+    <p class="lead mb-4">El torneo más esperado del Observatorio</p>
+    
+    <div class="bg-white bg-opacity-10 rounded-4 p-4 mb-3">
+        <h2 class="h4 mb-3">🏆 El Mundial comienza en:</h2>
+        <div id="mundial-countdown" class="mb-3">
+            ⏳ Calculando...
+        </div>
+        <p class="mb-0 opacity-90">
+            <i class="bi bi-calendar-event me-2"></i>
+            Primer partido: <strong>{{ next_matches[0].home_team }} vs {{ next_matches[0].away_team }}</strong>
+        </p>
     </div>
-    <p style="margin: 10px 0 0; font-size: 1.1em; opacity: 0.95;">Primer partido: {{ next_matches[0].home_team }} vs {{ next_matches[0].away_team }}</p>
+</div>
+{% else %}
+<div class="hero-section mb-4">
+    <h1><i class="bi bi-trophy-fill text-warning"></i> Prode Mundial 2026</h1>
+    <p class="lead">El torneo más esperado del Observatorio</p>
 </div>
 {% endif %}
 
-<p>Bienvenido al Prode del Obser. Realiza tus pronósticos y compite con tus amigos.</p>
-
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
-    <a href="{{ url_for('main.rankings') }}" class="card" style="padding: 20px; text-align: center; text-decoration: none;">
-        <h3>🏆 Rankings</h3>
-        <p>Ve cómo vas en el torneo</p>
-    </a>
+<!-- Cards de acceso rápido -->
+<div class="row g-4 mb-5">
+    <div class="col-md-6">
+        <a href="{{ url_for('main.rankings') }}" class="card h-100 text-decoration-none border-0">
+            <div class="card-body text-center p-4">
+                <i class="bi bi-bar-chart-fill text-primary" style="font-size: 3rem;"></i>
+                <h3 class="mt-3 mb-2">Rankings</h3>
+                <p class="text-muted mb-0">Ve tu posición y la de tus competidores</p>
+            </div>
+        </a>
+    </div>
     
-    <a href="{{ url_for('main.all_predictions') }}" class="card" style="padding: 20px; text-align: center; text-decoration: none;">
-        <h3>⚽ Todos los Pronósticos</h3>
-        <p>Compara tus pronósticos</p>
-    </a>
+    <div class="col-md-6">
+        <a href="{{ url_for('main.all_predictions') }}" class="card h-100 text-decoration-none border-0">
+            <div class="card-body text-center p-4">
+                <i class="bi bi-list-check text-success" style="font-size: 3rem;"></i>
+                <h3 class="mt-3 mb-2">Todos los Pronósticos</h3>
+                <p class="text-muted mb-0">Compara y analiza los pronósticos</p>
+            </div>
+        </a>
+    </div>
 </div>
 
 <!-- Próximos partidos -->
 {% if next_matches and next_matches|length > 0 %}
-<div style="margin-top: 40px;">
-    <h3>⚽ Próximos Partidos</h3>
+<div class="mb-5">
+    <h3 class="mb-4">
+        <i class="bi bi-calendar3 text-primary me-2"></i>
+        Próximos Partidos
+    </h3>
     
-    {% for match in next_matches[:3] %}
-    <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
-        <p style="margin: 0; font-weight: 600; font-size: 1.1em;">{{ match.home_team }} vs {{ match.away_team }}</p>
+    <div class="row g-3">
+        {% for match in next_matches[:3] %}
+        <div class="col-md-4">
+            <div class="match-card">
+                <!-- 🖼️ AQUÍ puedes agregar logos de equipos más adelante -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-primary">{{ match.phase }}</span>
+                    <small class="text-muted">
+                        <i class="bi bi-clock me-1"></i>
+                        {{ match.kickoff_at.strftime('%d/%m %H:%M') if match.kickoff_at else 'Por definir' }}
+                    </small>
+                </div>
+                <h5 class="mb-3 text-center fw-bold">
+                    {{ match.home_team }}
+                    <span class="text-muted mx-2">vs</span>
+                    {{ match.away_team }}
+                </h5>
+                {% if match.stadium %}
+                <p class="text-muted small mb-0 text-center">
+                    <i class="bi bi-geo-alt-fill me-1"></i>{{ match.stadium }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 {% endif %}
 
 <!-- Vista previa del tablón -->
 {% if recent_comments %}
-<div style="margin-top: 40px;">
-    <h3>📢 Últimos comentarios del tablón
-        <a href="{{ url_for('main.tablon') }}" style="font-size: 0.9em; color: var(--primary);">Ver todos →</a>
-    </h3>
+<div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0">
+            <i class="bi bi-chat-dots-fill text-info me-2"></i>
+            Últimos comentarios del tablón
+        </h3>
+        <a href="{{ url_for('main.tablon') }}" class="btn btn-sm btn-outline-primary">
+            Ver todos <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
     
     {% for comment in recent_comments %}
-    <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
-        <p style="margin: 0 0 8px; font-weight: 600;">{{ comment.user.name }}</p>
-        <p style="margin: 0 0 8px; color: var(--text);">{{ comment.content[:100] }}{% if comment.content|length > 100 %}...{% endif %}</p>
-        <small style="color: #6b7280;">{{ comment.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+    <div class="card mb-3 border-0">
+        <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+                <!-- 🖼️ AQUÍ puedes agregar avatares de usuarios -->
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                     style="width: 40px; height: 40px; font-weight: 600;">
+                    {{ comment.user.name[0].upper() }}
+                </div>
+                <div>
+                    <h6 class="mb-0">{{ comment.user.name }}</h6>
+                    <small class="text-muted">
+                        <i class="bi bi-clock me-1"></i>
+                        {{ comment.created_at.strftime('%d/%m/%Y %H:%M') }}
+                    </small>
+                </div>
+            </div>
+            <p class="mb-0 ms-5">{{ comment.content[:100] }}{% if comment.content|length > 100 %}...{% endif %}</p>
+        </div>
     </div>
     {% endfor %}
 </div>
 {% endif %}
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
 const firstMatchDate = "{{ next_matches[0].kickoff_at if next_matches else '' }}";
 
@@ -80,32 +149,35 @@ function updateMundialCountdown() {
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
             
             element.innerHTML = `
-                <span style="display: inline-block; margin: 0 10px;">
-                    <span style="font-size: 1.2em;">${days}</span>
-                    <span style="font-size: 0.5em; display: block;">días</span>
-                </span>
-                <span style="display: inline-block; margin: 0 10px;">
-                    <span style="font-size: 1.2em;">${hours}</span>
-                    <span style="font-size: 0.5em; display: block;">horas</span>
-                </span>
-                <span style="display: inline-block; margin: 0 10px;">
-                    <span style="font-size: 1.2em;">${minutes}</span>
-                    <span style="font-size: 0.5em; display: block;">min</span>
-                </span>
-                <span style="display: inline-block; margin: 0 10px;">
-                    <span style="font-size: 1.2em;">${seconds}</span>
-                    <span style="font-size: 0.5em; display: block;">seg</span>
-                </span>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <div class="text-center">
+                        <div class="fs-1 fw-bold">${days}</div>
+                        <div class="small opacity-75">días</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="fs-1 fw-bold">${hours}</div>
+                        <div class="small opacity-75">horas</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="fs-1 fw-bold">${minutes}</div>
+                        <div class="small opacity-75">min</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="fs-1 fw-bold">${seconds}</div>
+                        <div class="small opacity-75">seg</div>
+                    </div>
+                </div>
             `;
         } else {
-            element.textContent = "🎉 ¡Ya comenzó!";
-            element.style.fontSize = "2.5em";
+            element.innerHTML = '<div class="fs-1">🎉 ¡Ya comenzó!</div>';
         }
     }
 }
 
 // Actualizar cada segundo
-updateMundialCountdown();
-setInterval(updateMundialCountdown, 1000);
+if (firstMatchDate) {
+    updateMundialCountdown();
+    setInterval(updateMundialCountdown, 1000);
+}
 </script>
 {% endblock %}
