@@ -22,36 +22,41 @@ def register():
             flash('Todos los campos son requeridos', 'error')
             return redirect(url_for('auth.register'))
         
-        # Validar que las contraseñas coincidan
-        if password != password_confirm:
-            flash('Las contraseñas no coinciden', 'error')
-            return redirect(url_for('auth.register'))
-        
-        # Validar longitud de contraseña
-        if len(password) < 6:
-            flash('La contraseña debe tener al menos 6 caracteres', 'error')
-            return redirect(url_for('auth.register'))
-        
-        # Validar que el email está permitido
+        # ← PRIMERO: Validar que el email está permitido
         allowed = AllowedEmail.query.filter_by(email=email).first()
         if not allowed:
             flash(f'El email {email} no está habilitado para registrarse', 'error')
             return redirect(url_for('auth.register'))
         
-        # Validar que el usuario no exista
+        # SEGUNDO: Validar que el usuario no exista
         if User.query.filter_by(email=email).first():
             flash('Este email ya está registrado', 'error')
             return redirect(url_for('auth.register'))
         
+        # TERCERO: Validar que las contraseñas coincidan
+        if password != password_confirm:
+            flash('Las contraseñas no coinciden', 'error')
+            return redirect(url_for('auth.register'))
+        
+        # CUARTO: Validar longitud de contraseña
+        if len(password) < 4:
+            flash('La contraseña debe tener al menos 4 caracteres', 'error')
+            return redirect(url_for('auth.register'))
+        
         # Crear usuario
-        user = User(name=name, email=email, is_enabled=True)
-        user.set_password(password)
-        
-        db.session.add(user)
-        db.session.commit()
-        
-        flash('¡Registro exitoso! Ahora puedes iniciar sesión', 'success')
-        return redirect(url_for('auth.login'))
+        try:
+            user = User(name=name, email=email, is_enabled=True)
+            user.set_password(password)
+            
+            db.session.add(user)
+            db.session.commit()
+            
+            flash('¡Registro exitoso! Ahora puedes iniciar sesión', 'success')
+            return redirect(url_for('auth.login'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error al registrar: {str(e)}', 'error')
+            return redirect(url_for('auth.register'))
     
     return render_template('auth/register.html')
 

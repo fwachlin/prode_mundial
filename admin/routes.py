@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from admin.decorators import admin_required
-from models import db, Match, Prediction, User, Comment
+from models import db, Match, Prediction, User, Comment, AllowedEmail
 from datetime import datetime, timezone
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
@@ -318,4 +318,43 @@ def delete_comment(comment_id):
     
     flash(f'Comentario de {user_name} eliminado', 'success')
     return redirect(url_for('admin.manage_comments'))
+
+@admin_bp.route('/allowed-emails', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def allowed_emails():
+    """Gestionar emails habilitados (sin registrar aún)"""
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        if not email:
+            flash('El email es requerido', 'error')
+            return redirect(url_for('admin.allowed_emails'))
+
+        existing = AllowedEmail.query.filter_by(email=email).first()
+        if existing:
+            flash('Ese email ya está habilitado', 'warning')
+            return redirect(url_for('admin.allowed_emails'))
+
+        db.session.add(AllowedEmail(email=email))
+        db.session.commit()
+        flash('Email habilitado', 'success')
+        return redirect(url_for('admin.allowed_emails'))
+
+    # Obtener emails habilitados que NO tienen usuario registrado
+    allowed = db.session.query(AllowedEmail).outerjoin(
+        User, AllowedEmail.email == User.email
+    ).filter(User.id == None).all()
+    
+    return render_template('admin/allowed_emails.html', emails=allowed)
+
+@admin_bp.route('/allowed-emails/<int:email_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_allowed_email(email_id):
+    """Eliminar email habilitado"""
+    item = AllowedEmail.query.get_or_404(email_id)
+    db.session.delete(item)
+    db.session.commit()
+    flash('Email eliminado', 'success')
+    return redirect(url_for('admin.allowed_emails'))
 

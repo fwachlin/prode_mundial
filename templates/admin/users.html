@@ -5,7 +5,11 @@
 {% block content %}
 <h1>Gestionar Usuarios</h1>
 
-<p style="margin-bottom: 20px;">Total de usuarios: <strong>{{ users|length }}</strong></p>
+<p style="margin-bottom: 20px;">
+    <strong>Usuarios registrados:</strong> {{ users|length }}
+    &nbsp;|&nbsp;
+    <a href="{{ url_for('admin.allowed_emails') }}" class="btn btn-secondary">📧 Emails habilitados (sin registrar)</a>
+</p>
 
 {% if users %}
     <table>
