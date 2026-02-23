@@ -6,9 +6,13 @@
 
 <!-- Hero Section con countdown -->
 {% if next_matches and next_matches|length > 0 %}
-<div class="hero-section hero-with-bg mb-4">
-    <!-- 🖼️ AQUÍ puedes poner imagen de fondo editando .hero-with-bg en site.css -->
+<div class="hero-section mb-4" style="background-image: linear-gradient(rgba(26, 71, 42, 0.75), rgba(45, 106, 79, 0.75)), url('{{ url_for('static', filename='images/backgrounds/stadium.jpg') }}'); background-size: cover; background-position: center;">
+    <!-- 🖼️ Tu imagen de estadio como fondo -->
     <h1><i class="bi bi-trophy-fill text-warning"></i> Prode Mundial 2026</h1>
+    <img src="{{ url_for('static', filename='images/backgrounds/argentina.jpg') }}" 
+         alt="Argentina" 
+         class="img-fluid rounded-4 shadow-lg mb-4" 
+         style="max-width: 600px; width: 90%;">
     <p class="lead mb-4">El torneo más esperado del Observatorio</p>
     
     <div class="bg-white bg-opacity-10 rounded-4 p-4 mb-3">
@@ -23,8 +27,12 @@
     </div>
 </div>
 {% else %}
-<div class="hero-section mb-4">
+<div class="hero-section mb-4" style="background-image: linear-gradient(rgba(26, 71, 42, 0.75), rgba(45, 106, 79, 0.75)), url('{{ url_for('static', filename='images/backgrounds/stadium.jpg') }}'); background-size: cover; background-position: center;">
     <h1><i class="bi bi-trophy-fill text-warning"></i> Prode Mundial 2026</h1>
+    <img src="{{ url_for('static', filename='images/backgrounds/argentina.jpg') }}" 
+         alt="Argentina" 
+         class="img-fluid rounded-4 shadow-lg mb-4" 
+         style="max-width: 600px; width: 90%;">
     <p class="lead">El torneo más esperado del Observatorio</p>
 </div>
 {% endif %}

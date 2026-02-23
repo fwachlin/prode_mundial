@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Imagen</title>
+    <style>
+        .test1 {
+            width: 100%;
+            height: 300px;
+            background-image: url('images/backgrounds/stadium.jpg');
+            background-size: cover;
+            background-position: center;
+            border: 3px solid red;
+            margin-bottom: 20px;
+        }
+        .test2 {
+            width: 100%;
+            height: 300px;
+            background-image: url('../static/images/backgrounds/stadium.jpg');
+            background-size: cover;
+            background-position: center;
+            border: 3px solid blue;
+            margin-bottom: 20px;
+        }
+        .test3 {
+            width: 100%;
+            height: 300px;
+            background-image: url('/static/images/backgrounds/stadium.jpg');
+            background-size: cover;
+            background-position: center;
+            border: 3px solid green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Prueba de rutas de imagen</h1>
+    <h2>Ruta relativa (rojo):</h2>
+    <div class="test1"></div>
+    
+    <h2>Ruta con ../ (azul):</h2>
+    <div class="test2"></div>
+    
+    <h2>Ruta absoluta desde root (verde):</h2>
+    <div class="test3"></div>
+    
+    <h2>Imagen directa:</h2>
+    <img src="images/backgrounds/stadium.jpg" style="max-width: 100%; border: 3px solid orange;">
+</body>
+</html>

@@ -24,7 +24,12 @@
 body {
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #f5f5f5;
+  background: linear-gradient(rgba(245, 245, 245, 0.55), rgba(245, 245, 245, 0.55)), 
+              url('../images/backgrounds/foto2.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: #212529;
   min-height: 100vh;
   display: flex;
@@ -219,10 +224,12 @@ footer {
 
 /* Imagen de fondo para hero sections */
 .hero-with-bg {
-  background-image: linear-gradient(rgba(26, 71, 42, 0.85), rgba(45, 106, 79, 0.85)), 
-                    url('/static/images/backgrounds/stadium.jpg'); /* ← AQUÍ PONES TU FOTO DE ESTADIO */
-  background-size: cover;
-  background-position: center;
+  background: linear-gradient(rgba(26, 71, 42, 0.75), rgba(45, 106, 79, 0.75)), 
+              url('../images/backgrounds/stadium.jpg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 /* Logos de equipos en partidos */
