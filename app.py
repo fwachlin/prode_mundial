@@ -2,10 +2,21 @@ from flask import Flask
 from flask_login import LoginManager, current_user
 from models import db, User
 from datetime import datetime, timezone
+import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///prode_mundial.db'
-app.config['SECRET_KEY'] = 'tu_clave_secreta_aqui'
+
+# Configuración de base de datos
+# En producción (Render), usar la ruta correcta para instance
+if os.environ.get('RENDER'):
+    # Render provee un directorio persistente
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////opt/render/project/src/instance/prode_mundial.db'
+else:
+    # Desarrollo local
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///prode_mundial.db'
+
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'tu_clave_secreta_aqui')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 login_manager = LoginManager()
