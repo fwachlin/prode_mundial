@@ -160,28 +160,25 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(main_bp)
 app.register_blueprint(admin_bp)
 
-# Endpoint temporal para crear admin en producción
-@app.route('/secret-create-admin-xyz123')
-def create_admin_temp():
-    """Endpoint temporal. Eliminar después de usar."""
-    admin = User.query.filter_by(email='admin@prode.com').first()
+# Crear tablas si no existen y asegurar admin existe
+with app.app_context():
+    db.create_all()
     
-    if admin:
-        admin.set_password('admin123')
-        admin.is_admin = True
-        db.session.commit()
-        return f"✅ Admin actualizado: {admin.email} (is_admin={admin.is_admin})"
-    else:
+    # Crear usuario admin automáticamente si no existe
+    admin = User.query.filter_by(email='admin@prode.com').first()
+    if not admin:
         admin = User(email='admin@prode.com', name='Admin')
         admin.set_password('admin123')
         admin.is_admin = True
         db.session.add(admin)
         db.session.commit()
-        return f"✅ Admin creado: {admin.email} (is_admin={admin.is_admin})"
-
-# Crear tablas si no existen
-with app.app_context():
-    db.create_all()
+        print("✅ Usuario admin creado automáticamente")
+    else:
+        # Asegurar que tenga privilegios de admin
+        if not admin.is_admin:
+            admin.is_admin = True
+            db.session.commit()
+            print("✅ Privilegios de admin actualizados")
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000)
