@@ -174,7 +174,7 @@ def rankings_by_match(match_id):
 def all_predictions():
     """Ver todos los pronósticos en tabla por fase"""
     phases = Phase.query.order_by(Phase.order).all()
-    users = User.query.filter(User.is_admin == False).order_by(User.name).all()
+    users = User.query.filter_by(is_admin=False).order_by(User.name).all()
 
     # precargar pronósticos
     predictions = Prediction.query.all()
@@ -182,6 +182,10 @@ def all_predictions():
 
     phase_data = []
     for phase in phases:
+        # Excluir Fecha 4 - Eliminación Directa
+        if 'Eliminación Directa' in phase.name or phase.name == 'Fecha 4':
+            continue
+            
         matches = Match.query.filter_by(phase_id=phase.id).order_by(Match.kickoff_at).all()
         if not matches:
             continue
