@@ -151,10 +151,12 @@ def country_iso2_filter(country_name):
 from auth.routes import auth_bp
 from main.routes import main_bp
 from admin.routes import admin_bp
+from reset_db_endpoint import reset_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(main_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(reset_bp)
 
 # Crear tablas si no existen
 with app.app_context():
