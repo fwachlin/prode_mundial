@@ -160,13 +160,6 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(main_bp)
 app.register_blueprint(admin_bp)
 
-# Registrar endpoint temporal solo si existe
-try:
-    from reset_db_endpoint import reset_bp
-    app.register_blueprint(reset_bp)
-except ImportError:
-    pass
-
 # Crear tablas si no existen
 with app.app_context():
     db.create_all()
