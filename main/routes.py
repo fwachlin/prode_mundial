@@ -21,22 +21,9 @@ def index():
         Match.kickoff_at >= now
     ).order_by(Match.kickoff_at).limit(5).all()
     
-    # Convertir a dict para pasar a JS
-    matches_data = []
-    for match in next_matches:
-        kickoff = match.kickoff_at
-        if kickoff.tzinfo is None:
-            kickoff = kickoff.replace(tzinfo=timezone.utc)
-        matches_data.append({
-            'id': match.id,
-            'home_team': match.home_team,
-            'away_team': match.away_team,
-            'kickoff_at': kickoff.isoformat()
-        })
-    
     return render_template('main/index.html', 
                          recent_comments=recent_comments,
-                         next_matches=matches_data)
+                         next_matches=next_matches)
 
 @main_bp.route('/predictions', methods=['GET', 'POST'])
 @login_required

@@ -78,9 +78,10 @@
                     <small class="text-muted">
                         <i class="bi bi-clock me-1"></i>
                         {% if match.kickoff_at %}
-                            {% set utc_time = match.kickoff_at.strftime('%Y-%m-%dT%H:%M:%S') + 'Z' %}
+                            {% set kickoff = match.kickoff_at.replace(tzinfo=None) if match.kickoff_at.tzinfo else match.kickoff_at %}
+                            {% set utc_time = kickoff.strftime('%Y-%m-%dT%H:%M:%S') + 'Z' %}
                             <span class="local-time" data-utc="{{ utc_time }}" title="Hora ajustada a tu zona horaria">
-                                {{ match.kickoff_at.strftime('%d/%m %H:%M') }}
+                                {{ kickoff.strftime('%d/%m %H:%M') }}
                             </span>
                             <span class="badge badge-sm bg-secondary ms-1" style="font-size: 0.65rem;">hora local</span>
                         {% else %}
@@ -147,7 +148,12 @@
 {% block extra_js %}
 <script>
 // Fecha del primer partido en formato ISO UTC
-const firstMatchDate = "{{ (next_matches[0].kickoff_at.strftime('%Y-%m-%dT%H:%M:%S') + 'Z') if next_matches and next_matches[0].kickoff_at else '' }}";
+{% if next_matches and next_matches[0].kickoff_at %}
+    {% set first_kickoff = next_matches[0].kickoff_at.replace(tzinfo=None) if next_matches[0].kickoff_at.tzinfo else next_matches[0].kickoff_at %}
+    const firstMatchDate = "{{ first_kickoff.strftime('%Y-%m-%dT%H:%M:%S') }}Z";
+{% else %}
+    const firstMatchDate = "";
+{% endif %}
 
 function updateMundialCountdown() {
     if (!firstMatchDate) return;
