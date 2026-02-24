@@ -3,7 +3,102 @@
 {% block title %}Todos los Pronósticos - Prode Mundial{% endblock %}
 
 {% block content %}
-<div style="max-width: 1200px; margin: 0 auto;">
+<style>
+    .predictions-table-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .predictions-table-container {
+        overflow: auto;
+        max-height: 70vh;
+        border: 1px solid #ddd;
+        margin-top: 20px;
+    }
+    
+    .predictions-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 900px;
+    }
+    
+    /* Encabezados sticky */
+    .predictions-table thead tr:first-child th {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        background-color: #e8e8e8;
+        z-index: 20;
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+        min-width: 120px;
+        height: 75px !important;
+        max-height: 75px !important;
+        line-height: 1.2;
+        overflow: hidden;
+        white-space: normal;
+        vertical-align: middle;
+    }
+    
+    .predictions-table thead .result-row th {
+        position: -webkit-sticky !important;
+        position: sticky !important;
+        top: 95px !important;
+        background-color: #f4f4f4 !important;
+        z-index: 20 !important;
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+        font-weight: 700;
+        min-width: 120px;
+        height: 45px !important;
+        max-height: 45px !important;
+        line-height: 1.2;
+        overflow: hidden;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+    
+    /* Primera columna sticky */
+    .predictions-table th:first-child,
+    .predictions-table td:first-child {
+        position: -webkit-sticky;
+        position: sticky;
+        left: 0;
+        z-index: 10;
+        border-right: 2px solid #999;
+    }
+    
+    .predictions-table thead th:first-child {
+        z-index: 30;
+        background-color: #e8e8e8;
+        text-align: left;
+    }
+    
+    .predictions-table thead .result-row th:first-child {
+        z-index: 30;
+        background-color: #f4f4f4;
+        text-align: left;
+    }
+    
+    .predictions-table tbody td:first-child {
+        background-color: #f9f9f9;
+        font-weight: 600;
+    }
+    
+    .predictions-table tbody td {
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #ddd;
+        min-width: 120px;
+    }
+</style>
+
+<div class="predictions-table-wrapper">
     <a href="{{ url_for('main.index') }}" style="color: #007bff; text-decoration: none;">← Volver</a>
     <h1>📊 Todos los Pronósticos</h1>
 
@@ -13,22 +108,22 @@
                 📅 {{ block.phase.name }}
             </h2>
 
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; min-width: 900px;">
+            <div class="predictions-table-container">
+                <table class="predictions-table">
                     <thead>
-                        <tr style="background-color: #e8e8e8;">
-                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Participante</th>
+                        <tr>
+                            <th>Participante</th>
                             {% for match in block.matches %}
-                                <th style="padding: 10px; text-align: center; border: 1px solid #ddd;">
+                                <th>
                                     {{ match.home_team }}<br>vs<br>{{ match.away_team }}
                                 </th>
                             {% endfor %}
                         </tr>
                         <!-- Fila de resultados reales -->
-                        <tr style="background-color: #f4f4f4;">
-                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Resultado</th>
+                        <tr class="result-row">
+                            <th>Resultado</th>
                             {% for match in block.matches %}
-                                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: 700;">
+                                <th>
                                     {% if match.home_goals is not none %}
                                         {{ match.home_goals }} - {{ match.away_goals }}
                                     {% else %}
@@ -41,9 +136,7 @@
                     <tbody>
                         {% for user in block.users %}
                         <tr>
-                            <td style="padding: 10px; border: 1px solid #ddd; font-weight: 600;">
-                                {{ user.name }}
-                            </td>
+                            <td>{{ user.name }}</td>
                             {% for match in block.matches %}
                                 {% set p = block.pred_map.get((user.id, match.id)) %}
                                 {% if p and match.home_goals is not none %}
@@ -55,8 +148,7 @@
                                     {% set exact = false %}
                                     {% set winner = false %}
                                 {% endif %}
-                                <td style="padding: 10px; text-align: center; border: 1px solid #ddd;
-                                           {% if p and match.home_goals is not none %}
+                                <td style="{% if p and match.home_goals is not none %}
                                                {% if exact %}background-color: #e8f5e9;
                                                {% elif winner %}background-color: #fff9e6;
                                                {% else %}background-color: #fdecea;
