@@ -32,6 +32,30 @@ def load_user(user_id):
 def inject_user():
     return {'current_user': current_user}
 
+# Filtro para convertir nombres de países a códigos FIFA
+@app.template_filter('fifa_code')
+def fifa_code_filter(country_name):
+    """Convierte nombre de país a código FIFA de 3 letras"""
+    fifa_codes = {
+        'Argentina': 'ARG', 'Brasil': 'BRA', 'Uruguay': 'URU', 'Chile': 'CHI',
+        'Paraguay': 'PAR', 'Colombia': 'COL', 'Ecuador': 'ECU', 'Perú': 'PER',
+        'Venezuela': 'VEN', 'Bolivia': 'BOL', 'México': 'MEX', 'Estados Unidos': 'USA',
+        'Canadá': 'CAN', 'Costa Rica': 'CRC', 'Jamaica': 'JAM', 'Panamá': 'PAN',
+        'Honduras': 'HON', 'El Salvador': 'SLV', 'Trinidad y Tobago': 'TRI',
+        'Alemania': 'GER', 'España': 'ESP', 'Francia': 'FRA', 'Inglaterra': 'ENG',
+        'Italia': 'ITA', 'Portugal': 'POR', 'Países Bajos': 'NED', 'Bélgica': 'BEL',
+        'Croacia': 'CRO', 'Dinamarca': 'DEN', 'Suiza': 'SUI', 'Polonia': 'POL',
+        'Suecia': 'SWE', 'Austria': 'AUT', 'República Checa': 'CZE', 'Serbia': 'SRB',
+        'Ucrania': 'UKR', 'Gales': 'WAL', 'Escocia': 'SCO', 'Noruega': 'NOR',
+        'Japón': 'JPN', 'Corea del Sur': 'KOR', 'Australia': 'AUS', 'Arabia Saudita': 'KSA',
+        'Irán': 'IRN', 'Irak': 'IRQ', 'Catar': 'QAT', 'China': 'CHN',
+        'Nigeria': 'NGA', 'Senegal': 'SEN', 'Ghana': 'GHA', 'Camerún': 'CMR',
+        'Túnez': 'TUN', 'Argelia': 'ALG', 'Marruecos': 'MAR', 'Costa de Marfil': 'CIV',
+        'Egipto': 'EGY', 'Sudáfrica': 'RSA', 'Mali': 'MLI', 'Burkina Faso': 'BFA',
+        'Nueva Zelanda': 'NZL'
+    }
+    return fifa_codes.get(country_name, country_name[:3].upper())
+
 # Registrar blueprints
 from auth.routes import auth_bp
 from main.routes import main_bp

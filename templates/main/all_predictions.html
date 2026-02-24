@@ -30,11 +30,11 @@
         top: 0;
         background-color: #e8e8e8;
         z-index: 20;
-        padding: 10px;
+        padding: 5px 3px;
         text-align: center;
         border: 1px solid #ddd;
         box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
-        min-width: 120px;
+        min-width: 45px;
         height: 75px !important;
         max-height: 75px !important;
         line-height: 1.2;
@@ -46,15 +46,15 @@
     .predictions-table thead .result-row th {
         position: -webkit-sticky !important;
         position: sticky !important;
-        top: 95px !important;
+        top: 75px !important;
         background-color: #f4f4f4 !important;
         z-index: 20 !important;
-        padding: 10px;
+        padding: 5px 3px;
         text-align: center;
         border: 1px solid #ddd;
         box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
         font-weight: 700;
-        min-width: 120px;
+        min-width: 45px;
         height: 45px !important;
         max-height: 45px !important;
         line-height: 1.2;
@@ -71,6 +71,9 @@
         left: 0;
         z-index: 10;
         border-right: 2px solid #999;
+        padding: 5px 8px;
+        min-width: 90px;
+        white-space: normal;
     }
     
     .predictions-table thead th:first-child {
@@ -82,7 +85,7 @@
     .predictions-table thead .result-row th:first-child {
         z-index: 30;
         background-color: #f4f4f4;
-        text-align: left;
+        text-align: center;
     }
     
     .predictions-table tbody td:first-child {
@@ -91,10 +94,11 @@
     }
     
     .predictions-table tbody td {
-        padding: 10px;
+        padding: 5px 3px;
         text-align: center;
         border: 1px solid #ddd;
-        min-width: 120px;
+        min-width: 45px;
+        font-weight: 600;
     }
 </style>
 
@@ -115,7 +119,7 @@
                             <th>Participante</th>
                             {% for match in block.matches %}
                                 <th>
-                                    {{ match.home_team }}<br>vs<br>{{ match.away_team }}
+                                    {{ match.home_team|fifa_code }}<br>vs<br>{{ match.away_team|fifa_code }}
                                 </th>
                             {% endfor %}
                         </tr>
