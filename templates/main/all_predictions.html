@@ -119,7 +119,10 @@
                             <th>Participante</th>
                             {% for match in block.matches %}
                                 <th>
-                                    {{ match.home_team|fifa_code }}<br>vs<br>{{ match.away_team|fifa_code }}
+                                    <img src="https://flagcdn.com/24x18/{{ match.home_team|country_iso2 }}.png" alt="{{ match.home_team }}" style="display: block; margin: 2px auto 4px auto;">
+                                    {{ match.home_team|fifa_code }}<br>vs<br>
+                                    {{ match.away_team|fifa_code }}
+                                    <img src="https://flagcdn.com/24x18/{{ match.away_team|country_iso2 }}.png" alt="{{ match.away_team }}" style="display: block; margin: 4px auto 2px auto;">
                                 </th>
                             {% endfor %}
                         </tr>
