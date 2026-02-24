@@ -78,9 +78,10 @@
                     <small class="text-muted">
                         <i class="bi bi-clock me-1"></i>
                         {% if match.kickoff_at %}
-                            <span class="local-time" data-utc="{{ match.kickoff_at.isoformat() }}">
+                            <span class="local-time" data-utc="{{ match.kickoff_at.isoformat() }}" title="Hora ajustada a tu zona horaria">
                                 {{ match.kickoff_at.strftime('%d/%m %H:%M') }} UTC
                             </span>
+                            <span class="badge badge-sm bg-secondary ms-1" style="font-size: 0.65rem;">hora local</span>
                         {% else %}
                             Por definir
                         {% endif %}
