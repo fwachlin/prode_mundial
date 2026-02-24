@@ -7,12 +7,16 @@ import os
 app = Flask(__name__)
 
 # Configuración de base de datos
-# En producción (Render), usar la ruta correcta para instance
-if os.environ.get('RENDER'):
-    # Render provee un directorio persistente
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////opt/render/project/src/instance/prode_mundial.db'
+# En producción (Render), usar PostgreSQL
+# En desarrollo local, usar SQLite
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    # Render provee DATABASE_URL con postgres://, pero SQLAlchemy necesita postgresql://
+    if DATABASE_URL.startswith('postgres://'):
+        DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 else:
-    # Desarrollo local
+    # Desarrollo local con SQLite
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'instance', 'prode.db')
 
