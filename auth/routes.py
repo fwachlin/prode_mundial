@@ -92,3 +92,41 @@ def logout():
     logout_user()
     flash('Sesión cerrada', 'success')
     return redirect(url_for('main.index'))
+
+@auth_bp.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    """Cambiar contraseña del usuario actual"""
+    if request.method == 'POST':
+        current_password = request.form.get('current_password', '')
+        new_password = request.form.get('new_password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        
+        # Validar que todos los campos estén completos
+        if not current_password or not new_password or not confirm_password:
+            flash('Todos los campos son requeridos', 'error')
+            return redirect(url_for('auth.change_password'))
+        
+        # Verificar contraseña actual
+        if not current_user.check_password(current_password):
+            flash('La contraseña actual es incorrecta', 'error')
+            return redirect(url_for('auth.change_password'))
+        
+        # Validar que las nuevas contraseñas coincidan
+        if new_password != confirm_password:
+            flash('Las nuevas contraseñas no coinciden', 'error')
+            return redirect(url_for('auth.change_password'))
+        
+        # Validar longitud mínima
+        if len(new_password) < 4:
+            flash('La nueva contraseña debe tener al menos 4 caracteres', 'error')
+            return redirect(url_for('auth.change_password'))
+        
+        # Actualizar contraseña
+        current_user.set_password(new_password)
+        db.session.commit()
+        
+        flash('Contraseña actualizada exitosamente', 'success')
+        return redirect(url_for('main.index'))
+    
+    return render_template('auth/change_password.html')
