@@ -13,9 +13,6 @@ reset_bp = Blueprint('reset', __name__)
 @reset_bp.route('/secret-reset-db-do-not-share')
 def reset_database():
     try:
-        # Importar los datos de partidos
-        from recrear_db_completa import PARTIDOS_2026
-        
         # Eliminar y recrear tablas
         db.drop_all()
         db.create_all()
@@ -36,8 +33,6 @@ def reset_database():
         fase2 = Phase.query.filter_by(name="Fecha 2").first()
         fase3 = Phase.query.filter_by(name="Fecha 3").first()
         fase4 = Phase.query.filter_by(name="Fecha 4 - Eliminación Directa").first()
-        
-        # Cargar partidos (copiado de recrear_db_completa.py)
         PARTIDOS = [
             # FECHA 1
             ('MEX', 'RSA', '2026-06-11 19:00 UTC'),
