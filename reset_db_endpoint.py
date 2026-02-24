@@ -5,8 +5,9 @@ ELIMINAR DESPUÉS DE USAR
 """
 from flask import Blueprint, jsonify
 from extensions import db
-from models import Phase, Match
+from models import Phase, Match, User, Prediction
 from datetime import datetime, timezone
+import random
 
 reset_bp = Blueprint('reset', __name__)
 
@@ -145,6 +146,74 @@ def reset_database():
             'fecha1': Match.query.filter_by(phase_id=fase1.id).count(),
             'fecha2': Match.query.filter_by(phase_id=fase2.id).count(),
             'fecha3': Match.query.filter_by(phase_id=fase3.id).count()
+        })
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@reset_bp.route('/create-test-users')
+def create_test_users():
+    try:
+        # Crear 10 usuarios ficticios
+        usuarios = [
+            ('Juan Pérez', 'juan.perez@observatorio.org'),
+            ('María García', 'maria.garcia@observatorio.org'),
+            ('Carlos López', 'carlos.lopez@observatorio.org'),
+            ('Ana Martínez', 'ana.martinez@observatorio.org'),
+            ('Pedro Rodríguez', 'pedro.rodriguez@observatorio.org'),
+            ('Laura Fernández', 'laura.fernandez@observatorio.org'),
+            ('Diego Sánchez', 'diego.sanchez@observatorio.org'),
+            ('Sofía Ramírez', 'sofia.ramirez@observatorio.org'),
+            ('Miguel Torres', 'miguel.torres@observatorio.org'),
+            ('Elena Ruiz', 'elena.ruiz@observatorio.org')
+        ]
+        
+        users_created = []
+        for nombre, email in usuarios:
+            user = User(
+                name=nombre,
+                email=email,
+                is_admin=False
+            )
+            user.set_password('password123')
+            db.session.add(user)
+            users_created.append(nombre)
+        
+        db.session.commit()
+        
+        # Crear pronósticos aleatorios para partidos de Fecha 1, 2 y 3
+        users = User.query.filter_by(is_admin=False).all()
+        matches = Match.query.filter(Match.phase_id.in_([1, 2, 3])).all()
+        
+        predictions_created = 0
+        for user in users:
+            # Cada usuario pronostica entre 50% y 100% de los partidos
+            num_predictions = random.randint(len(matches) // 2, len(matches))
+            selected_matches = random.sample(matches, num_predictions)
+            
+            for match in selected_matches:
+                # Generar goles aleatorios (más probable 0-2 goles)
+                weights = [30, 35, 25, 8, 2]  # Pesos para 0, 1, 2, 3, 4 goles
+                home_goals = random.choices([0, 1, 2, 3, 4], weights=weights)[0]
+                away_goals = random.choices([0, 1, 2, 3, 4], weights=weights)[0]
+                
+                prediction = Prediction(
+                    user_id=user.id,
+                    match_id=match.id,
+                    home_goals=home_goals,
+                    away_goals=away_goals
+                )
+                db.session.add(prediction)
+                predictions_created += 1
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'users_created': len(users_created),
+            'users': users_created,
+            'predictions_created': predictions_created
         })
     
     except Exception as e:
