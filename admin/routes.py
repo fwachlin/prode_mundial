@@ -15,7 +15,7 @@ def dashboard():
     predictions_count = Prediction.query.count()
     users_count = User.query.filter_by(is_admin=False).count()  # ← Solo usuarios NO admin
     
-    recent_matches = Match.query.order_by(Match.kickoff_at.desc()).limit(10).all()
+    recent_matches = Match.query.order_by(Match.kickoff_at.asc()).limit(10).all()
     
     return render_template('admin/dashboard.html',
                          matches_count=matches_count,
