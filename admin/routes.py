@@ -363,7 +363,15 @@ def delete_allowed_email(email_id):
 @login_required
 @admin_required
 def agregar_fase4():
-    """Endpoint temporal para agregar los 32 partidos de Fase 4 en producción"""
+    """Página de confirmación para agregar los 32 partidos de Fase 4"""
+    return render_template('admin/agregar_fase4.html')
+
+
+@admin_bp.route('/agregar-fase4/ejecutar')
+@login_required
+@admin_required
+def ejecutar_agregar_fase4():
+    """Ejecuta la acción de agregar los 32 partidos de Fase 4 en producción"""
     from models import Phase
     from datetime import timedelta
     

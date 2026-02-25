@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Fase 4</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">Agregar Partidos de Fase 4</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            Este proceso agregará los 32 partidos de eliminación directa (Fase 4) a la base de datos.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h5>Partidos a agregar:</h5>
+                            <ul>
+                                <li>16 partidos de Octavos de Final</li>
+                                <li>8 partidos de Cuartos de Final</li>
+                                <li>4 partidos de Semifinales</li>
+                                <li>4 partidos de Finales</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('admin.ejecutar_agregar_fase4') }}" class="btn btn-primary btn-lg">
+                                Agregar 32 partidos de Fase 4
+                            </a>
+                            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+                                Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
