@@ -14,45 +14,58 @@
     }
     
     .predictions-table-container {
-        overflow-x: auto;
-        overflow-y: hidden;
+        overflow: visible;
         border: 1px solid #ddd;
         margin-top: 20px;
         position: relative;
+        background-color: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
+        max-height: 70vh;
+        display: flex;
+        flex-direction: column;
     }
     
     .predictions-table {
         width: 100%;
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0;
         min-width: 900px;
+        display: block;
     }
     
-    /* Forzar altura exacta del thead */
+    /* Thead fijo */
     .predictions-table thead {
-        display: table;
-        width: 100%;
-        table-layout: fixed;
+        display: block;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: white;
     }
     
+    /* Tbody con scroll */
     .predictions-table tbody {
         display: block;
-        overflow-y: auto;
+        overflow-y: scroll;
+        overflow-x: visible;
         max-height: calc(70vh - 124px);
     }
     
-    .predictions-table thead tr,
+    /* Hacer que las filas se comporten como tabla */
+    .predictions-table thead tr {
+        display: table;
+        width: calc(100% - 17px); /* Restar ancho del scrollbar */
+        table-layout: fixed;
+    }
+    
     .predictions-table tbody tr {
         display: table;
         width: 100%;
         table-layout: fixed;
     }
     
-    /* Encabezados sticky - Primera fila (partidos) */
+    /* Encabezados - Primera fila (partidos) */
     .predictions-table thead tr:first-child th {
-        position: sticky;
-        top: 0;
-        background-color: #e8e8e8;
-        z-index: 30;
+        background-color: rgba(232, 232, 232, 0.98);
         padding: 5px 3px;
         text-align: center;
         border: 1px solid #ddd;
@@ -63,14 +76,12 @@
         overflow: hidden;
         white-space: normal;
         vertical-align: middle;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     
     /* Segunda fila (resultados) */
     .predictions-table thead .result-row th {
-        position: sticky;
-        top: 75px;
-        background-color: #f4f4f4;
-        z-index: 30;
+        background-color: rgba(244, 244, 244, 0.98);
         padding: 5px 3px;
         text-align: center;
         border: 1px solid #ddd;
@@ -82,6 +93,7 @@
         overflow: hidden;
         white-space: nowrap;
         vertical-align: middle;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     
     /* Primera columna sticky */
@@ -240,9 +252,9 @@
                                     {% set winner = false %}
                                 {% endif %}
                                 <td style="{% if p and match.home_goals is not none %}
-                                               {% if exact %}background-color: #e8f5e9;
-                                               {% elif winner %}background-color: #fff9e6;
-                                               {% else %}background-color: #fdecea;
+                                               {% if exact %}background-color: #4caf50; color: white; font-weight: 700;
+                                               {% elif winner %}background-color: #ffc107; color: #000; font-weight: 700;
+                                               {% else %}background-color: #f44336; color: white; font-weight: 700;
                                                {% endif %}
                                            {% endif %}">
                                     {% if p %}
