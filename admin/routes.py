@@ -358,3 +358,62 @@ def delete_allowed_email(email_id):
     flash('Email eliminado', 'success')
     return redirect(url_for('admin.allowed_emails'))
 
+
+@admin_bp.route('/agregar-fase4')
+@login_required
+@admin_required
+def agregar_fase4():
+    """Endpoint temporal para agregar los 32 partidos de Fase 4 en producción"""
+    from models import Phase
+    from datetime import timedelta
+    
+    # Partidos de Fase 4
+    PARTIDOS_FASE4 = [
+        ("1A", "2B", "2026-06-29 19:00"), ("1C", "2D", "2026-06-29 22:00"),
+        ("1E", "2F", "2026-06-30 19:00"), ("1G", "2H", "2026-06-30 22:00"),
+        ("1B", "2A", "2026-07-01 19:00"), ("1D", "2C", "2026-07-01 22:00"),
+        ("1F", "2E", "2026-07-02 19:00"), ("1H", "2G", "2026-07-02 22:00"),
+        ("1I", "2J", "2026-07-03 19:00"), ("1K", "2L", "2026-07-03 22:00"),
+        ("1J", "2I", "2026-07-04 19:00"), ("1L", "2K", "2026-07-04 22:00"),
+        ("1A", "3C/D/E", "2026-07-05 19:00"), ("1B", "3A/C/D", "2026-07-05 22:00"),
+        ("1C", "3A/B/E", "2026-07-06 19:00"), ("1D", "3A/B/C", "2026-07-06 22:00"),
+        ("W1", "W2", "2026-07-09 19:00"), ("W3", "W4", "2026-07-09 22:00"),
+        ("W5", "W6", "2026-07-10 19:00"), ("W7", "W8", "2026-07-10 22:00"),
+        ("W9", "W10", "2026-07-11 19:00"), ("W11", "W12", "2026-07-11 22:00"),
+        ("W13", "W14", "2026-07-12 19:00"), ("W15", "W16", "2026-07-12 22:00"),
+        ("W17", "W18", "2026-07-14 22:00"), ("W19", "W20", "2026-07-15 22:00"),
+        ("W21", "W22", "2026-07-16 22:00"), ("W23", "W24", "2026-07-17 22:00"),
+        ("L25", "L26", "2026-07-18 19:00"), ("W25", "W26", "2026-07-18 22:00"),
+        ("L27", "L28", "2026-07-19 19:00"), ("W27", "W28", "2026-07-19 22:00"),
+    ]
+    
+    try:
+        fase4 = Phase.query.filter_by(name='Fecha 4 - Eliminación Directa').first()
+        if not fase4:
+            flash('❌ ERROR: No se encontró la Fase 4 en la base de datos', 'error')
+            return redirect(url_for('admin.dashboard'))
+        
+        total_antes = Match.query.count()
+        partidos_agregados = 0
+        
+        for home, away, kickoff_str in PARTIDOS_FASE4:
+            existing = Match.query.filter_by(home_team=home, away_team=away, phase_id=fase4.id).first()
+            if existing:
+                continue
+            
+            kickoff = datetime.strptime(kickoff_str, "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
+            closes = kickoff - timedelta(minutes=10)
+            
+            match = Match(home_team=home, away_team=away, kickoff_at=kickoff, closes_at=closes, phase_id=fase4.id)
+            db.session.add(match)
+            partidos_agregados += 1
+        
+        db.session.commit()
+        total_despues = Match.query.count()
+        
+        flash(f'✅ {partidos_agregados} partidos de Fase 4 agregados! Total: {total_antes} → {total_despues}', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'❌ Error: {str(e)}', 'error')
+    
+    return redirect(url_for('admin.dashboard'))
