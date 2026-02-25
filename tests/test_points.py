@@ -122,7 +122,8 @@ class TestPointsCalculation:
             
             points = pred.calculate_points()
             
-            assert points == 0  # NO acertó ganador = 0 puntos
+            # NO acertó ganador (0 puntos) + NO batacazo (0) + score (diferencia 4 goles: 5-4=1)
+            assert points == 1
     
     def test_draw_prediction_correct(self, app):
         """Acertar empate correctamente"""
