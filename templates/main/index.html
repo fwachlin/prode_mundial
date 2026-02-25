@@ -5,7 +5,6 @@
 {% block content %}
 
 <!-- Hero Section con countdown -->
-{% if next_matches and next_matches|length > 0 %}
 <div class="hero-section mb-4" style="background-image: linear-gradient(rgba(26, 71, 42, 0.75), rgba(45, 106, 79, 0.75)), url('{{ url_for('static', filename='images/backgrounds/stadium.jpg') }}'); background-size: cover; background-position: center;">
     <!-- 🖼️ Tu imagen de estadio como fondo -->
     <h1><i class="bi bi-trophy-fill text-warning"></i> Prode Mundial 2026</h1>
@@ -15,27 +14,19 @@
          style="max-width: 600px; width: 90%;">
     <p class="lead mb-4">El torneo más esperado del Observatorio</p>
     
-    <div class="bg-white bg-opacity-10 rounded-4 p-4 mb-3">
+    {% if first_match %}
+    <div id="countdown-container" class="bg-white bg-opacity-10 rounded-4 p-4 mb-3">
         <h2 class="h4 mb-3">🏆 El Mundial comienza en:</h2>
         <div id="mundial-countdown" class="mb-3">
             ⏳ Calculando...
         </div>
         <p class="mb-0 opacity-90">
             <i class="bi bi-calendar-event me-2"></i>
-            Primer partido: <strong>{{ next_matches[0].home_team }} vs {{ next_matches[0].away_team }}</strong>
+            Primer partido: <strong>{{ first_match.home_team }} vs {{ first_match.away_team }}</strong>
         </p>
     </div>
+    {% endif %}
 </div>
-{% else %}
-<div class="hero-section mb-4" style="background-image: linear-gradient(rgba(26, 71, 42, 0.75), rgba(45, 106, 79, 0.75)), url('{{ url_for('static', filename='images/backgrounds/stadium.jpg') }}'); background-size: cover; background-position: center;">
-    <h1><i class="bi bi-trophy-fill text-warning"></i> Prode Mundial 2026</h1>
-    <img src="{{ url_for('static', filename='images/backgrounds/argentina.jpg') }}" 
-         alt="Argentina" 
-         class="img-fluid rounded-4 shadow-lg mb-4" 
-         style="max-width: 600px; width: 90%;">
-    <p class="lead">El torneo más esperado del Observatorio</p>
-</div>
-{% endif %}
 
 <!-- Cards de acceso rápido -->
 <div class="row g-4 mb-5">
@@ -148,8 +139,8 @@
 {% block extra_js %}
 <script>
 // Fecha del primer partido en formato ISO UTC
-{% if next_matches and next_matches[0].kickoff_at %}
-    {% set first_kickoff = next_matches[0].kickoff_at.replace(tzinfo=None) if next_matches[0].kickoff_at.tzinfo else next_matches[0].kickoff_at %}
+{% if first_match and first_match.kickoff_at %}
+    {% set first_kickoff = first_match.kickoff_at.replace(tzinfo=None) if first_match.kickoff_at.tzinfo else first_match.kickoff_at %}
     const firstMatchDate = "{{ first_kickoff.strftime('%Y-%m-%dT%H:%M:%S') }}Z";
 {% else %}
     const firstMatchDate = "";
@@ -164,8 +155,9 @@ function updateMundialCountdown() {
     const distance = kickoffTime - now;
     
     const element = document.getElementById("mundial-countdown");
+    const container = document.getElementById("countdown-container");
     
-    if (element) {
+    if (element && container) {
         if (distance > 0) {
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -193,7 +185,8 @@ function updateMundialCountdown() {
                 </div>
             `;
         } else {
-            element.innerHTML = '<div class="fs-1">🎉 ¡Ya comenzó!</div>';
+            // Ocultar el contenedor completo cuando ya comenzó
+            container.style.display = 'none';
         }
     }
 }

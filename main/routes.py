@@ -21,9 +21,13 @@ def index():
         Match.kickoff_at >= now
     ).order_by(Match.kickoff_at).limit(5).all()
     
+    # Obtener el primer partido del Mundial (para el countdown)
+    first_match = Match.query.order_by(Match.kickoff_at).first()
+    
     return render_template('main/index.html', 
                          recent_comments=recent_comments,
-                         next_matches=next_matches)
+                         next_matches=next_matches,
+                         first_match=first_match)
 
 @main_bp.route('/predictions', methods=['GET', 'POST'])
 @login_required
