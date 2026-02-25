@@ -118,6 +118,11 @@ def edit_match(match_id):
         match.home_team = request.form.get('home_team', '').strip()
         match.away_team = request.form.get('away_team', '').strip()
         
+        # Actualizar phase_id
+        phase_id = request.form.get('phase_id', type=int)
+        if phase_id:
+            match.phase_id = phase_id
+        
         try:
             kickoff_str = request.form.get('kickoff_at')
             match.kickoff_at = datetime.fromisoformat(kickoff_str).replace(tzinfo=timezone.utc)
@@ -127,6 +132,32 @@ def edit_match(match_id):
         except ValueError:
             flash('Formato de fecha inválido', 'error')
             return redirect(url_for('admin.edit_match', match_id=match_id))
+        
+        # Procesar home_goals y away_goals si vienen en el formulario
+        home_goals_str = request.form.get('home_goals', '').strip()
+        away_goals_str = request.form.get('away_goals', '').strip()
+        
+        if home_goals_str and away_goals_str:
+            try:
+                home_goals = int(home_goals_str)
+                away_goals = int(away_goals_str)
+                
+                if home_goals < 0 or away_goals < 0:
+                    flash('Los goles no pueden ser negativos', 'error')
+                    return redirect(url_for('admin.edit_match', match_id=match_id))
+                
+                # Actualizar goles
+                match.home_goals = home_goals
+                match.away_goals = away_goals
+                
+                # Recalcular puntos de todos los pronósticos
+                for prediction in match.predictions:
+                    prediction.points_awarded = prediction.calculate_points()
+                
+                flash(f'Resultado cargado: {match.home_team} {home_goals} - {away_goals} {match.away_team}. Puntos recalculados.', 'success')
+            except ValueError:
+                flash('Formato de goles inválido', 'error')
+                return redirect(url_for('admin.edit_match', match_id=match_id))
         
         db.session.commit()
         flash(f'Partido {match.home_team} vs {match.away_team} actualizado', 'success')
@@ -317,6 +348,11 @@ def edit_user(user_id):
         
         user.name = name
         user.email = email
+        
+        # Actualizar is_admin e is_enabled
+        user.is_admin = request.form.get('is_admin') == 'true'
+        user.is_enabled = request.form.get('is_enabled') == 'true'
+        
         db.session.commit()
         
         flash(f'Usuario {name} actualizado correctamente', 'success')

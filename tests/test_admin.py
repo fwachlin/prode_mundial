@@ -100,7 +100,6 @@ class TestAdminMatchManagement:
             match = Match.query.get(open_match)
             assert match.away_team == 'Uruguay'
     
-    @pytest.mark.skip(reason="Requiere verificar implementación de la ruta de edición en admin/routes.py")
     def test_admin_can_load_result(self, client, admin_user, open_match):
         """Admin puede cargar resultado"""
         # Login como admin
@@ -148,7 +147,6 @@ class TestAdminUserManagement:
         response = client.get('/admin/users')
         assert response.status_code == 200
     
-    @pytest.mark.skip(reason="Requiere verificar implementación de la ruta de edición en admin/routes.py")
     def test_admin_can_disable_user(self, client, admin_user, regular_user):
         """Admin puede deshabilitar usuarios"""
         # Login como admin
