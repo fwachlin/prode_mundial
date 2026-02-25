@@ -3,25 +3,94 @@ Configuración de fixtures para pytest
 """
 import pytest
 from datetime import datetime, timezone, timedelta
-from app import app as flask_app
+from flask import Flask
 from models import db, User, Match, Prediction, AllowedEmail, Phase
+from flask_login import LoginManager
 
 
 @pytest.fixture
 def app():
-    """Fixture de aplicación Flask para testing"""
-    flask_app.config.update({
+    """Fixture de aplicación Flask para testing - AISLADA de la app real"""
+    import os
+    from flask_login import current_user
+    
+    # Crear una app NUEVA para tests, NO usar la app de desarrollo
+    # Configurar para que busque templates desde la raíz del proyecto
+    template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
+    test_app = Flask(__name__, template_folder=template_dir)
+    
+    test_app.config.update({
         'TESTING': True,
         'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',  # Base de datos en memoria
         'WTF_CSRF_ENABLED': False,  # Deshabilitar CSRF en tests
-        'SECRET_KEY': 'test-secret-key'
+        'SECRET_KEY': 'test-secret-key',
+        'SQLALCHEMY_TRACK_MODIFICATIONS': False
     })
     
-    with flask_app.app_context():
+    # Inicializar extensiones con la app de test
+    db.init_app(test_app)
+    login_manager = LoginManager()
+    login_manager.init_app(test_app)
+    login_manager.login_view = 'auth.login'
+    
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+    
+    # Hacer current_user disponible en templates
+    @test_app.context_processor
+    def inject_user():
+        return {'current_user': current_user}
+    
+    # Registrar filtros de template (copiadosde app.py)
+    @test_app.template_filter('fifa_code')
+    def fifa_code_filter(country_name):
+        """Convierte nombre de país a código FIFA de 3 letras"""
+        if not country_name:
+            return ''
+        if len(country_name) <= 4 and country_name.isupper():
+            return country_name
+        if 'Path' in country_name or 'IC' in country_name:
+            return country_name
+        if any(country_name.startswith(x) for x in ['1A', '1B', '1C', '1D', '1E', '1F', '1G', '1H', '1I', '1J', '1K', '1L',
+                                                      '2A', '2B', '2C', '2D', '2E', '2F', '2G', '2H', '2I', '2J', '2K', '2L',
+                                                      '3A', '3B', '3C', '3D', '3E', '3F']):
+            return country_name
+        if (country_name.startswith('W') or country_name.startswith('L')) and len(country_name) >= 2:
+            if country_name[1].isdigit():
+                return country_name
+        return country_name[:3].upper()
+    
+    @test_app.template_filter('country_iso2')
+    def country_iso2_filter(country_name):
+        """Convierte nombre de país a código ISO2 para banderas"""
+        if not country_name:
+            return 'xx'
+        if 'Path' in country_name or country_name.startswith('IC '):
+            return 'xx'
+        if any(country_name.startswith(x) for x in ['1A', '1B', '1C', '1D', '1E', '1F', '1G', '1H', '1I', '1J', '1K', '1L',
+                                                      '2A', '2B', '2C', '2D', '2E', '2F', '2G', '2H', '2I', '2J', '2K', '2L',
+                                                      '3A', '3B', '3C', '3D', '3E', '3F']):
+            return 'xx'
+        if (country_name.startswith('W') or country_name.startswith('L')) and len(country_name) >= 2:
+            if country_name[1].isdigit():
+                return 'xx'
+        return 'xx'  # Simplificado para tests
+    
+    # Registrar blueprints (sin url_prefix porque ya los tienen definidos)
+    from auth.routes import auth_bp
+    from main.routes import main_bp
+    from admin.routes import admin_bp
+    
+    test_app.register_blueprint(auth_bp)
+    test_app.register_blueprint(main_bp)
+    test_app.register_blueprint(admin_bp)
+    
+    with test_app.app_context():
         db.create_all()
         # Crear fases por defecto
         _create_default_phases()
-        yield flask_app
+        yield test_app
         db.session.remove()
         db.drop_all()
 
