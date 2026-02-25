@@ -5,9 +5,9 @@
 ---
 
 ## 📅 FECHA DE SNAPSHOT
-**Última actualización:** 25 de Febrero, 2026  
+**Última actualización:** 25 de Febrero, 2026 (16:35 UTC)  
 **Mundial:** FIFA World Cup 2026 (Estados Unidos, Canadá, México)  
-**Estado del proyecto:** ✅ Producción en Render
+**Estado del proyecto:** ✅ Desarrollo local con datos ficticios + Producción en Render
 
 ---
 
@@ -30,15 +30,41 @@
 
 **Tabla `phases`:**
 ```
-id | name    | order
----|---------|------
-1  | Fecha 1 | 1
-2  | Fecha 2 | 2
-3  | Fecha 3 | 3
-4  | Fecha 4 | 4
+id | name                           | order
+---|--------------------------------|------
+1  | Fecha 1                        | 1
+2  | Fecha 2                        | 2
+3  | Fecha 3                        | 3
+4  | Fecha 4 - Eliminación Directa  | 4
 ```
 
 **Estado:** ✅ Las 4 fases están creadas y funcionando correctamente.
+
+### Datos Actuales (Desarrollo Local)
+
+**Generados con:** `generar_datos_completos.py`
+
+| Entidad | Cantidad | Detalles |
+|---------|----------|----------|
+| **Usuarios** | 12 | 1 admin + 11 ficticios |
+| **Partidos** | 104 | 24 fecha 1 + 24 fecha 2 + 24 fecha 3 + 32 eliminación |
+| **Pronósticos** | ~675 | 85% cobertura (algunos usuarios no pronostican todo) |
+| **Emails permitidos** | 11 | Uno por usuario ficticio |
+
+**Usuarios ficticios:**
+- Ana Martínez (ana.martinez@prode.com)
+- Carlos López (carlos.lopez@prode.com)
+- Diego Sánchez (diego.sanchez@prode.com)
+- Elena Ruiz (elena.ruiz@prode.com)
+- Fernando Torres (fernando.torres@prode.com)
+- Gabriela Díaz (gabriela.diaz@prode.com)
+- Javier Morales (javier.morales@prode.com)
+- Laura Fernández (laura.fernandez@prode.com)
+- María García (maria.garcia@prode.com)
+- Miguel Torres (miguel.torres@prode.com)
+- Pedro Rodríguez (pedro.rodriguez@prode.com)
+
+**Contraseña todos:** `prode123`
 
 ### Estructura de Partidos
 
@@ -128,17 +154,20 @@ if not match.is_open():
 
 **Comportamiento actual:**
 ```python
-prediction = Prediction.query.filter_by(
-    user_id=current_user.id,
-    match_id=match_id
-).first()
+prediction = PNO devuelve 0 (cambio reciente - sigue evaluando score)
 
-if prediction:
-    # ACTUALIZA pronóstico existente
-    prediction.home_goals = home_goals
-    prediction.away_goals = away_goals
-else:
-    # CREA nuevo pronóstico
+**Componente 2: Batacazo (1-5 pts bonus)**
+- ✅ Implementado
+- ✅ Funcional
+- ✅ Basado en porcentaje de aciertos
+- ✅ **FIX APLICADO (25/Feb/2026):** Ahora excluye admins correctamente en numerador Y denominador
+- ✅ Solo se otorga si acertó ganador/empate
+
+**Componente 3: Score Exacto (máx 5 pts)**
+- ✅ Implementado
+- ✅ Funcional
+- ✅ Penalización por diferencia de goles
+- ✅ **FIX APLICADO (25/Feb/2026):** Ahora se otorga SIEMPRE (incluso si no acertó ganador)
     prediction = Prediction(...)
     db.session.add(prediction)
 ```
@@ -472,6 +501,80 @@ python app.py
 
 ---
 
+## 🆕 NUEVAS FUNCIONALIDADES
+
+### Sistema de Backups Automáticos
+
+**Estado:** ✅ Implementado (25/Feb/2026)
+
+**Características:**
+- Backup automático al ejecutar `python app.py` (solo desarrollo)
+- Backups en carpeta `backups/` (ignorada por git)
+- Mantiene últimos 10 backups
+- Restauración con `python auto_backup.py restore`
+
+**Archivos:**
+- `auto_backup.py` - Sistema de backups
+- `backups/` - Carpeta de backups (no en git)
+
+### Script de Generación de Datos
+
+**Estado:** ✅ Implementado (25/Feb/2026)
+
+**Script:** `generar_datos_completos.py`
+
+**Genera:**
+- 4 fases
+- 104 partidos del Mundial 2026
+- 11 usuarios ficticios con contraseña `prode123`
+- ~675 pronósticos (85% cobertura - realista con faltantes)
+
+**Uso:**
+```powershell
+python generar_datos_completos.py
+```
+
+### Documentación Nueva
+
+**Archivos creados:**
+- `QUICK_START.md` - Guía rápida de inicio
+- `DATABASE_INFO.md` - Información de base de datos
+- `DISASTER_RECOVERY.md` - Plan de recuperación
+- `SCRIPTS_PELIGROSOS.md` - Scripts que NO ejecutar
+
+## 🐛 BUGS CORREGIDOS
+
+### Bug: Batacazo incluía pronósticos de admins
+
+**Fecha:** 25 de Febrero, 2026
+
+**Síntoma:**
+- Carlos López obtenía 18 puntos en lugar de 19
+- Batacazo otorgaba 3 puntos en lugar de 4
+
+**Causa:**
+```python
+# INCORRECTO (línea 153 models.py - antes)
+correct_predictions = Prediction.query.filter_by(match_id=match.id).all()
+```
+
+Incluía pronósticos de admins en el conteo, aumentando porcentaje incorrectamente.
+
+**Fix:**
+```python
+# CORRECTO (línea 153-155 models.py - ahora)
+correct_predictions = Prediction.query.filter_by(match_id=match.id).join(User).filter(
+    User.is_admin == False
+).all()
+```
+
+**Resultado:**
+- ✅ Carlos López ahora recibe 19 puntos correctamente
+- ✅ Todos los tests (47) pasando
+- ✅ Batacazo calcula solo sobre usuarios no-admin
+
+---
+
 ## 🔮 ROADMAP FUTURO (No implementado)
 
 ### Corto Plazo
@@ -503,6 +606,38 @@ python app.py
 2. ✅ Leer este archivo - Estado actual del sistema
 3. ✅ Verificar que el cambio no rompa funcionalidad documentada
 4. ✅ Probar en desarrollo antes de producción
+5. ✅ Ejecutar `pytest tests/` después de cambios
+6. ✅ Verificar que backups automáticos funcionen
+
+### Al Reportar Bugs
+
+**Incluir:**
+- Entorno (Desarrollo/Producción)
+- Pasos para reproducir
+- Comportamiento esperado vs actual
+- Capturas de pantalla si aplica
+
+### Al Agregar Features
+
+**Documentar:**
+- Actualizar `PROJECT_RULES.md` si afecta arquitectura
+- Actualizar este archivo con nueva funcionalidad
+- Agregar tests si es posible
+- Actualizar README si es user-facing
+
+---
+
+## 📞 CONTACTO Y MANTENIMIENTO
+
+**Responsable:** (Agregar nombre)  
+**Última revisión:** 25 de Febrero, 2026 (16:35 UTC)
+**Próxima revisión:** Después de cada deploy importante
+
+---
+
+**🎯 Recuerda:** Este documento es un snapshot del sistema FUNCIONAL. Úsalo como referencia para asegurar que los cambios no rompan lo que ya funciona.
+
+**Versión:** 2.0
 
 ### Al Reportar Bugs
 

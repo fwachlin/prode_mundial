@@ -139,31 +139,35 @@ class Prediction(db.Model):
         user_result = self._get_result(self.home_goals, self.away_goals)
         match_result = self._get_result(match.home_goals, match.away_goals)
         
-        if user_result == match_result:
+        acerto_ganador = (user_result == match_result)
+        
+        if acerto_ganador:
             total_points += 10
-        else:
-            # Si no acertó el ganador, devuelve 0
-            return 0
         
-        # ====== 2. BATACAZO: bonus si pocos aciertan ======
-        # Contar cuántos acertaron el ganador
-        total_predictions = Prediction.query.filter_by(match_id=match.id).count()
-        correct_predictions = Prediction.query.filter_by(match_id=match.id).all()
-        correct_count = sum(1 for p in correct_predictions if self._get_result(p.home_goals, p.away_goals) == match_result)
-        
-        if total_predictions > 0:
-            correct_percentage = (correct_count / total_predictions) * 100
+        # ====== 2. BATACAZO: bonus si pocos aciertan (solo si acertó ganador) ======
+        if acerto_ganador:
+            # Total de participantes (usuarios no admin)
+            total_participants = User.query.filter_by(is_admin=False).count()
             
-            if correct_percentage < 5:
-                total_points += 5
-            elif correct_percentage < 10:
-                total_points += 4
-            elif correct_percentage < 15:
-                total_points += 3
-            elif correct_percentage < 20:
-                total_points += 2
-            elif correct_percentage < 25:
-                total_points += 1
+            # Contar cuántos acertaron el ganador (solo usuarios no admin)
+            correct_predictions = Prediction.query.filter_by(match_id=match.id).join(User).filter(
+                User.is_admin == False
+            ).all()
+            correct_count = sum(1 for p in correct_predictions if self._get_result(p.home_goals, p.away_goals) == match_result)
+            
+            if total_participants > 0:
+                correct_percentage = (correct_count / total_participants) * 100
+                
+                if correct_percentage < 5:
+                    total_points += 5
+                elif correct_percentage < 10:
+                    total_points += 4
+                elif correct_percentage < 15:
+                    total_points += 3
+                elif correct_percentage < 20:
+                    total_points += 2
+                elif correct_percentage < 25:
+                    total_points += 1
         
         # ====== 3. SCORE: 5 puntos menos penalización ======
         if self.home_goals == match.home_goals and self.away_goals == match.away_goals:

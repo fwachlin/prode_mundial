@@ -14,6 +14,9 @@
 6. [Manejo de Fechas y Zonas Horarias](#6-manejo-de-fechas-y-zonas-horarias)
 7. [Roles y Permisos](#7-roles-y-permisos)
 8. [Filtros de Template](#8-filtros-de-template)
+9. [Despliegue y Entornos](#9-despliegue-y-entornos)
+10. [Sistema de Backups](#10-sistema-de-backups)
+11. [Scripts de Utilidad](#11-scripts-de-utilidad)
 
 ---
 
@@ -159,14 +162,24 @@ else:
 #### 4.2. Batacazo (1-5 puntos bonus)
 **Bonus si pocos usuarios aciertan:**
 ```python
+# CRÍTICO: Contar solo usuarios NO-ADMIN
+total_participants = User.query.filter_by(is_admin=False).count()
+correct_predictions = Prediction.query.filter_by(match_id=match.id).join(User).filter(
+    User.is_admin == False
+).all()
+correct_count = sum(1 for p in correct_predictions if ...)
+correct_percentage = (correct_count / total_participants) * 100
+
 if correct_percentage < 5:  total_points += 5
 if correct_percentage < 10: total_points += 4
 if correct_percentage < 15: total_points += 3
 if correct_percentage < 20: total_points += 2
 if correct_percentage < 25: total_points += 1
 ```
+- ⚠️ **CRÍTICO:** Tanto el denominador (total_participants) como el numerador (correct_count) deben excluir admins
 - ⚠️ **Solo se otorga si menos del 25% acertó**
 - ✅ Recompensa pronósticos difíciles
+- ✅ **FIX aplicado 25/Feb/2026:** Ahora filtra correctamente usuarios no-admin en ambas consultas
 
 #### 4.3. Score Exacto (máximo 5 puntos)
 ```python
@@ -412,7 +425,85 @@ python app.py
 | `recrear_db_completa.py` | Reset completo | **SOLO DESARROLLO** |
 
 ### ✅ Scripts de Utilidad Seguros
+10. SISTEMA DE BACKUPS
 
+### Backups Automáticos
+
+**Archivo:** `auto_backup.py`
+
+```python
+def backup_database():
+    """Crear backup antes de cualquier operación"""
+    # Se ejecuta automáticamente al iniciar Flask (solo en desarrollo)
+    # Mantiene últimos 10 backups
+```
+
+**REGLAS:**
+- ✅ **Backups automáticos** - Se crean al ejecutar `python app.py`
+- ✅ **Solo en desarrollo** - No se ejecutan en producción (Render)
+- ✅ **Carpeta `backups/`** - Ignorada en git, no se sube
+- ✅ **Mantener últimos 10** - Los más antiguos se eliminan automáticamente
+
+**Restauración:**
+```powershell
+python auto_backup.py restore
+```
+
+**REGLA CRÍTICA:**
+- ⚠️ **NUNCA subir backups a git** - Contienen datos sensibles
+- ⚠️ **Backups locales solo** - Render tiene sus propios backups automáticos
+
+---
+
+## 11. SCRIPTS DE UTILIDAD
+
+### Scripts Seguros (Solo Lectura)
+
+| Script | Propósito | Uso |
+|--------|-----------|-----|
+| `ver_db.py`  (Actualización 2)
+- ✅ **FIX CRÍTICO:** Batacazo ahora excluye admins en AMBAS consultas (numerador y denominador)
+- ✅ Sistema de backups automáticos implementado (`auto_backup.py`)
+- ✅ Script de generación completa de datos (`generar_datos_completos.py`)
+- ✅ Documentación completa creada (QUICK_START.md, DATABASE_INFO.md, DISASTER_RECOVERY.md)
+- ✅ Protecciones contra pérdida de datos implementadas
+
+### 2026-02-25 (Actualización 1)| Ver contenido completo de DB | `python ver_db.py` |
+| `check_users.py` | Ver lista de usuarios | `python check_users.py` |
+| `check_render_db.py` | Ver estado de DB en Render | Requiere DATABASE_URL |
+| `sync_db_from_render.py` | Sincronizar DE Render a local | NO afecta Render |
+
+### Scripts de Generación
+
+| Script | Propósito | Uso |
+|--------|-----------|-----|
+| `generar_datos_completos.py` | Genera DB ficticia completa | `python generar_datos_completos.py` |
+| `init_phases.py` | Crea solo las 4 fases | Solo si no existen |
+
+**Script de Generación Completa:**
+```python
+# generar_datos_completos.py
+# - 4 fases
+# - 104 partidos del Mundial 2026
+# - 11 usuarios ficticios (contraseña: prode123)
+# - ~675 pronósticos (85% cobertura)
+```
+
+### ⚠️ Scripts Peligrosos (DESTRUCTIVOS)
+
+**NUNCA ejecutar sin confirmación explícita:**
+- `1_recrear_base_de_datos.py` - **BORRA TODA LA DB**
+- `recrear_db_completa.py` - **BORRA TODA LA DB**
+- `eliminar_todos_los_partidos.py` - **BORRA TODOS LOS PARTIDOS**
+
+**REGLA CRÍTICA:**
+- ⚠️ **Leer código completo** antes de ejecutar cualquier script
+- ⚠️ **Ver `SCRIPTS_PELIGROSOS.md`** para detalles
+- ⚠️ **Tener backup** antes de ejecutar scripts destructivos
+
+---
+
+## 
 | Script | Propósito | Uso |
 |--------|-----------|-----|
 | `ver_db.py` | Ver contenido de tablas | Debugging |

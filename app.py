@@ -160,6 +160,14 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(main_bp)
 app.register_blueprint(admin_bp)
 
+# 🔒 BACKUP AUTOMÁTICO antes de iniciar
+if not os.environ.get('DATABASE_URL'):  # Solo en desarrollo local
+    try:
+        from auto_backup import backup_database
+        backup_database()
+    except ImportError:
+        pass
+
 # Crear tablas si no existen y asegurar admin existe
 with app.app_context():
     db.create_all()
