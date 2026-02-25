@@ -248,11 +248,11 @@ def delete_result(match_id):
     # Resetear los puntos de todas las predicciones de este partido
     predictions = Prediction.query.filter_by(match_id=match_id).all()
     for prediction in predictions:
-        prediction.points_awarded = 0
+        prediction.points_awarded = prediction.calculate_points()  # Devuelve 0 si no hay resultado
     
     db.session.commit()
 
-    flash(f'Resultado de "{match_name}" eliminado. Puntos reseteados a 0.', 'success')
+    flash(f'Resultado de "{match_name}" borrado. Puntos recalculados a 0.', 'success')
     return redirect(url_for('admin.edit_match', match_id=match_id))
 
 # ==================== RUTAS DE USUARIOS ====================
