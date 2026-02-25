@@ -8,6 +8,16 @@
     
     <h1>Editar Partido</h1>
     
+    {% if match.home_goals is not none and match.away_goals is not none %}
+    <div class="form-group" style="background-color: #fff3cd; padding: 15px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #ffc107;">
+        <strong>⚠️ Resultado cargado:</strong> {{ match.home_goals }} - {{ match.away_goals }}
+        <p style="color: #666; font-size: 0.9em; margin: 5px 0;">Los resultados se pueden editar desde la vista de partidos usando "Cargar resultado"</p>
+        <form method="POST" action="{{ url_for('admin.delete_result', match_id=match.id) }}" style="margin-top: 10px;" onsubmit="return confirm('¿Estás seguro de borrar el resultado? Esto reseteará los puntos de todas las predicciones.');">
+            <button type="submit" class="btn btn-danger" style="background-color: #dc3545; color: white;">Borrar Resultado</button>
+        </form>
+    </div>
+    {% endif %}
+    
     <form method="POST" class="edit-form">
         <div class="form-group">
             <label for="home_team">Equipo Local:</label>
@@ -32,16 +42,6 @@
                    value="{% if match.closes_at %}{{ match.closes_at.replace(tzinfo=None).strftime('%Y-%m-%dT%H:%M') }}{% endif %}" required>
             <small>Típicamente 10 minutos antes del kickoff</small>
         </div>
-        
-        {% if match.home_goals is not none and match.away_goals is not none %}
-        <div class="form-group" style="background-color: #f0f0f0; padding: 10px; border-radius: 4px;">
-            <strong>Resultado cargado:</strong> {{ match.home_goals }} - {{ match.away_goals }}
-            <p style="color: #666; font-size: 0.9em;">Los resultados se pueden editar desde la vista de partidos usando "Cargar resultado"</p>
-            <form method="POST" action="{{ url_for('admin.delete_result', match_id=match.id) }}" style="margin-top: 10px;" onsubmit="return confirm('¿Estás seguro de borrar el resultado?');">
-                <button type="submit" class="btn btn-danger" style="background-color: #dc3545;">Borrar Resultado</button>
-            </form>
-        </div>
-        {% endif %}
         
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
