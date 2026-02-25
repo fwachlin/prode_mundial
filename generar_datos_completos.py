@@ -297,4 +297,30 @@ def main():
         print("="*80 + "\n")
 
 if __name__ == '__main__':
+    print("="*80)
+    print("⚠️  ADVERTENCIA: Este script BORRA TODOS LOS DATOS EXISTENTES")
+    print("="*80)
+    print("\nEste script va a:")
+    print("  1. ELIMINAR todos los usuarios (excepto admin)")
+    print("  2. ELIMINAR todos los partidos")
+    print("  3. ELIMINAR todos los pronósticos")
+    print("  4. GENERAR nuevos datos ficticios")
+    print("\n⚠️  SI TIENES DATOS REALES, SE PERDERÁN PERMANENTEMENTE")
+    print("\nSolo usa este script para regenerar datos de prueba.")
+    print("="*80)
+    
+    confirmacion = input("\n¿Estás SEGURO? Escribe 'REGENERAR' para continuar: ")
+    
+    if confirmacion != "REGENERAR":
+        print("\n❌ Operación cancelada. No se hicieron cambios.")
+        exit(0)
+    
+    print("\n⚠️  ÚLTIMA CONFIRMACIÓN")
+    confirmacion2 = input("Escribe 'SI BORRA TODO' para confirmar: ")
+    
+    if confirmacion2 != "SI BORRA TODO":
+        print("\n❌ Operación cancelada. No se hicieron cambios.")
+        exit(0)
+    
+    print("\n🔄 Iniciando generación de datos...")
     main()
