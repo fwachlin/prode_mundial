@@ -113,7 +113,7 @@ def rankings():
     ).join(Prediction, User.id == Prediction.user_id, isouter=True)\
      .filter(User.is_admin == False)\
      .group_by(User.id)\
-     .order_by(func.sum(Prediction.points_awarded).desc(), User.name)\
+     .order_by(func.coalesce(func.sum(Prediction.points_awarded), 0).desc(), User.name)\
      .all()
     
     return render_template('main/rankings.html', user_stats=user_stats)
@@ -134,7 +134,7 @@ def rankings_by_phase(phase_id):
      .join(Match, Prediction.match_id == Match.id)\
      .filter(Match.phase_id == phase_id, User.is_admin == False)\
      .group_by(User.id)\
-     .order_by(func.sum(Prediction.points_awarded).desc(), User.name)\
+     .order_by(func.coalesce(func.sum(Prediction.points_awarded), 0).desc(), User.name)\
      .all()
     
     # Obtener todas las fases para el menú
