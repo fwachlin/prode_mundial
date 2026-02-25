@@ -180,5 +180,68 @@ with app.app_context():
             db.session.commit()
             print("✅ Privilegios de admin actualizados")
 
+
+# Endpoint temporal de emergencia para agregar Fase 4 (acceso directo)
+@app.route('/cargar-fase4-ahora')
+def cargar_fase4_emergencia():
+    """Endpoint de emergencia para cargar Fase 4 sin autenticación (TEMPORAL)"""
+    from models import Phase
+    from datetime import timedelta
+    
+    PARTIDOS_FASE4 = [
+        ("1A", "2B", "2026-06-29 19:00"), ("1C", "2D", "2026-06-29 22:00"),
+        ("1E", "2F", "2026-06-30 19:00"), ("1G", "2H", "2026-06-30 22:00"),
+        ("1B", "2A", "2026-07-01 19:00"), ("1D", "2C", "2026-07-01 22:00"),
+        ("1F", "2E", "2026-07-02 19:00"), ("1H", "2G", "2026-07-02 22:00"),
+        ("1I", "2J", "2026-07-03 19:00"), ("1K", "2L", "2026-07-03 22:00"),
+        ("1J", "2I", "2026-07-04 19:00"), ("1L", "2K", "2026-07-04 22:00"),
+        ("1A", "3C/D/E", "2026-07-05 19:00"), ("1B", "3A/C/D", "2026-07-05 22:00"),
+        ("1C", "3A/B/E", "2026-07-06 19:00"), ("1D", "3A/B/C", "2026-07-06 22:00"),
+        ("W1", "W2", "2026-07-09 19:00"), ("W3", "W4", "2026-07-09 22:00"),
+        ("W5", "W6", "2026-07-10 19:00"), ("W7", "W8", "2026-07-10 22:00"),
+        ("W9", "W10", "2026-07-11 19:00"), ("W11", "W12", "2026-07-11 22:00"),
+        ("W13", "W14", "2026-07-12 19:00"), ("W15", "W16", "2026-07-12 22:00"),
+        ("W17", "W18", "2026-07-14 22:00"), ("W19", "W20", "2026-07-15 22:00"),
+        ("W21", "W22", "2026-07-16 22:00"), ("W23", "W24", "2026-07-17 22:00"),
+        ("L25", "L26", "2026-07-18 19:00"), ("W25", "W26", "2026-07-18 22:00"),
+        ("L27", "L28", "2026-07-19 19:00"), ("W27", "W28", "2026-07-19 22:00"),
+    ]
+    
+    try:
+        fase4 = Phase.query.filter_by(name='Fecha 4 - Eliminación Directa').first()
+        if not fase4:
+            return "❌ ERROR: No se encontró la Fase 4", 500
+        
+        total_antes = Match.query.count()
+        partidos_agregados = 0
+        
+        for home, away, kickoff_str in PARTIDOS_FASE4:
+            existing = Match.query.filter_by(home_team=home, away_team=away, phase_id=fase4.id).first()
+            if existing:
+                continue
+            
+            kickoff = datetime.strptime(kickoff_str, "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
+            closes = kickoff - timedelta(minutes=10)
+            
+            match = Match(home_team=home, away_team=away, kickoff_at=kickoff, closes_at=closes, phase_id=fase4.id)
+            db.session.add(match)
+            partidos_agregados += 1
+        
+        db.session.commit()
+        total_despues = Match.query.count()
+        
+        return f"""
+        <h1>✅ Fase 4 Cargada Exitosamente</h1>
+        <p>Partidos agregados: {partidos_agregados}</p>
+        <p>Total antes: {total_antes}</p>
+        <p>Total después: {total_despues}</p>
+        <p><a href="/admin/dashboard">Ir al Dashboard</a></p>
+        <p><strong>IMPORTANTE: Eliminar este endpoint después de usar</strong></p>
+        """
+    except Exception as e:
+        db.session.rollback()
+        return f"❌ Error: {str(e)}", 500
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000)
