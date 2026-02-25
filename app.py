@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_login import LoginManager, current_user
-from models import db, User
+from models import db, User, Match
 from datetime import datetime, timezone
 import os
 
