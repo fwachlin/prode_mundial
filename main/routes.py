@@ -9,9 +9,8 @@ main_bp = Blueprint('main', __name__, url_prefix='')
 @main_bp.route('/')
 def index():
     """Página de inicio"""
-    # Obtener últimos 5 comentarios
+    # Obtener últimos 5 comentarios (más recientes primero)
     recent_comments = Comment.query.order_by(Comment.created_at.desc()).limit(5).all()
-    recent_comments.reverse()
     
     # Obtener próximos 5 partidos sin resultado
     now = datetime.now(timezone.utc)
@@ -214,8 +213,7 @@ def tablon():
         flash('Comentario publicado', 'success')
         return redirect(url_for('main.tablon'))
     
-    # Obtener últimos 10 comentarios
+    # Obtener últimos 10 comentarios (más recientes primero)
     comments = Comment.query.order_by(Comment.created_at.desc()).limit(10).all()
-    comments.reverse()  # Mostrar más antiguos primero
     
     return render_template('main/tablon.html', comments=comments)
