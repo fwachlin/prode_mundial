@@ -195,6 +195,35 @@ def set_result(match_id):
     flash(f'Resultado: {match.home_team} {home_goals} - {away_goals} {match.away_team}. Puntos calculados.', 'success')
     return redirect(url_for('admin.list_matches'))
 
+@admin_bp.route('/matches/<int:match_id>/delete-result', methods=['POST'])
+@login_required
+@admin_required
+def delete_result(match_id):
+    """Borrar resultado de un partido y recalcular puntos"""
+    match = Match.query.get_or_404(match_id)
+
+    if match.home_goals is None and match.away_goals is None:
+        flash('Este partido no tiene resultado cargado', 'warning')
+        return redirect(url_for('admin.edit_match', match_id=match_id))
+
+    # Guardar nombre del partido para el mensaje
+    match_name = f"{match.home_team} vs {match.away_team}"
+    
+    # Borrar el resultado
+    match.home_goals = None
+    match.away_goals = None
+    db.session.commit()
+
+    # Resetear los puntos de todas las predicciones de este partido
+    predictions = Prediction.query.filter_by(match_id=match_id).all()
+    for prediction in predictions:
+        prediction.points_awarded = 0
+    
+    db.session.commit()
+
+    flash(f'Resultado de "{match_name}" eliminado. Puntos reseteados a 0.', 'success')
+    return redirect(url_for('admin.edit_match', match_id=match_id))
+
 # ==================== RUTAS DE USUARIOS ====================
 
 @admin_bp.route('/users')
