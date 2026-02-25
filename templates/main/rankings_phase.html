@@ -3,7 +3,7 @@
 {% block title %}Ranking {{ phase.name }} - Prode Mundial{% endblock %}
 
 {% block content %}
-<div style="max-width: 900px; margin: 0 auto;">
+<div style="max-width: 900px; margin: 0 auto; background-color: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
     <h1>🏆 Ranking {{ phase.name }}</h1>
     
     <p style="margin: 20px 0; text-align: center;">
@@ -24,6 +24,10 @@
     </div>
     
     {% if user_stats %}
+        <div style="background-color: #fff9e6; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+            <strong>🏆 Premio:</strong> Solo 1° lugar (10% del pozo)
+        </div>
+        
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
             <thead>
                 <tr style="background-color: #f0f0f0; border-bottom: 2px solid #007bff;">
@@ -35,9 +39,10 @@
             </thead>
             <tbody>
                 {% for stat in user_stats %}
-                    <tr style="border-bottom: 1px solid #ddd; {% if loop.index == 1 %}background-color: #fff9e6;{% endif %}">
+                    {% set is_first = (loop.index == 1) %}
+                    <tr style="border-bottom: 1px solid #ddd; {% if is_first %}background-color: #ffd700; font-weight: bold;{% endif %}">
                         <td style="padding: 12px; border: 1px solid #ddd;">
-                            {% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% elif loop.index == 3 %}🥉{% else %}{{ loop.index }}{% endif %}
+                            {% if loop.index == 1 %}🥇 1{% else %}{{ loop.index }}{% endif %}
                         </td>
                         <td style="padding: 12px; border: 1px solid #ddd;">
                             <strong>{{ stat.name }}</strong>

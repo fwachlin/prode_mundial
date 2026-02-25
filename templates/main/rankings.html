@@ -3,7 +3,7 @@
 {% block title %}Rankings - Prode Mundial{% endblock %}
 
 {% block content %}
-<div style="max-width: 900px; margin: 0 auto;">
+<div style="max-width: 900px; margin: 0 auto; background-color: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
     <h1>🏆 Rankings General</h1>
     
     <p style="margin: 20px 0; text-align: center;">
@@ -24,6 +24,28 @@
     </div>
     
     {% if user_stats %}
+        {# Calcular anteúltimo válido (usuarios que pronosticaron TODOS los partidos con resultado hasta ahora) #}
+        {% set matches_played = matches_with_result or 0 %}
+        {# Un usuario es válido si tiene pronósticos CON PUNTOS igual a partidos finalizados #}
+        {% set valid_users = [] %}
+        {% for stat in user_stats %}
+            {% if matches_played > 0 and (stat.predictions_with_points or 0) == matches_played %}
+                {% set _ = valid_users.append(loop.index) %}
+            {% endif %}
+        {% endfor %}
+        {% set total_valid = valid_users|length %}
+        {% set penultimate_position = valid_users[total_valid - 2] if total_valid >= 2 else -1 %}
+        
+        <div style="background-color: #fff9e6; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+            <strong>🏆 Premios del Pozo:</strong>
+            <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                <li>1° lugar: 35% del pozo</li>
+                <li>2° lugar: 15% del pozo</li>
+                <li>3° lugar: 5% del pozo</li>
+                <li>Anteúltimo: 5% del pozo (usuarios con pronósticos en todos los partidos finalizados)</li>
+            </ul>
+        </div>
+        
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
             <thead>
                 <tr style="background-color: #f0f0f0; border-bottom: 2px solid #007bff;">
@@ -35,19 +57,25 @@
             </thead>
             <tbody>
                 {% for stat in user_stats %}
-                    <tr style="border-bottom: 1px solid #ddd; {% if loop.index == 1 %}background-color: #fff9e6;{% endif %}">
-                        <td style="padding: 12px; border: 1px solid #ddd;">
-                            {% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% elif loop.index == 3 %}🥉{% else %}{{ loop.index }}{% endif %}
+                    {% set is_first = (loop.index == 1) %}
+                    {% set is_second = (loop.index == 2) %}
+                    {% set is_third = (loop.index == 3) %}
+                    {% set is_valid_for_penultimate = (matches_with_result > 0 and (stat.predictions_with_points or 0) == matches_with_result) %}
+                    {% set is_penultimate = (loop.index == penultimate_position and penultimate_position > 0) %}
+                    {% set is_awarded = is_first or is_second or is_third or is_penultimate %}
+                    <tr style="border-bottom: 1px solid #ddd; {% if is_first %}background-color: #ffd700; font-weight: bold;{% elif is_second %}background-color: #e0e0e0; font-weight: bold;{% elif is_third %}background-color: #cd7f32; color: white; font-weight: bold;{% elif is_penultimate %}background-color: #d4f1d4; font-weight: bold;{% endif %}">
+                        <td style="padding: 12px; border: 1px solid #ddd; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% endif %}">
+                            {% if is_first %}🥇{% elif is_second %}🥈{% elif is_third %}🥉{% elif is_penultimate %}🎖️{% else %}{{ loop.index }}{% endif %}
                         </td>
-                        <td style="padding: 12px; border: 1px solid #ddd;">
+                        <td style="padding: 12px; border: 1px solid #ddd; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% endif %}">
                             <strong>{{ stat.name }}</strong>
                             <br>
-                            <small style="color: #666;">{{ stat.email }}</small>
+                            <small style="{% if is_third %}color: #eee;{% elif not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545; opacity: 0.8;{% else %}color: #666;{% endif %}">{{ stat.email }}</small>
                         </td>
-                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% endif %}">
                             {{ stat.total_predictions or 0 }}
                         </td>
-                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold; color: #007bff; font-size: 1.2em;">
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold; {% if is_third %}color: white;{% elif not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% else %}color: #007bff;{% endif %} font-size: 1.2em;">
                             {{ stat.total_points or 0 }}
                         </td>
                     </tr>

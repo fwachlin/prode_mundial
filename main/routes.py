@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from models import db, Match, Prediction, User, Phase, Comment
-from sqlalchemy import func
+from sqlalchemy import func, case
 from datetime import datetime, timezone
 from auto_backup import backup_on_change  # BACKUP AUTOMÁTICO
 
@@ -108,7 +108,7 @@ def predictions():
 def rankings():
     """Rankings general de usuarios (excluye admins)"""
     # Obtener ranking general: suma de todos los puntos (SIN ADMINS)
-    user_stats = db.session.query(
+    user_stats_raw = db.session.query(
         User.id,
         User.name,
         User.email,
@@ -120,7 +120,26 @@ def rankings():
      .order_by(func.coalesce(func.sum(Prediction.points_awarded), 0).desc(), User.name)\
      .all()
     
-    return render_template('main/rankings.html', user_stats=user_stats)
+    # Agregar manualmente el conteo de predicciones para partidos finalizados
+    user_stats = []
+    for stat in user_stats_raw:
+        # Contar pronósticos que hizo este usuario PARA partidos que tienen resultado cargado
+        preds_for_finished = db.session.query(func.count(Prediction.id))\
+            .join(Match, Prediction.match_id == Match.id)\
+            .filter(Prediction.user_id == stat.id, Match.home_goals.isnot(None))\
+            .scalar() or 0
+        
+        # Crear tupla con el campo adicional
+        from collections import namedtuple
+        StatWithPoints = namedtuple('StatWithPoints', ['id', 'name', 'email', 'total_predictions', 'total_points', 'predictions_with_points'])
+        user_stats.append(StatWithPoints(stat.id, stat.name, stat.email, stat.total_predictions, stat.total_points, preds_for_finished))
+    
+    # Calcular cuántos partidos tienen resultado cargado hasta ahora
+    matches_with_result = Match.query.filter(Match.home_goals.isnot(None)).count()
+    
+    return render_template('main/rankings.html', 
+                         user_stats=user_stats,
+                         matches_with_result=matches_with_result)
 
 @main_bp.route('/rankings/phase/<int:phase_id>')
 def rankings_by_phase(phase_id):
