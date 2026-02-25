@@ -10,7 +10,15 @@ from flask_login import LoginManager
 
 @pytest.fixture
 def app():
-    """Fixture de aplicación Flask para testing - AISLADA de la app real"""
+    """
+    Fixture de aplicación Flask para testing - COMPLETAMENTE AISLADA de la app real
+    
+    GARANTÍAS DE SEGURIDAD:
+    1. NO importa 'app' de app.py - crea una app NUEVA
+    2. Base de datos en MEMORIA (sqlite:///:memory:) - NUNCA toca archivos
+    3. Cada test crea y destruye su propia DB en memoria
+    4. IMPOSIBLE que afecte instance/prode.db
+    """
     import os
     from flask_login import current_user
     
@@ -21,11 +29,17 @@ def app():
     
     test_app.config.update({
         'TESTING': True,
-        'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',  # Base de datos en memoria
+        'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',  # ⚠️ MEMORIA - NUNCA archivo
         'WTF_CSRF_ENABLED': False,  # Deshabilitar CSRF en tests
         'SECRET_KEY': 'test-secret-key',
         'SQLALCHEMY_TRACK_MODIFICATIONS': False
     })
+    
+    # ✅ VERIFICACIÓN DE SEGURIDAD: Confirmar que NO usa DB real
+    assert test_app.config['SQLALCHEMY_DATABASE_URI'] == 'sqlite:///:memory:', \
+        "❌ PELIGRO: Tests NO deben usar base de datos de archivo"
+    assert test_app.config['TESTING'] is True, \
+        "❌ PELIGRO: Tests deben tener TESTING=True"
     
     # Inicializar extensiones con la app de test
     db.init_app(test_app)
