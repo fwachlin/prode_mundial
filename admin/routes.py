@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from admin.decorators import admin_required
 from models import db, Match, Prediction, User, Comment, AllowedEmail
 from datetime import datetime, timezone
+from auto_backup import backup_on_change  # BACKUP AUTOMÁTICO
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -154,12 +155,16 @@ def edit_match(match_id):
                 for prediction in match.predictions:
                     prediction.points_awarded = prediction.calculate_points()
                 
+                # 🔒 BACKUP AUTOMÁTICO después de cargar resultado
+                db.session.commit()
+                backup_on_change("resultado")
+                
                 flash(f'Resultado cargado: {match.home_team} {home_goals} - {away_goals} {match.away_team}. Puntos recalculados.', 'success')
             except ValueError:
                 flash('Formato de goles inválido', 'error')
                 return redirect(url_for('admin.edit_match', match_id=match_id))
-        
-        db.session.commit()
+        else:
+            db.session.commit()
         flash(f'Partido {match.home_team} vs {match.away_team} actualizado', 'success')
         return redirect(url_for('admin.list_matches'))
     
@@ -222,6 +227,9 @@ def set_result(match_id):
         prediction.points_awarded = prediction.calculate_points()
 
     db.session.commit()
+    
+    # 🔒 BACKUP AUTOMÁTICO después de cargar resultado
+    backup_on_change("resultado")
 
     flash(f'Resultado: {match.home_team} {home_goals} - {away_goals} {match.away_team}. Puntos calculados.', 'success')
     return redirect(url_for('admin.list_matches'))

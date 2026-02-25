@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from models import db, Match, Prediction, User, Phase, Comment
 from sqlalchemy import func
 from datetime import datetime, timezone
+from auto_backup import backup_on_change  # BACKUP AUTOMÁTICO
 
 main_bp = Blueprint('main', __name__, url_prefix='')
 
@@ -84,6 +85,10 @@ def predictions():
             db.session.add(prediction)
         
         db.session.commit()
+        
+        # 🔒 BACKUP AUTOMÁTICO después de guardar pronóstico
+        backup_on_change("pronostico")
+        
         flash('Pronóstico guardado', 'success')
         return redirect(url_for('main.predictions'))
     

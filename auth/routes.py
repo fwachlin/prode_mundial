@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from models import db, User, AllowedEmail
 from werkzeug.security import generate_password_hash
+from auto_backup import backup_on_change  # BACKUP AUTOMÁTICO
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -50,6 +51,9 @@ def register():
             
             db.session.add(user)
             db.session.commit()
+            
+            # 🔒 BACKUP AUTOMÁTICO después de crear usuario
+            backup_on_change("usuario")
             
             flash('¡Registro exitoso! Ahora puedes iniciar sesión', 'success')
             return redirect(url_for('auth.login'))
