@@ -97,7 +97,7 @@ def predictions():
                          predictions=user_predictions)
 
 
-@main_bp.route('/predictions/delete/<int:match_id>', methods=['POST'], endpoint='main.delete_prediction')
+@main_bp.route('/predictions/delete/<int:match_id>', methods=['POST'], endpoint='delete_prediction')
 @login_required
 def delete_prediction(match_id):
     """Borrar pronóstico de un partido para el usuario actual"""
