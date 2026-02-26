@@ -233,8 +233,14 @@ def all_predictions():
             percent = (correct_count / total_participants) * 100 if total_participants > 0 else 0
             batacazo_percentages.append(percent)
 
+        # Reemplazar nombre de fase 4
+        phase_name = phase.name
+        if phase_name.strip().lower().startswith('fecha 4'):
+            phase_name = 'Fecha 4'
+
         phase_data.append({
             'phase': phase,
+            'phase_name': phase_name,
             'matches': matches,
             'users': users,
             'pred_map': pred_map,
