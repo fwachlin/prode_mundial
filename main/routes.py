@@ -37,63 +37,134 @@ def predictions():
     if current_user.is_admin:
         flash('Los administradores no pueden hacer pronósticos', 'warning')
         return redirect(url_for('main.index'))
-    
+
     if request.method == 'POST':
         match_id = request.form.get('match_id', type=int)
         home_goals = request.form.get('home_goals')
         away_goals = request.form.get('away_goals')
-        
-        match = Match.query.get_or_404(match_id)
-        
-        # Validar que el pronóstico esté abierto (BACKEND)
-        if not match.is_open():
-            flash('Este pronóstico está cerrado', 'error')
-            return redirect(url_for('main.predictions'))
-        
-        # Validar que ambos campos tengan valores
-        if home_goals == '' or away_goals == '':
-            flash('Debes ingresar ambos goles para guardar el pronóstico', 'warning')
-            return redirect(url_for('main.predictions'))
-        
-        try:
-            home_goals = int(home_goals)
-            away_goals = int(away_goals)
-        except ValueError:
-            flash('Los goles deben ser números válidos', 'error')
-            return redirect(url_for('main.predictions'))
-        
-        if home_goals < 0 or away_goals < 0:
-            flash('Los goles no pueden ser negativos', 'error')
-            return redirect(url_for('main.predictions'))
-        
-        # Buscar si ya existe pronóstico
-        prediction = Prediction.query.filter_by(
-            user_id=current_user.id,
-            match_id=match_id
-        ).first()
-        
-        if prediction:
-            prediction.home_goals = home_goals
-            prediction.away_goals = away_goals
-        else:
-            prediction = Prediction(
+        if match_id is not None and home_goals is not None and away_goals is not None:
+            match = Match.query.get_or_404(match_id)
+            # Validar que el pronóstico esté abierto (BACKEND)
+            if not match.is_open():
+                flash('Este pronóstico está cerrado', 'error')
+                return redirect(url_for('main.predictions'))
+            # Validar que ambos campos tengan valores
+            if home_goals == '' or away_goals == '':
+                flash('Debes ingresar ambos goles para guardar el pronóstico', 'warning')
+                return redirect(url_for('main.predictions'))
+            try:
+                home_goals = int(home_goals)
+                away_goals = int(away_goals)
+            except ValueError:
+                flash('Los goles deben ser números válidos', 'error')
+                return redirect(url_for('main.predictions'))
+            if home_goals < 0 or away_goals < 0:
+                flash('Los goles no pueden ser negativos', 'error')
+                return redirect(url_for('main.predictions'))
+            # Buscar si ya existe pronóstico
+            prediction = Prediction.query.filter_by(
                 user_id=current_user.id,
-                match_id=match_id,
-                home_goals=home_goals,
-                away_goals=away_goals
-            )
-            db.session.add(prediction)
-        
+                match_id=match_id
+            ).first()
+            if prediction:
+                prediction.home_goals = home_goals
+                prediction.away_goals = away_goals
+            else:
+                prediction = Prediction(
+                    user_id=current_user.id,
+                    match_id=match_id,
+                    home_goals=home_goals,
+                    away_goals=away_goals
+                )
+                db.session.add(prediction)
+            db.session.commit()
+            # 🔒 BACKUP AUTOMÁTICO después de guardar pronóstico
+            backup_on_change("pronostico")
+            flash('Pronóstico guardado', 'success')
+            return redirect(url_for('main.predictions'))
+        # Si POST pero sin datos válidos, redirigir
+        return redirect(url_for('main.predictions'))
+
+    # GET: mostrar solo partidos abiertos
+    now = datetime.now(timezone.utc)
+    matches = Match.query.filter(Match.closes_at > now).order_by(Match.kickoff_at).all()
+    # Obtener pronósticos del usuario actual
+    user_predictions = {}
+    for prediction in current_user.predictions:
+        user_predictions[prediction.match_id] = prediction
+    return render_template('main/predictions.html', 
+                         matches=matches,
+                         predictions=user_predictions)
+
+
+@main_bp.route('/predictions/delete/<int:match_id>', methods=['POST'], endpoint='main.delete_prediction')
+@login_required
+def delete_prediction(match_id):
+    """Borrar pronóstico de un partido para el usuario actual"""
+    prediction = Prediction.query.filter_by(user_id=current_user.id, match_id=match_id).first()
+    if prediction:
+        db.session.delete(prediction)
         db.session.commit()
-        
-        # 🔒 BACKUP AUTOMÁTICO después de guardar pronóstico
+        db.session.expunge_all()
         backup_on_change("pronostico")
-        
-        flash('Pronóstico guardado', 'success')
+        flash('Pronóstico eliminado', 'info')
+    else:
+        flash('No hay pronóstico para borrar', 'warning')
+    return redirect(url_for('main.predictions'))
+
+    if request.method == 'POST':
+        match_id = request.form.get('match_id', type=int)
+        home_goals = request.form.get('home_goals')
+        away_goals = request.form.get('away_goals')
+        if match_id is not None and home_goals is not None and away_goals is not None:
+            match = Match.query.get_or_404(match_id)
+            # Validar que el pronóstico esté abierto (BACKEND)
+            if not match.is_open():
+                flash('Este pronóstico está cerrado', 'error')
+                return redirect(url_for('main.predictions'))
+            # Validar que ambos campos tengan valores
+            if home_goals == '' or away_goals == '':
+                flash('Debes ingresar ambos goles para guardar el pronóstico', 'warning')
+                return redirect(url_for('main.predictions'))
+            try:
+                home_goals = int(home_goals)
+                away_goals = int(away_goals)
+            except ValueError:
+                flash('Los goles deben ser números válidos', 'error')
+                return redirect(url_for('main.predictions'))
+            if home_goals < 0 or away_goals < 0:
+                flash('Los goles no pueden ser negativos', 'error')
+                return redirect(url_for('main.predictions'))
+            # Eliminar cualquier duplicado antes de crear
+            existing = Prediction.query.filter_by(user_id=current_user.id, match_id=match_id).first()
+            if existing:
+                existing.home_goals = home_goals
+                existing.away_goals = away_goals
+                db.session.commit()
+            else:
+                # Por seguridad, eliminar cualquier predicción zombie
+                Prediction.query.filter_by(user_id=current_user.id, match_id=match_id).delete()
+                db.session.commit()
+                db.session.expunge_all()
+                prediction = Prediction(
+                    user_id=current_user.id,
+                    match_id=match_id,
+                    home_goals=home_goals,
+                    away_goals=away_goals
+                )
+                db.session.add(prediction)
+                db.session.commit()
+            # 🔒 BACKUP AUTOMÁTICO después de guardar pronóstico
+            backup_on_change("pronostico")
+            flash('Pronóstico guardado', 'success')
+            return redirect(url_for('main.predictions'))
+        # Si POST pero sin datos válidos, redirigir
         return redirect(url_for('main.predictions'))
     
-    # GET: mostrar pronósticos
-    matches = Match.query.order_by(Match.kickoff_at).all()
+    # GET: mostrar solo partidos abiertos
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    matches = Match.query.filter(Match.closes_at > now).order_by(Match.kickoff_at).all()
     
     # Obtener pronósticos del usuario actual
     user_predictions = {}
