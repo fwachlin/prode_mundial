@@ -48,6 +48,19 @@
     margin-bottom: 10px;
     line-height: 1.4;
   }
+  .match-times .match-close-row {
+    white-space: nowrap;
+  }
+  .match-times span.closes-at,
+  .match-times span.countdown-inline {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .match-times span.countdown-inline {
+    display: inline-block;
+    min-width: 170px;
+    white-space: nowrap;
+  }
 
   .prediction-inputs {
     display: flex;
@@ -58,7 +71,7 @@
   }
 
   .prediction-input {
-    width: 45px;
+    width: 60px;
     padding: 6px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -146,65 +159,60 @@
 {% block content %}
 <div class="predictions-container">
   <h1>Mis Pronósticos</h1>
-
   {% if matches %}
     <div class="predictions-grid">
       {% for match in matches %}
       {% set has_prediction = match.id in predictions %}
-      <form method="post" class="prediction-card {% if not has_prediction %}no-prediction{% endif %}" data-closes-utc="{{ match.closes_at.isoformat() }}">
-        <input type="hidden" name="match_id" value="{{ match.id }}">
-
-        <div class="match-title">
-          {{ match.home_team }} vs {{ match.away_team }}
+      <div class="prediction-card {% if not has_prediction %}no-prediction{% endif %}" data-closes-utc="{{ match.closes_at.isoformat() }}" style="position: relative;">
+        <div class="match-title" style="display: flex; align-items: center; justify-content: space-between;">
+          <span>{{ match.home_team }} vs {{ match.away_team }}</span>
+          {% if not has_prediction %}
+            <span class="no-prediction-msg">⚠️ Sin pronóstico</span>
+          {% elif match.is_open() and has_prediction %}
+            <form method="post" action="{{ url_for('main.delete_prediction', match_id=match.id) }}" class="delete-prediction-form-inline" style="display:inline; position: absolute; top: 12px; right: 12px; z-index: 2;">
+              <button type="submit" class="btn btn-link text-danger" style="padding:0 4px; font-size:0.98em;">Borrar</button>
+            </form>
+          {% endif %}
         </div>
-
-        <div class="match-times">
-          <div>
-            <strong>Kickoff:</strong>
-            <span class="kickoff-at" data-utc="{{ match.kickoff_at.isoformat() }}"></span>
+        <form method="post">
+          <input type="hidden" name="match_id" value="{{ match.id }}">
+          <div class="match-times">
+            <div>
+              <strong>Comienza:</strong>
+              <span class="kickoff-at" data-utc="{{ match.kickoff_at.isoformat() }}"></span>
+            </div>
+            <div class="match-close-row">
+              <strong>Cierra:</strong>
+              <span class="closes-at" data-utc="{{ match.closes_at.isoformat() }}"></span>
+              <span class="countdown-inline" data-utc="{{ match.closes_at.isoformat() }}"></span>
+            </div>
           </div>
-          <div>
-            <strong>Cierra:</strong>
-            <span class="closes-at" data-utc="{{ match.closes_at.isoformat() }}"></span>
-          </div>
-        </div>
-
-        <div class="countdown" data-utc="{{ match.closes_at.isoformat() }}"></div>
-
-        {% if not has_prediction %}
-          <div class="no-prediction-msg">
-            ⚠️ Sin pronóstico
-          </div>
-        {% endif %}
-
-        <div class="prediction-inputs">
-          <input type="number"
+          <div class="prediction-row-flex" style="display: flex; align-items: center; gap: 10px;">
+            <div class="prediction-inputs" style="margin: 0;">
+               <input type="number"
                  name="home_goals"
                  class="prediction-input"
                  min="0"
-                 max="9"
+                 max="99"
                  {% if not match.is_open() %}disabled{% endif %}
                  value="{{ predictions.get(match.id).home_goals if has_prediction else '' }}"
-                 placeholder="0">
-          <span class="vs-text">-</span>
-          <input type="number"
+                 placeholder="{% if not has_prediction %}--{% else %}0{% endif %}">
+              <span class="vs-text">-</span>
+               <input type="number"
                  name="away_goals"
                  class="prediction-input"
                  min="0"
-                 max="9"
+                 max="99"
                  {% if not match.is_open() %}disabled{% endif %}
                  value="{{ predictions.get(match.id).away_goals if has_prediction else '' }}"
-                 placeholder="0">
-        </div>
-
-        <div class="status {{ 'open' if match.is_open() else 'closed' }}">
-          {{ 'Abierto' if match.is_open() else 'Cerrado' }}
-        </div>
-
-        {% if match.is_open() %}
-          <button type="submit" class="submit-btn">Guardar</button>
-        {% endif %}
-      </form>
+                 placeholder="{% if not has_prediction %}--{% else %}0{% endif %}">
+            </div>
+            {% if match.is_open() %}
+              <button type="submit" class="submit-btn" style="margin-left: 8px;">Guardar</button>
+            {% endif %}
+          </div>
+        </form>
+      </div>
       {% endfor %}
     </div>
   {% else %}
@@ -216,9 +224,7 @@
 
 <script>
 function renderLocalTimes() {
-  document.querySelectorAll("[data-utc]").forEach(el => {
-    if (el.classList.contains("countdown")) return;
-
+  document.querySelectorAll(".kickoff-at, .closes-at").forEach(el => {
     const d = new Date(el.dataset.utc);
     el.textContent = d.toLocaleString(undefined, {
       dateStyle: "short",
@@ -231,25 +237,17 @@ function closeForm(form) {
   form.querySelectorAll(".prediction-input").forEach(input => {
     input.disabled = true;
   });
-
-  const status = form.querySelector(".status");
-  if (status) {
-    status.textContent = "Cerrado";
-    status.classList.remove("open");
-    status.classList.add("closed");
-  }
 }
 
 function renderCountdowns() {
   const now = new Date();
-
   document.querySelectorAll(".prediction-card").forEach(form => {
     const closesAt = new Date(form.dataset.closesUtc);
-    const countdown = form.querySelector(".countdown");
+    const countdown = form.querySelector(".countdown-inline");
     const diff = closesAt - now;
 
     if (diff <= 0) {
-      countdown.style.display = "none";
+      if (countdown) countdown.style.display = "none";
       closeForm(form);
       return;
     }
@@ -258,12 +256,13 @@ function renderCountdowns() {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
 
-    countdown.textContent = `Cierra en: ${minutes}m ${seconds}s`;
-
-    if (minutes < 5) {
-      countdown.classList.add("warning");
-    } else {
-      countdown.classList.remove("warning");
+    if (countdown) {
+      countdown.textContent = ` (en ${minutes}m ${seconds}s)`;
+      if (minutes < 5) {
+        countdown.classList.add("warning");
+      } else {
+        countdown.classList.remove("warning");
+      }
     }
   });
 }
