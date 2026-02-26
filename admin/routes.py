@@ -12,11 +12,7 @@ admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 @admin_required
 def dashboard():
     """Panel principal de administrador"""
-    matches_count = Match.query.count()
-    predictions_count = Prediction.query.count()
-    users_count = User.query.filter_by(is_admin=False).count()  # ← Solo usuarios NO admin
-    
-    # Obtener TODOS los partidos para el dashboard (antes eran solo 10)
+    # Obtener TODOS los partidos para el dashboard
     matches = Match.query.order_by(Match.kickoff_at).all()
     now = datetime.now(timezone.utc)
     
@@ -28,11 +24,7 @@ def dashboard():
         match.has_started = now >= kickoff
         match.minutes_until_start = int((kickoff - now).total_seconds() // 60) if not match.has_started else 0
     
-    return render_template('admin/dashboard.html',
-                         matches_count=matches_count,
-                         predictions_count=predictions_count,
-                         users_count=users_count,
-                         matches=matches)
+    return render_template('admin/dashboard.html', matches=matches)
 
 @admin_bp.route('/matches/new', methods=['GET', 'POST'])
 @login_required

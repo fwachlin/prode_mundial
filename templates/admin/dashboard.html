@@ -4,31 +4,13 @@
 
 {% block content %}
 <div class="admin-container">
-    <h1>Panel de Administrador</h1>
-    
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h3>Partidos</h3>
-            <p class="stat-number">{{ matches_count }}</p>
-        </div>
-        
-        <div class="stat-card">
-            <h3>Pronósticos</h3>
-            <p class="stat-number">{{ predictions_count }}</p>
-        </div>
-        
-        <div class="stat-card">
-            <h3>Usuarios</h3>
-            <p class="stat-number">{{ users_count }}</p>
-            <a href="{{ url_for('admin.manage_users') }}" class="btn btn-primary">Gestionar</a>
-        </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>Panel de Administrador</h1>
+        <a href="{{ url_for('admin.manage_users') }}" class="btn btn-primary">Gestionar Usuarios</a>
     </div>
     
     <div class="recent-matches">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2>Gestionar Partidos</h2>
-            <a href="{{ url_for('admin.create_match') }}" class="btn btn-primary">+ Nuevo Partido</a>
-        </div>
+        <h2 style="margin-bottom: 20px;">Gestionar Partidos</h2>
         
         {% if matches %}
             <table class="matches-table">
@@ -61,23 +43,21 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{{ url_for('admin.edit_match', match_id=match.id) }}" class="btn btn-secondary">Editar</a>
+                            <a href="{{ url_for('admin.edit_match', match_id=match.id) }}" class="btn btn-sm btn-secondary">Editar</a>
                             
                             <!-- Solo mostrar form si el partido ya comenzó -->
                             {% if match.has_started %}
                                 <form method="POST" action="{{ url_for('admin.set_result', match_id=match.id) }}" style="display:inline;">
-                                    <input type="number" name="home_goals" placeholder="Local" min="0" style="width:60px;" required>
-                                    <input type="number" name="away_goals" placeholder="Visit" min="0" style="width:60px;" required>
-                                    <button type="submit" class="btn btn-success">Cargar</button>
+                                    <input type="number" name="home_goals" placeholder="Local" min="0" style="width:50px; height:28px; font-size:0.95em;" required>
+                                    <input type="number" name="away_goals" placeholder="Visit" min="0" style="width:50px; height:28px; font-size:0.95em;" required>
+                                    <button type="submit" class="btn btn-sm btn-success">Guardar</button>
                                 </form>
                             {% else %}
                                 <span style="color:#6b7280;font-size:0.9em;">⏳ Esperando kickoff</span>
                             {% endif %}
                             
-                            <form method="POST" action="{{ url_for('admin.delete_match', match_id=match.id) }}" 
-                                  style="display:inline;"
-                                  onsubmit="return confirm('¿Eliminar {{ match.home_team }} vs {{ match.away_team }}?');">
-                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            <form method="POST" action="{{ url_for('admin.delete_match', match_id=match.id) }}" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar partido?');">Eliminar</button>
                             </form>
                         </td>
                     </tr>

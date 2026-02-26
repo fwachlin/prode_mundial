@@ -3,52 +3,33 @@
 {% block title %}Admin - Gestionar Usuarios{% endblock %}
 
 {% block content %}
-<h1>Gestionar Usuarios</h1>
 
-<p style="margin-bottom: 20px;">
-    <strong>Usuarios registrados:</strong> {{ users|length }}
-    &nbsp;|&nbsp;
-    <a href="{{ url_for('admin.allowed_emails') }}" class="btn btn-secondary">📧 Emails habilitados (sin registrar)</a>
-</p>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+  <h1 style="margin-bottom:0;">Gestionar Usuarios</h1>
+  <a href="{{ url_for('admin.allowed_emails') }}" class="btn btn-success">+habilitar nuevo email</a>
+</div>
 
 {% if users %}
-    <table>
+    <table class="users-table">
         <thead>
             <tr>
+                <th>#</th>
                 <th>Nombre</th>
                 <th>Email</th>
-                <th>Habilitado</th>
-                <th>Pronósticos</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
             {% for user in users %}
             <tr>
+                <td>{{ loop.index }}</td>
                 <td>{{ user.name }}</td>
                 <td>{{ user.email }}</td>
-                <td>
-                    {% if user.is_enabled %}
-                        <span class="badge badge-success">✓ Habilitado</span>
-                    {% else %}
-                        <span class="badge badge-danger">✗ Deshabilitado</span>
-                    {% endif %}
-                </td>
-                <td>{{ user.predictions|length }}</td>
                 <td class="actions">
                     <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-secondary">✏️ Editar</a>
-                    
-                    <form method="POST" action="{{ url_for('admin.toggle_user', user_id=user.id) }}" 
-                          style="display: inline;"
-                          onsubmit="return confirm('¿{{ 'Deshabilitar' if user.is_enabled else 'Habilitar' }} a {{ user.name }}?');">
-                        <button type="submit" class="btn {% if user.is_enabled %}btn-danger{% else %}btn-success{% endif %}">
-                            {% if user.is_enabled %}Deshabilitar{% else %}Habilitar{% endif %}
-                        </button>
-                    </form>
-                    
                     <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}" 
                           style="display: inline;"
-                          onsubmit="return confirm('⚠️ ADVERTENCIA: ¿Eliminar a {{ user.name }}?\n\nEmail: {{ user.email }}\nPronósticos: {{ user.predictions|length }}\n\nSe eliminarán todos los datos asociados.\nEsta acción NO SE PUEDE DESHACER.');">
+                          onsubmit="return confirm('⚠️ ADVERTENCIA: ¿Eliminar a {{ user.name }}?\n\nEmail: {{ user.email }}\n\nSe eliminarán todos los datos asociados.\nEsta acción NO SE PUEDE DESHACER.');">
                         <button type="submit" class="btn btn-danger">🗑️ Eliminar</button>
                     </form>
                 </td>
@@ -56,6 +37,47 @@
             {% endfor %}
         </tbody>
     </table>
+
+<style>
+.users-table {
+  background: rgba(255,255,255,0.93);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 2rem;
+}
+.users-table th, .users-table td {
+  padding-top: 0.28em;
+  padding-bottom: 0.28em;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  font-size: 0.97em;
+  line-height: 1.1;
+  vertical-align: middle;
+}
+.users-table thead th {
+  background: #f8f9fa;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.89em;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e5e7eb;
+}
+.users-table tbody tr:hover {
+  background: #f3f4f6;
+}
+.users-table td.actions {
+  white-space: nowrap;
+}
+.users-table .btn {
+  padding: 0.18rem 0.7rem;
+  font-size: 0.92em;
+  border-radius: 7px;
+  line-height: 1.1;
+}
+</style>
 {% else %}
     <p>No hay usuarios registrados.</p>
 {% endif %}

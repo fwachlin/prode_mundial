@@ -1,3 +1,25 @@
+.matches-table .btn, .matches-table button, .matches-table input[type=number] {
+  padding-top: 0.12rem !important;
+  padding-bottom: 0.12rem !important;
+  height: 1.6rem !important;
+  min-height: 1.6rem !important;
+  font-size: 0.90em !important;
+  line-height: 1.05 !important;
+}
+
+.matches-table input[type=number] {
+  padding-left: 0.3em;
+  padding-right: 0.3em;
+  width: 2.3em;
+  margin-right: 2px;
+  margin-left: 2px;
+}
+.btn-sm {
+  padding: 0.18rem 0.7rem;
+  font-size: 0.92em;
+  border-radius: 7px;
+  line-height: 1.1;
+}
 /* ===================================
    🎨 PRODE MUNDIAL 2026 - BOOTSTRAP THEME
    =================================== */
@@ -88,6 +110,7 @@ body {
   padding: 1rem 1.5rem;
 }
 
+
 /* Tablas mejoradas */
 .table {
   border-radius: 12px;
@@ -109,6 +132,18 @@ body {
 
 .table tbody tr:hover {
   background: #f8f9fa;
+}
+
+/* Reducir altura de filas en tabla de partidos admin */
+.matches-table tr, .matches-table td, .matches-table th {
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+  font-size: 0.95em;
+  line-height: 1.1;
+}
+
+.matches-table td, .matches-table th {
+  vertical-align: middle !important;
 }
 
 /* Badges personalizados */
