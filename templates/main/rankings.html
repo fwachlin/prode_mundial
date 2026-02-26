@@ -3,22 +3,18 @@
 {% block title %}Rankings - Prode Mundial{% endblock %}
 
 {% block content %}
-<div style="max-width: 900px; margin: 0 auto; background-color: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-    <h1>🏆 Rankings General</h1>
+<div style="max-width: 600px; margin: 0 auto; background-color: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+    <h1 style="font-size:1.4rem; font-weight:700; margin-bottom:10px; text-align:center;">🏆 Ranking General</h1>
     
-    <p style="margin: 20px 0; text-align: center;">
-        <strong>Puntuación acumulada de todas las fechas</strong>
-    </p>
     
     <!-- Links a rankings por fecha -->
-    <div style="margin: 30px 0; text-align: center;">
-        <a href="{{ url_for('main.rankings') }}" style="display: inline-block; padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; margin: 5px; font-weight: bold;">
-            📊 General
+    <div style="margin: 24px 0 0 0; text-align: center;">
+        <a href="{{ url_for('main.rankings') }}" class="rankings-nav-btn" style="display: inline-block; background-color: #007bff; color: white; text-decoration: none; margin: 2px; font-weight: bold;">
+            🗂️ General
         </a>
-        
         {% for phase_num in [1, 2, 3, 4] %}
-            <a href="{{ url_for('main.rankings_by_phase', phase_id=phase_num) }}" style="display: inline-block; padding: 10px 15px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px; margin: 5px;">
-                Fecha {{ phase_num }}
+            <a href="{{ url_for('main.rankings_by_phase', phase_id=phase_num) }}" class="rankings-nav-btn" style="display: inline-block; background-color: #6c757d; color: white; text-decoration: none; margin: 2px;">
+                {% if phase_num == 4 %}Fecha 4{% else %}Fecha {{ phase_num }}{% endif %}
             </a>
         {% endfor %}
     </div>
@@ -38,20 +34,19 @@
         
         <div style="background-color: #fff9e6; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
             <strong>🏆 Premios del Pozo:</strong>
-            <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+            <ul style="margin: 10px 0 0 0; padding-left: 20px; font-size: 0.90em;">
                 <li>1° lugar: 35% del pozo</li>
                 <li>2° lugar: 15% del pozo</li>
                 <li>3° lugar: 5% del pozo</li>
-                <li>Anteúltimo: 5% del pozo (usuarios con pronósticos en todos los partidos finalizados)</li>
+                <li>Penúltimo: 5% del pozo (jugadores en <b style="color:#dc3545;">rojo</b> no participan)</li>
             </ul>
         </div>
         
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <table class="rankings-table" style="width: 100%; max-width: 520px; margin: 0 auto; border-collapse: collapse; margin-top: 20px;">
             <thead>
                 <tr style="background-color: #f0f0f0; border-bottom: 2px solid #007bff;">
                     <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">#</th>
                     <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Participante</th>
-                    <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">Pronósticos</th>
                     <th style="padding: 12px; text-align: center; border: 1px solid #ddd; color: #007bff; font-weight: bold;">Puntos</th>
                 </tr>
             </thead>
@@ -69,11 +64,6 @@
                         </td>
                         <td style="padding: 12px; border: 1px solid #ddd; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% endif %}">
                             <strong>{{ stat.name }}</strong>
-                            <br>
-                            <small style="{% if is_third %}color: #eee;{% elif not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545; opacity: 0.8;{% else %}color: #666;{% endif %}">{{ stat.email }}</small>
-                        </td>
-                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% endif %}">
-                            {{ stat.total_predictions or 0 }}
                         </td>
                         <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold; {% if is_third %}color: white;{% elif not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% else %}color: #007bff;{% endif %} font-size: 1.2em;">
                             {{ stat.total_points or 0 }}

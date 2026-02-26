@@ -139,12 +139,17 @@ def rankings():
     
     return render_template('main/rankings.html', 
                          user_stats=user_stats,
-                         matches_with_result=matches_with_result)
+                         matches_with_result=matches_with_result,
+                         zip=zip)
 
 @main_bp.route('/rankings/phase/<int:phase_id>')
 def rankings_by_phase(phase_id):
     """Rankings por fase específica (excluye admins)"""
     phase = Phase.query.get_or_404(phase_id)
+    # Mostrar 'Fecha 4' en vez de 'Fecha 4 - Eliminación directa'
+    phase_name = phase.name
+    if phase_name.strip().lower().startswith('fecha 4'):
+        phase_name = 'Fecha 4'
     
     # Obtener puntajes de usuarios SOLO para esta fase
     user_stats = db.session.query(
@@ -162,11 +167,27 @@ def rankings_by_phase(phase_id):
     
     # Obtener todas las fases para el menú
     phases = Phase.query.order_by(Phase.order).all()
+    # Generar lista de nombres corregidos para el menú (siempre 'Fecha N')
+    phase_names = []
+    for p in phases:
+        n = p.name
+        if n.strip().lower().startswith('fecha'):
+            # Extraer número
+            import re
+            m = re.match(r'fecha\s*(\d+)', n.strip().lower())
+            if m:
+                n = f'Fecha {m.group(1)}'
+            else:
+                n = 'Fecha'
+        phase_names.append(n)
     
     return render_template('main/rankings_phase.html', 
                          phase=phase, 
+                         phase_name=phase_name,
                          user_stats=user_stats,
-                         phases=phases)
+                         phases=phases,
+                         phase_names=phase_names,
+                         zip=zip)
 
 @main_bp.route('/rankings/matches/<int:match_id>')
 def rankings_by_match(match_id):

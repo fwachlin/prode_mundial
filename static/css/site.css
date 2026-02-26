@@ -1,3 +1,22 @@
+/* Botones compactos para navegación de rankings */
+.rankings-nav-btn {
+  padding: 4px 12px !important;
+  font-size: 0.98em !important;
+  min-height: 1.2em !important;
+  height: 2em !important;
+  border-radius: 4px !important;
+}
+/* Filas compactas para rankings */
+.rankings-table tr, .rankings-table td, .rankings-table th {
+  padding-top: 0.18rem !important;
+  padding-bottom: 0.18rem !important;
+  font-size: 0.93em;
+  line-height: 1.05;
+}
+
+.rankings-table td, .rankings-table th {
+  vertical-align: middle !important;
+}
 .matches-table .btn, .matches-table button, .matches-table input[type=number] {
   padding-top: 0.12rem !important;
   padding-bottom: 0.12rem !important;
