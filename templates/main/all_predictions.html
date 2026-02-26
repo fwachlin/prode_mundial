@@ -14,7 +14,8 @@
     }
     
     .predictions-table-container {
-        overflow: visible;
+        overflow-y: auto;
+        max-height: 70vh;
         border: 1px solid #ddd;
         margin-top: 20px;
         position: relative;
@@ -29,33 +30,45 @@
         border-collapse: separate;
         border-spacing: 0;
         min-width: 900px;
-        display: block;
         background-color: rgba(255, 255, 255, 0.95);
     }
     
     /* Thead fijo */
     .predictions-table thead {
-        display: block;
         position: sticky;
         top: 0;
         z-index: 100;
         background-color: rgba(255, 255, 255, 0.98);
+        display: table;
+        width: 100%;
     }
     
     /* Tbody con scroll */
     .predictions-table tbody {
-        display: block;
-        overflow-y: scroll;
-        overflow-x: visible;
-        max-height: calc(70vh - 124px);
+        display: table;
+        width: 100%;
         background-color: rgba(255, 255, 255, 0.95);
     }
     
     /* Hacer que las filas se comporten como tabla */
     .predictions-table thead tr {
         display: table;
-        width: calc(100% - 17px); /* Restar ancho del scrollbar */
+        width: 100%;
         table-layout: fixed;
+    }
+
+    /* Fijar las 3 primeras filas del thead */
+    .predictions-table thead tr {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+    .predictions-table thead tr.result-row:nth-of-type(2) {
+        top: 41px;
+    }
+    .predictions-table thead tr.result-row:nth-of-type(3) {
+        top: 82px;
+    }
     }
     
     .predictions-table tbody tr {
@@ -70,12 +83,12 @@
         padding: 5px 3px;
         text-align: center;
         border: 1px solid #ddd;
-        min-width: 45px;
+        min-width: 48px;
         height: 75px;
         max-height: 75px;
         line-height: 1.2;
         overflow: hidden;
-        white-space: normal;
+        white-space: nowrap;
         vertical-align: middle;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
@@ -87,7 +100,7 @@
         text-align: center;
         border: 1px solid #ddd;
         font-weight: 700;
-        min-width: 45px;
+        min-width: 48px;
         height: 45px;
         max-height: 45px;
         line-height: 1.2;
@@ -135,7 +148,8 @@
         padding: 5px 3px;
         text-align: center;
         border: 1px solid #ddd;
-        min-width: 45px;
+        min-width: 48px;
+        white-space: nowrap;
         font-weight: 600;
     }
     
@@ -232,6 +246,19 @@
                                 </th>
                             {% endfor %}
                         </tr>
+                        <!-- Fila de porcentaje de aciertos (Batacazo) -->
+                         <tr class="result-row" style="background: #e0f7fa; font-size: 0.95em; border-bottom: 5px solid #1976d2;">
+                             <th>Batacazo</th>
+                             {% for percent in block.batacazo_percentages %}
+                                 <th>
+                                     {% if percent is not none %}
+                                         {{ percent|round(1) }}%
+                                     {% else %}
+                                         &nbsp;
+                                     {% endif %}
+                                 </th>
+                             {% endfor %}
+                         </tr>
                     </thead>
                     <tbody>
                         {% for user in block.users %}

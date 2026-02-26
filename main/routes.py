@@ -197,15 +197,48 @@ def all_predictions():
     phase_data = []
     for phase in phases:
         matches = Match.query.filter_by(phase_id=phase.id).order_by(Match.kickoff_at).all()
-        
         if not matches:
             continue
+
+        # Calcular porcentaje de aciertos (batacazo) para cada partido
+        batacazo_percentages = []
+        total_participants = len(users)
+        for match in matches:
+            if match.home_goals is None or match.away_goals is None or total_participants == 0:
+                batacazo_percentages.append(None)
+                continue
+            match_result = None
+            if match.home_goals > match.away_goals:
+                match_result = 'home'
+            elif match.home_goals < match.away_goals:
+                match_result = 'away'
+            else:
+                match_result = 'draw'
+
+            # Contar cuántos usuarios acertaron el ganador/empate
+            correct_count = 0
+            for user in users:
+                p = pred_map.get((user.id, match.id))
+                if not p:
+                    continue
+                # Solo cuenta si el usuario pronosticó
+                if p.home_goals > p.away_goals:
+                    user_result = 'home'
+                elif p.home_goals < p.away_goals:
+                    user_result = 'away'
+                else:
+                    user_result = 'draw'
+                if user_result == match_result:
+                    correct_count += 1
+            percent = (correct_count / total_participants) * 100 if total_participants > 0 else 0
+            batacazo_percentages.append(percent)
 
         phase_data.append({
             'phase': phase,
             'matches': matches,
             'users': users,
-            'pred_map': pred_map
+            'pred_map': pred_map,
+            'batacazo_percentages': batacazo_percentages
         })
 
     return render_template('main/all_predictions.html', phase_data=phase_data)
