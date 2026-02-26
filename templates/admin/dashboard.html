@@ -13,7 +13,17 @@
         <h2 style="margin-bottom: 20px;">Gestionar Partidos</h2>
         
         {% if matches %}
-            <table class="matches-table">
+            <table class="matches-table matches-table-opaca">
+                <style>
+                .matches-table-opaca {
+                    background: rgba(255,255,255,0.93);
+                    border-radius: 12px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+                    width: 100%;
+                    border-collapse: separate;
+                    border-spacing: 0;
+                }
+                </style>
                 <thead>
                     <tr>
                         <th>Partido</th>

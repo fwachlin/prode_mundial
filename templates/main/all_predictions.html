@@ -148,8 +148,8 @@
     }
     
     .phase-btn {
-        padding: 12px 24px;
-        font-size: 16px;
+        padding: 6px 18px;
+        font-size: 14px;
         font-weight: 600;
         border: 2px solid #007bff;
         background-color: white;
@@ -181,8 +181,7 @@
 </style>
 
 <div class="predictions-table-wrapper">
-    <a href="{{ url_for('main.index') }}" style="color: #007bff; text-decoration: none;">← Volver</a>
-    <h1>📊 Todos los Pronósticos</h1>
+    <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5em;">📊 Todos los Pronósticos</h1>
 
     {% if phase_data %}
         <!-- Botones de selección de fecha -->
@@ -198,9 +197,6 @@
         <!-- Contenido de cada fecha -->
         {% for block in phase_data %}
             <div class="phase-content {% if loop.first %}active{% endif %}" id="phase-{{ loop.index0 }}">
-                <h2 style="margin-top: 20px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
-                    📅 {{ block.phase.name }}
-                </h2>
 
                 <div class="predictions-table-container">
                 <table class="predictions-table">
