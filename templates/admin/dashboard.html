@@ -10,7 +10,6 @@
         <div class="stat-card">
             <h3>Partidos</h3>
             <p class="stat-number">{{ matches_count }}</p>
-            <a href="{{ url_for('admin.list_matches') }}" class="btn btn-primary">Ver partidos</a>
         </div>
         
         <div class="stat-card">
@@ -26,40 +25,67 @@
     </div>
     
     <div class="recent-matches">
-        <h2>Partidos Recientes</h2>
-        {% if recent_matches %}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>Gestionar Partidos</h2>
+            <a href="{{ url_for('admin.create_match') }}" class="btn btn-primary">+ Nuevo Partido</a>
+        </div>
+        
+        {% if matches %}
             <table class="matches-table">
                 <thead>
                     <tr>
                         <th>Partido</th>
-                        <th>Fecha y Hora (UTC)</th>
-                        <th>Cierre de pronósticos</th>
+                        <th>Fecha/Hora</th>
+                        <th>Estado</th>
                         <th>Resultado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for match in recent_matches %}
+                    {% for match in matches %}
                     <tr>
-                        <td>{{ match.home_team }} vs {{ match.away_team }}</td>
-                        <td>{{ match.kickoff_at.isoformat() }}</td>
-                        <td>{{ match.closes_at.isoformat() }}</td>
+                        <td><strong>{{ match.home_team }}</strong> vs <strong>{{ match.away_team }}</strong></td>
+                        <td>{{ match.kickoff_at.strftime('%d/%m/%Y %H:%M') }} UTC</td>
                         <td>
-                            {% if match.home_goals is not none and match.away_goals is not none %}
-                                <strong>{{ match.home_goals }} - {{ match.away_goals }}</strong>
+                            {% if match.has_started %}
+                                <span class="badge badge-success">✓ Comenzó</span>
                             {% else %}
-                                <em>Sin cargar</em>
+                                <span class="badge badge-danger">🔒 Faltan {{ match.minutes_until_start }} min</span>
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{{ url_for('admin.edit_match', match_id=match.id) }}" class="btn btn-small btn-info">Editar</a>
+                            {% if match.home_goals is not none %}
+                                {{ match.home_goals }} - {{ match.away_goals }}
+                            {% else %}
+                                <em style="color:#6b7280;">Sin resultado</em>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin.edit_match', match_id=match.id) }}" class="btn btn-secondary">Editar</a>
+                            
+                            <!-- Solo mostrar form si el partido ya comenzó -->
+                            {% if match.has_started %}
+                                <form method="POST" action="{{ url_for('admin.set_result', match_id=match.id) }}" style="display:inline;">
+                                    <input type="number" name="home_goals" placeholder="Local" min="0" style="width:60px;" required>
+                                    <input type="number" name="away_goals" placeholder="Visit" min="0" style="width:60px;" required>
+                                    <button type="submit" class="btn btn-success">Cargar</button>
+                                </form>
+                            {% else %}
+                                <span style="color:#6b7280;font-size:0.9em;">⏳ Esperando kickoff</span>
+                            {% endif %}
+                            
+                            <form method="POST" action="{{ url_for('admin.delete_match', match_id=match.id) }}" 
+                                  style="display:inline;"
+                                  onsubmit="return confirm('¿Eliminar {{ match.home_team }} vs {{ match.away_team }}?');">
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         {% else %}
-            <p>No hay partidos cargados aún.</p>
+            <p>No hay partidos registrados.</p>
         {% endif %}
     </div>
 </div>

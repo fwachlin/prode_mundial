@@ -16,19 +16,7 @@ def dashboard():
     predictions_count = Prediction.query.count()
     users_count = User.query.filter_by(is_admin=False).count()  # ← Solo usuarios NO admin
     
-    recent_matches = Match.query.order_by(Match.kickoff_at.asc()).limit(10).all()
-    
-    return render_template('admin/dashboard.html',
-                         matches_count=matches_count,
-                         predictions_count=predictions_count,
-                         users_count=users_count,
-                         recent_matches=recent_matches)
-
-@admin_bp.route('/matches')
-@login_required
-@admin_required
-def list_matches():
-    """Listar todos los partidos"""
+    # Obtener TODOS los partidos para el dashboard (antes eran solo 10)
     matches = Match.query.order_by(Match.kickoff_at).all()
     now = datetime.now(timezone.utc)
     
@@ -40,7 +28,11 @@ def list_matches():
         match.has_started = now >= kickoff
         match.minutes_until_start = int((kickoff - now).total_seconds() // 60) if not match.has_started else 0
     
-    return render_template('admin/matches.html', matches=matches)
+    return render_template('admin/dashboard.html',
+                         matches_count=matches_count,
+                         predictions_count=predictions_count,
+                         users_count=users_count,
+                         matches=matches)
 
 @admin_bp.route('/matches/new', methods=['GET', 'POST'])
 @login_required
