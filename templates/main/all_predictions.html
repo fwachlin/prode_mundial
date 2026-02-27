@@ -252,7 +252,7 @@
                              {% for percent in block.batacazo_percentages %}
                                  <th style="{% if percent is not none and percent < 25 %}background-color: #43a047; color: #fff; font-weight: 700;{% endif %}">
                                      {% if percent is not none %}
-                                         {{ percent|round(1) }}%
+                                         {{ percent|int }}%
                                      {% else %}
                                          &nbsp;
                                      {% endif %}
