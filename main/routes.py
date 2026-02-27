@@ -222,20 +222,31 @@ def rankings_by_phase(phase_id):
     if phase_name.strip().lower().startswith('fecha 4'):
         phase_name = 'Fecha 4'
     
+
     # Obtener puntajes de usuarios SOLO para esta fase
-    user_stats = db.session.query(
-        User.id,
-        User.name,
-        User.email,
-        func.count(Prediction.id).label('total_predictions'),
-        func.sum(Prediction.points_awarded).label('total_points')
-    ).join(Prediction, User.id == Prediction.user_id)\
-     .join(Match, Prediction.match_id == Match.id)\
-     .filter(Match.phase_id == phase_id, User.is_admin == False)\
-     .group_by(User.id)\
-     .order_by(func.coalesce(func.sum(Prediction.points_awarded), 0).desc(), User.name)\
-     .all()
-    
+    user_stats = (
+        db.session.query(
+            User.id,
+            User.name,
+            User.email,
+            func.count(Prediction.id).label('total_predictions'),
+            func.sum(Prediction.points_awarded).label('total_points')
+        )
+        .join(Prediction, User.id == Prediction.user_id)
+        .join(Match, Prediction.match_id == Match.id)
+        .filter(Match.phase_id == phase_id, User.is_admin == False)
+        .group_by(User.id)
+        .order_by(func.coalesce(func.sum(Prediction.points_awarded), 0).desc(), User.name)
+        .all()
+    )
+
+    # Si no hay user_stats (ej. fecha 4 sin partidos jugados), mostrar todos los usuarios no-admin con 0 puntos
+    if not user_stats:
+        users = User.query.filter_by(is_admin=False).order_by(User.name).all()
+        from collections import namedtuple
+        StatWithPoints = namedtuple('StatWithPoints', ['id', 'name', 'email', 'total_predictions', 'total_points', 'predictions_with_points'])
+        user_stats = [StatWithPoints(u.id, u.name, u.email, 0, 0, 0) for u in users]
+
     # Obtener todas las fases para el menú
     phases = Phase.query.order_by(Phase.order).all()
     # Generar lista de nombres corregidos para el menú (siempre 'Fecha N')
@@ -243,7 +254,6 @@ def rankings_by_phase(phase_id):
     for p in phases:
         n = p.name
         if n.strip().lower().startswith('fecha'):
-            # Extraer número
             import re
             m = re.match(r'fecha\s*(\d+)', n.strip().lower())
             if m:
@@ -251,7 +261,7 @@ def rankings_by_phase(phase_id):
             else:
                 n = 'Fecha'
         phase_names.append(n)
-    
+
     return render_template('main/rankings_phase.html', 
                          phase=phase, 
                          phase_name=phase_name,

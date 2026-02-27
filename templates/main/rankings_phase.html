@@ -20,40 +20,33 @@
         {% endfor %}
     </div>
     
-    {% if user_stats %}
-        <div style="background-color: #fff9e6; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
-            <strong>🏆 Premio:</strong> 10% del pozo
-        </div>
-        
-        <table class="rankings-table" style="width: 100%; max-width: 520px; margin: 0 auto; border-collapse: collapse; margin-top: 20px;">
-            <thead>
-                <tr style="background-color: #f0f0f0; border-bottom: 2px solid #007bff;">
-                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">#</th>
-                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Participante</th>
-                    <th style="padding: 12px; text-align: center; border: 1px solid #ddd; color: #007bff; font-weight: bold;">Puntos</th>
+    <div style="background-color: #fff9e6; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+        <strong>🏆 Premio:</strong> 10% del pozo
+    </div>
+    <table class="rankings-table" style="width: 100%; max-width: 520px; margin: 0 auto; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+            <tr style="background-color: #f0f0f0; border-bottom: 2px solid #007bff;">
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">#</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Participante</th>
+                <th style="padding: 12px; text-align: center; border: 1px solid #ddd; color: #007bff; font-weight: bold;">Puntos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in user_stats or all_users %}
+                {% set is_first = (loop.index == 1) %}
+                <tr style="border-bottom: 1px solid #ddd; {% if is_first %}background-color: #ffd700; font-weight: bold;{% endif %}">
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        {% if loop.index == 1 %}🥇 1{% else %}{{ loop.index }}{% endif %}
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        <strong>{{ stat.name }}</strong>
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold; color: #007bff; font-size: 1.2em;">
+                        {{ stat.total_points or 0 }}
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                {% for stat in user_stats %}
-                    {% set is_first = (loop.index == 1) %}
-                    <tr style="border-bottom: 1px solid #ddd; {% if is_first %}background-color: #ffd700; font-weight: bold;{% endif %}">
-                        <td style="padding: 12px; border: 1px solid #ddd;">
-                            {% if loop.index == 1 %}🥇 1{% else %}{{ loop.index }}{% endif %}
-                        </td>
-                        <td style="padding: 12px; border: 1px solid #ddd;">
-                            <strong>{{ stat.name }}</strong>
-                        </td>
-                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold; color: #007bff; font-size: 1.2em;">
-                            {{ stat.total_points or 0 }}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p style="text-align: center; color: #666; margin-top: 30px;">
-            No hay datos de ranking disponibles para esta fecha
-        </p>
-    {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
