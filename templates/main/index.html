@@ -97,12 +97,6 @@
     {% for comment in recent_comments %}
     <div class="card mb-3 border-0">
         <div class="card-body">
-            <div class="mb-2">
-                <small class="text-muted">
-                    <i class="bi bi-clock me-1"></i>
-                    {{ comment.created_at.strftime('%d/%m/%Y %H:%M') }}
-                </small>
-            </div>
             <p class="mb-0">{{ comment.content[:100] }}{% if comment.content|length > 100 %}...{% endif %} <span class="text-muted">({{ comment.user.name }})</span></p>
         </div>
     </div>
