@@ -97,21 +97,13 @@
     {% for comment in recent_comments %}
     <div class="card mb-3 border-0">
         <div class="card-body">
-            <div class="d-flex align-items-center mb-2">
-                <!-- 🖼️ AQUÍ puedes agregar avatares de usuarios -->
-                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
-                     style="width: 40px; height: 40px; font-weight: 600;">
-                    {{ comment.user.name[0].upper() }}
-                </div>
-                <div>
-                    <h6 class="mb-0">{{ comment.user.name }}</h6>
-                    <small class="text-muted">
-                        <i class="bi bi-clock me-1"></i>
-                        {{ comment.created_at.strftime('%d/%m/%Y %H:%M') }}
-                    </small>
-                </div>
+            <div class="mb-2">
+                <small class="text-muted">
+                    <i class="bi bi-clock me-1"></i>
+                    {{ comment.created_at.strftime('%d/%m/%Y %H:%M') }}
+                </small>
             </div>
-            <p class="mb-0 ms-5">{{ comment.content[:100] }}{% if comment.content|length > 100 %}...{% endif %}</p>
+            <p class="mb-0">{{ comment.content[:100] }}{% if comment.content|length > 100 %}...{% endif %} <span class="text-muted">({{ comment.user.name }})</span></p>
         </div>
     </div>
     {% endfor %}
