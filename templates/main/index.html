@@ -12,7 +12,7 @@
          alt="Argentina" 
          class="img-fluid rounded-4 shadow-lg mb-4" 
          style="max-width: 600px; width: 90%;">
-    <p class="lead mb-4">El torneo más esperado del Observatorio</p>
+
     
     {% if first_match %}
     <div id="countdown-container" class="bg-white bg-opacity-10 rounded-4 p-4 mb-3">
@@ -97,7 +97,7 @@
     {% for comment in recent_comments %}
     <div class="card mb-2 border-0" style="min-height:unset;">
         <div class="card-body py-2 px-3" style="min-height:unset;">
-            <p class="mb-0 small">{{ comment.content[:100] }}{% if comment.content|length > 100 %}...{% endif %} <span class="text-muted">({{ comment.user.name }})</span></p>
+            <p class="mb-0 small">{{ comment.content }} <span class="text-muted">({{ comment.user.name }})</span></p>
         </div>
     </div>
     {% endfor %}
