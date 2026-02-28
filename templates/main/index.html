@@ -10,7 +10,7 @@
     <h1><i class="bi bi-trophy-fill text-warning"></i> Prode Mundial 2026</h1>
     <img src="{{ url_for('static', filename='images/backgrounds/argentina.jpg') }}" 
          alt="Argentina" 
-         class="img-fluid rounded-4 shadow-lg mb-4" 
+         class="img-fluid rounded-4 shadow-lg mb-2" 
          style="max-width: 600px; width: 90%;">
 
     
@@ -34,6 +34,29 @@
     
 
 </div>
+
+<!-- Vista previa del tablón -->
+{% if recent_comments %}
+<div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0">
+            <i class="bi bi-chat-dots-fill text-info me-2"></i>
+            Últimos comentarios del tablón
+        </h3>
+        <a href="{{ url_for('main.tablon') }}" class="btn btn-sm btn-outline-primary">
+            Ver todos <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+    
+    {% for comment in recent_comments %}
+    <div class="card mb-2 border-0" style="min-height:unset;">
+        <div class="card-body py-2 px-3" style="min-height:unset;">
+            <p class="mb-0 small">{{ comment.content }} <span class="text-muted">({{ comment.user.name }})</span></p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
 <!-- Próximos partidos -->
 {% if next_matches and next_matches|length > 0 %}
@@ -78,29 +101,6 @@
         </div>
         {% endfor %}
     </div>
-</div>
-{% endif %}
-
-<!-- Vista previa del tablón -->
-{% if recent_comments %}
-<div class="mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="mb-0">
-            <i class="bi bi-chat-dots-fill text-info me-2"></i>
-            Últimos comentarios del tablón
-        </h3>
-        <a href="{{ url_for('main.tablon') }}" class="btn btn-sm btn-outline-primary">
-            Ver todos <i class="bi bi-arrow-right ms-1"></i>
-        </a>
-    </div>
-    
-    {% for comment in recent_comments %}
-    <div class="card mb-2 border-0" style="min-height:unset;">
-        <div class="card-body py-2 px-3" style="min-height:unset;">
-            <p class="mb-0 small">{{ comment.content }} <span class="text-muted">({{ comment.user.name }})</span></p>
-        </div>
-    </div>
-    {% endfor %}
 </div>
 {% endif %}
 
