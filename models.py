@@ -180,7 +180,7 @@ class Prediction(db.Model):
             away_diff = abs(self.away_goals - match.away_goals)
             total_diff = home_diff + away_diff
             
-            score_points = max(0, 5 - total_diff)
+            score_points = max(-5, 5 - total_diff)
             total_points += score_points
         
         return total_points

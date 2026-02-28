@@ -174,12 +174,12 @@ def load_user(user_id):
 
 #### 4.1. Ganador/Empate (10 puntos)
 ```python
-if user_result == match_result:
+acerto_ganador = (user_result == match_result)
+if acerto_ganador:
     total_points += 10
-else:
-    return 0  # Si no acierta, devuelve 0 inmediatamente
 ```
-- ⚠️ **SI NO ACIERTA GANADOR, NO HAY PUNTOS** - Retorna 0 de inmediato
+- ✅ Acierta ganador/empate: 10 puntos
+- ✅ No acierta: 0 puntos (pero continúa calculando score)
 - ✅ Resultados posibles: `'home'`, `'away'`, `'draw'`
 
 #### 4.2. Batacazo (1-5 puntos bonus)
@@ -204,19 +204,39 @@ if correct_percentage < 25: total_points += 1
 - ✅ Recompensa pronósticos difíciles
 - ✅ **FIX aplicado 25/Feb/2026:** Ahora filtra correctamente usuarios no-admin en ambas consultas
 
-#### 4.3. Score Exacto (máximo 5 puntos)
+#### 4.3. Score Exacto (de -5 a 5 puntos)
 ```python
 if home_goals == match_home and away_goals == match_away:
     total_points += 5  # Exacto
 else:
     total_diff = abs(home_goals - match_home) + abs(away_goals - match_away)
-    score_points = max(0, 5 - total_diff)
+    score_points = max(-5, 5 - total_diff)
     total_points += score_points
 ```
 - ✅ Exacto: 5 puntos
 - ✅ 1 gol de diferencia total: 4 puntos
 - ✅ 2 goles de diferencia: 3 puntos
-- ✅ 5+ goles de diferencia: 0 puntos
+- ✅ 5 goles de diferencia: 0 puntos
+- ✅ 6-9 goles de diferencia: -1 a -4 puntos
+- ✅ 10+ goles de diferencia: -5 puntos (límite)
+- ⚠️ **IMPORTANTE:** Este componente se calcula SIEMPRE, incluso si no acertó ganador
+
+#### 4.4. Rangos de Puntos Posibles por Partido
+
+**Considerando los 3 componentes:**
+
+| Escenario | Ganador | Batacazo | Score | Total Posible |
+|-----------|---------|----------|-------|---------------|
+| **Mejor caso:** Exacto + Batacazo máximo | 10 | 5 | 5 | **20 puntos** |
+| **Acertó ganador, score aproxi** | 10 | 0-5 | -5 a 4 | **5 a 19 puntos** |
+| **No acertó ganador, score exacto** | 0 | 0 | 5 | **5 puntos** |
+| **No acertó ganador, score aprox** | 0 | 0 | -5 a 4 | **-5 a 4 puntos** |
+| **Peor caso:** Falló todo | 0 | 0 | -5 | **-5 puntos** |
+
+**IMPORTANTE:**
+- ⚠️ Los puntos totales por partido pueden ser **NEGATIVOS**
+- ⚠️ Mínimo: -5 puntos | Máximo: 20 puntos
+- ⚠️ El batacazo solo aplica si se acertó ganador/empate
 
 **REGLA CRÍTICA:**
 - ⚠️ **NO MODIFICAR FÓRMULAS** sin consenso

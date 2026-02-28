@@ -84,7 +84,7 @@ class TestPointsCalculation:
             
             # 10 (ganador) + score points
             # Diferencia: |2-3| + |0-1| = 1 + 1 = 2
-            # Score points: max(0, 5 - 2) = 3
+            # Score points: max(-5, 5 - 2) = 3
             assert points >= 10  # Al menos ganador
             assert points <= 15  # No es exacto
     
@@ -198,7 +198,7 @@ class TestPointsCalculation:
             
             # 10 (empate) + score reducido
             # Diferencia: |2-1| + |2-1| = 1 + 1 = 2
-            # Score: max(0, 5 - 2) = 3
+            # Score: max(-5, 5 - 2) = 3
             assert points >= 10
             assert points < 15  # No exacto
     
@@ -290,3 +290,98 @@ class TestPointsCalculation:
             # Solo 1 de 21 acertó = ~4.7% → bonus de 5 puntos
             # 10 (ganador) + 5 (exacto) + 5 (batacazo) = 20
             assert points == 20
+    
+    def test_negative_score_points(self, app):
+        """Verificar que se pueden obtener puntos negativos hasta -5"""
+        with app.app_context():
+            # Partido: Argentina 5 - Brasil 0
+            now = datetime.now(timezone.utc)
+            match = Match(
+                home_team='Argentina',
+                away_team='Brasil',
+                kickoff_at=now - timedelta(hours=2),
+                closes_at=now - timedelta(hours=3),
+                phase_id=1,
+                home_goals=5,
+                away_goals=0
+            )
+            db.session.add(match)
+            db.session.commit()
+            
+            user = User(name='Test', email='test@test.com')
+            user.set_password('pass')
+            db.session.add(user)
+            db.session.commit()
+            
+            # Caso 1: No acertar ganador y tener score muy diferente
+            # Pronóstico: Argentina 0 - Brasil 3 (predice que gana Brasil)
+            # No acierta ganador: 0 puntos
+            # Diferencia score: |0-5| + |3-0| = 5 + 3 = 8 goles
+            # Score points: max(-5, 5 - 8) = max(-5, -3) = -3
+            # Total: 0 + (-3) = -3 puntos
+            pred1 = Prediction(
+                user_id=user.id,
+                match_id=match.id,
+                home_goals=0,
+                away_goals=3
+            )
+            db.session.add(pred1)
+            db.session.commit()
+            
+            points1 = pred1.calculate_points()
+            assert points1 == -3
+            
+            # Caso 2: Acertar ganador pero con diferencia grande en score
+            # Pronóstico: Argentina 1 - Brasil 0 (acierta ganador)
+            # Ganador: 10 puntos
+            # Diferencia score: |1-5| + |0-0| = 4 + 0 = 4 goles
+            # Score points: max(-5, 5 - 4) = 1
+            # Total: 10 + 1 = 11
+            pred2 = Prediction(
+                user_id=user.id,
+                match_id=match.id,
+                home_goals=1,
+                away_goals=0
+            )
+            db.session.add(pred2)
+            db.session.commit()
+            
+            points2 = pred2.calculate_points()
+            assert points2 == 11
+            
+            # Caso 3: No acertar ganador con diferencia muy grande (más de 10 goles)
+            # Pronóstico: Argentina 0 - Brasil 6 (predice que gana Brasil)
+            # No acierta ganador: 0 puntos
+            # Diferencia score: |0-5| + |6-0| = 5 + 6 = 11 goles
+            # Score points: max(-5, 5 - 11) = max(-5, -6) = -5 (límite)
+            # Total: 0 + (-5) = -5 puntos
+            pred3 = Prediction(
+                user_id=user.id,
+                match_id=match.id,
+                home_goals=0,
+                away_goals=6
+            )
+            db.session.add(pred3)
+            db.session.commit()
+            
+            points3 = pred3.calculate_points()
+            assert points3 == -5
+            
+            # Caso 4: Acertar ganador con poca diferencia en score
+            # Pronóstico: Argentina 4 - Brasil 0 (acierta ganador)
+            # Ganador: 10 puntos
+            # Diferencia score: |4-5| + |0-0| = 1 + 0 = 1 gol
+            # Score points: max(-5, 5 - 1) = 4
+            # Total: 10 + 4 = 14
+            pred4 = Prediction(
+                user_id=user.id,
+                match_id=match.id,
+                home_goals=4,
+                away_goals=0
+            )
+            db.session.add(pred4)
+            db.session.commit()
+            
+            points4 = pred4.calculate_points()
+            assert points4 == 14
+
