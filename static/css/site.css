@@ -352,10 +352,10 @@ h1, h2, h3{ color: var(--text); }
 /* Tooltip personalizado */
 .country-tooltip::after {
   content: attr(data-country);
-  position: fixed;
-  bottom: auto;
+  position: absolute;
+  bottom: calc(100% + 8px);
   left: 50%;
-  transform: translate(-50%, -100%);
+  transform: translateX(-50%);
   background-color: rgba(0, 0, 0, 0.9);
   color: white;
   padding: 8px 14px;
@@ -368,24 +368,23 @@ h1, h2, h3{ color: var(--text); }
   transition: opacity 0.3s ease;
   z-index: 9999;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-  max-width: none;
-  width: auto;
-  margin-top: -12px;
+  max-width: 300px;
+  width: max-content;
 }
 
 /* Flecha del tooltip */
 .country-tooltip::before {
   content: '';
-  position: fixed;
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
   border: 6px solid transparent;
   border-top-color: rgba(0, 0, 0, 0.9);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
   z-index: 9999;
-  margin-top: -6px;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 /* Mostrar tooltip al hover */
@@ -395,7 +394,8 @@ h1, h2, h3{ color: var(--text); }
 }
 
 /* Asegurar que las celdas de tabla no limiten el tooltip */
-table td .country-tooltip,
-table th .country-tooltip {
+table td,
+table th {
+  position: relative;
   overflow: visible;
 }
