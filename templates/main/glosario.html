@@ -1,0 +1,500 @@
+{% extends "base.html" %}
+
+{% block title %}Glosario de Países - Prode Mundial{% endblock %}
+
+{% block extra_css %}
+<style>
+    .glosario-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+
+    .glosario-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .glosario-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .glosario-header p {
+        color: #666;
+        font-size: 1rem;
+    }
+
+    .countries-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .country-card {
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .country-card:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+
+    .country-flag {
+        font-size: 2.5rem;
+        line-height: 1;
+    }
+
+    .country-info {
+        flex: 1;
+    }
+
+    .country-code {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #333;
+        margin-bottom: 3px;
+    }
+
+    .country-name {
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    .back-button-container {
+        text-align: center;
+        margin-top: 40px;
+        margin-bottom: 20px;
+    }
+
+    .btn-back {
+        padding: 12px 30px;
+        font-size: 1rem;
+        font-weight: 600;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.2s;
+    }
+
+    .btn-back:hover {
+        background-color: #0056b3;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="glosario-container">
+    <div class="glosario-header">
+        <h1>🌍 Glosario de Países</h1>
+        <p>Mundial FIFA 2026 - Códigos y banderas</p>
+    </div>
+
+    <div class="countries-grid">
+        <div class="country-card">
+            <div class="country-flag">🇩🇿</div>
+            <div class="country-info">
+                <div class="country-code">ALG</div>
+                <div class="country-name">Argelia</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇦🇷</div>
+            <div class="country-info">
+                <div class="country-code">ARG</div>
+                <div class="country-name">Argentina</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇦🇺</div>
+            <div class="country-info">
+                <div class="country-code">AUS</div>
+                <div class="country-name">Australia</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇦🇹</div>
+            <div class="country-info">
+                <div class="country-code">AUT</div>
+                <div class="country-name">Austria</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇧🇪</div>
+            <div class="country-info">
+                <div class="country-code">BEL</div>
+                <div class="country-name">Bélgica</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇧🇷</div>
+            <div class="country-info">
+                <div class="country-code">BRA</div>
+                <div class="country-name">Brasil</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇨🇦</div>
+            <div class="country-info">
+                <div class="country-code">CAN</div>
+                <div class="country-name">Canadá</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇨🇳</div>
+            <div class="country-info">
+                <div class="country-code">CHN</div>
+                <div class="country-name">China</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇨🇮</div>
+            <div class="country-info">
+                <div class="country-code">CIV</div>
+                <div class="country-name">Costa de Marfil</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇨🇴</div>
+            <div class="country-info">
+                <div class="country-code">COL</div>
+                <div class="country-name">Colombia</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇨🇻</div>
+            <div class="country-info">
+                <div class="country-code">CPV</div>
+                <div class="country-name">Cabo Verde</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇨🇷</div>
+            <div class="country-info">
+                <div class="country-code">CRC</div>
+                <div class="country-name">Costa Rica</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇭🇷</div>
+            <div class="country-info">
+                <div class="country-code">CRO</div>
+                <div class="country-name">Croacia</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇨🇼</div>
+            <div class="country-info">
+                <div class="country-code">CUW</div>
+                <div class="country-name">Curazao</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇩🇰</div>
+            <div class="country-info">
+                <div class="country-code">DEN</div>
+                <div class="country-name">Dinamarca</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇪🇨</div>
+            <div class="country-info">
+                <div class="country-code">ECU</div>
+                <div class="country-name">Ecuador</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇪🇬</div>
+            <div class="country-info">
+                <div class="country-code">EGY</div>
+                <div class="country-name">Egipto</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
+            <div class="country-info">
+                <div class="country-code">ENG</div>
+                <div class="country-name">Inglaterra</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇪🇸</div>
+            <div class="country-info">
+                <div class="country-code">ESP</div>
+                <div class="country-name">España</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇫🇷</div>
+            <div class="country-info">
+                <div class="country-code">FRA</div>
+                <div class="country-name">Francia</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇩🇪</div>
+            <div class="country-info">
+                <div class="country-code">GER</div>
+                <div class="country-name">Alemania</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇬🇭</div>
+            <div class="country-info">
+                <div class="country-code">GHA</div>
+                <div class="country-name">Ghana</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇭🇹</div>
+            <div class="country-info">
+                <div class="country-code">HAI</div>
+                <div class="country-name">Haití</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇮🇷</div>
+            <div class="country-info">
+                <div class="country-code">IRN</div>
+                <div class="country-name">Irán</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇮🇹</div>
+            <div class="country-info">
+                <div class="country-code">ITA</div>
+                <div class="country-name">Italia</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇯🇵</div>
+            <div class="country-info">
+                <div class="country-code">JPN</div>
+                <div class="country-name">Japón</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇯🇴</div>
+            <div class="country-info">
+                <div class="country-code">JOR</div>
+                <div class="country-name">Jordania</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇰🇷</div>
+            <div class="country-info">
+                <div class="country-code">KOR</div>
+                <div class="country-name">Corea del Sur</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇸🇦</div>
+            <div class="country-info">
+                <div class="country-code">KSA</div>
+                <div class="country-name">Arabia Saudita</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇲🇦</div>
+            <div class="country-info">
+                <div class="country-code">MAR</div>
+                <div class="country-name">Marruecos</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇲🇽</div>
+            <div class="country-info">
+                <div class="country-code">MEX</div>
+                <div class="country-name">México</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇳🇱</div>
+            <div class="country-info">
+                <div class="country-code">NED</div>
+                <div class="country-name">Países Bajos</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇳🇴</div>
+            <div class="country-info">
+                <div class="country-code">NOR</div>
+                <div class="country-name">Noruega</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇳🇿</div>
+            <div class="country-info">
+                <div class="country-code">NZL</div>
+                <div class="country-name">Nueva Zelanda</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇵🇦</div>
+            <div class="country-info">
+                <div class="country-code">PAN</div>
+                <div class="country-name">Panamá</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇵🇾</div>
+            <div class="country-info">
+                <div class="country-code">PAR</div>
+                <div class="country-name">Paraguay</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇵🇱</div>
+            <div class="country-info">
+                <div class="country-code">POL</div>
+                <div class="country-name">Polonia</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇵🇹</div>
+            <div class="country-info">
+                <div class="country-code">POR</div>
+                <div class="country-name">Portugal</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇶🇦</div>
+            <div class="country-info">
+                <div class="country-code">QAT</div>
+                <div class="country-name">Qatar</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇿🇦</div>
+            <div class="country-info">
+                <div class="country-code">RSA</div>
+                <div class="country-name">Sudáfrica</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🏴󠁧󠁢󠁳󠁣󠁴󠁿</div>
+            <div class="country-info">
+                <div class="country-code">SCO</div>
+                <div class="country-name">Escocia</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇸🇳</div>
+            <div class="country-info">
+                <div class="country-code">SEN</div>
+                <div class="country-name">Senegal</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇨🇭</div>
+            <div class="country-info">
+                <div class="country-code">SUI</div>
+                <div class="country-name">Suiza</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇹🇳</div>
+            <div class="country-info">
+                <div class="country-code">TUN</div>
+                <div class="country-name">Túnez</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇺🇾</div>
+            <div class="country-info">
+                <div class="country-code">URU</div>
+                <div class="country-name">Uruguay</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇺🇸</div>
+            <div class="country-info">
+                <div class="country-code">USA</div>
+                <div class="country-name">Estados Unidos</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🇺🇿</div>
+            <div class="country-info">
+                <div class="country-code">UZB</div>
+                <div class="country-name">Uzbekistán</div>
+            </div>
+        </div>
+
+        <div class="country-card">
+            <div class="country-flag">🏴󠁧󠁢󠁷󠁬󠁳󠁿</div>
+            <div class="country-info">
+                <div class="country-code">WAL</div>
+                <div class="country-name">Gales</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="back-button-container">
+        <a href="{{ url_for('main.all_predictions') }}" class="btn-back">
+            ← Volver a Pronósticos
+        </a>
+    </div>
+</div>
+{% endblock %}

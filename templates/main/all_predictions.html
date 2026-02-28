@@ -195,7 +195,10 @@
 </style>
 
 <div class="predictions-table-wrapper">
-    <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5em;">📊 Pronósticos</h1>
+    <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5em;">
+        📊 Pronósticos 
+        <a href="{{ url_for('main.glosario') }}" style="font-size: 0.9rem; color: #007bff; text-decoration: none;">(glosario)</a>
+    </h1>
 
     {% if phase_data %}
         <!-- Botones de selección de fecha -->

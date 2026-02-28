@@ -85,9 +85,11 @@ def predictions():
         # Si POST pero sin datos válidos, redirigir
         return redirect(url_for('main.predictions'))
 
-    # GET: mostrar solo partidos abiertos
+    # GET: mostrar todos los partidos (abiertos primero, luego cerrados)
     now = datetime.now(timezone.utc)
-    matches = Match.query.filter(Match.closes_at > now).order_by(Match.kickoff_at).all()
+    open_matches = Match.query.filter(Match.closes_at > now).order_by(Match.kickoff_at).all()
+    closed_matches = Match.query.filter(Match.closes_at <= now).order_by(Match.kickoff_at.desc()).limit(10).all()
+    matches = open_matches + closed_matches
     # Obtener pronósticos del usuario actual
     user_predictions = {}
     for prediction in current_user.predictions:
@@ -355,6 +357,11 @@ def all_predictions():
 def reglamento():
     """Reglamento del Prode Mundial 2026"""
     return render_template('main/reglamento.html')
+
+@main_bp.route('/glosario')
+def glosario():
+    """Glosario de países del Mundial 2026"""
+    return render_template('main/glosario.html')
 
 @main_bp.route('/tablon', methods=['GET', 'POST'])
 @login_required
