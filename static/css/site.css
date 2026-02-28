@@ -347,6 +347,7 @@ h1, h2, h3{ color: var(--text); }
   cursor: help;
   border-bottom: 1px dotted #666;
   display: inline-block;
+  z-index: 1;
 }
 
 /* Tooltip personalizado */
@@ -366,10 +367,10 @@ h1, h2, h3{ color: var(--text); }
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  z-index: 9999;
+  z-index: 10000;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-  max-width: 300px;
   width: max-content;
+  min-width: max-content;
 }
 
 /* Flecha del tooltip */
@@ -384,7 +385,7 @@ h1, h2, h3{ color: var(--text); }
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  z-index: 9999;
+  z-index: 10001;
 }
 
 /* Mostrar tooltip al hover */
@@ -397,5 +398,19 @@ h1, h2, h3{ color: var(--text); }
 table td,
 table th {
   position: relative;
-  overflow: visible;
+  overflow: visible !important;
+}
+
+table {
+  overflow: visible !important;
+}
+
+.predictions-table td,
+.predictions-table th {
+  overflow: visible !important;
+}
+
+.predictions-table-container {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
 }
