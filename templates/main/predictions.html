@@ -163,28 +163,37 @@
     <div class="predictions-grid">
       {% for match in matches %}
       {% set has_prediction = match.id in predictions %}
-      <div class="prediction-card {% if not has_prediction %}no-prediction{% endif %}" data-closes-utc="{{ match.closes_at.isoformat() }}" style="position: relative;">
-        <div class="match-title" style="display: flex; align-items: center; justify-content: space-between;">
+      {% set closes = match.closes_at.replace(tzinfo=None) if match.closes_at.tzinfo else match.closes_at %}
+      {% set closes_utc = closes.strftime('%Y-%m-%dT%H:%M:%S') + 'Z' %}
+      <div class="prediction-card {% if not has_prediction %}no-prediction{% endif %}" data-closes-utc="{{ closes_utc }}" style="position: relative;">
+        <div class="match-title" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
           <span>{{ match.home_team }} vs {{ match.away_team }}</span>
-          {% if not has_prediction %}
-            <span class="no-prediction-msg">⚠️ Sin pronóstico</span>
-          {% elif match.is_open() and has_prediction %}
-            <form method="post" action="{{ url_for('main.delete_prediction', match_id=match.id) }}" class="delete-prediction-form-inline" style="display:inline; position: absolute; top: 12px; right: 12px; z-index: 2;">
-              <button type="submit" class="btn btn-link text-danger" style="padding:0 4px; font-size:0.98em;">Borrar</button>
-            </form>
-          {% endif %}
+          <div style="display: flex; align-items: center; gap: 8px;">
+            {% if not match.is_open() %}
+              <span class="badge bg-danger" style="font-size: 0.75em; padding: 4px 8px;">CERRADO</span>
+            {% endif %}
+            {% if not has_prediction and match.is_open() %}
+              <span class="no-prediction-msg">⚠️ Sin pronóstico</span>
+            {% elif match.is_open() and has_prediction %}
+              <form method="post" action="{{ url_for('main.delete_prediction', match_id=match.id) }}" class="delete-prediction-form-inline" style="display:inline; position: absolute; top: 12px; right: 12px; z-index: 2;">
+                <button type="submit" class="btn btn-link text-danger" style="padding:0 4px; font-size:0.98em;">Borrar</button>
+              </form>
+            {% endif %}
+          </div>
         </div>
         <form method="post">
           <input type="hidden" name="match_id" value="{{ match.id }}">
           <div class="match-times">
             <div>
               <strong>Comienza:</strong>
-              <span class="kickoff-at" data-utc="{{ match.kickoff_at.isoformat() }}"></span>
+              {% set kickoff = match.kickoff_at.replace(tzinfo=None) if match.kickoff_at.tzinfo else match.kickoff_at %}
+              {% set kickoff_utc = kickoff.strftime('%Y-%m-%dT%H:%M:%S') + 'Z' %}
+              <span class="kickoff-at" data-utc="{{ kickoff_utc }}"></span>
             </div>
             <div class="match-close-row">
               <strong>Cierra:</strong>
-              <span class="closes-at" data-utc="{{ match.closes_at.isoformat() }}"></span>
-              <span class="countdown-inline" data-utc="{{ match.closes_at.isoformat() }}"></span>
+              <span class="closes-at" data-utc="{{ closes_utc }}"></span>
+              <span class="countdown-inline" data-utc="{{ closes_utc }}"></span>
             </div>
           </div>
           <div class="prediction-row-flex" style="display: flex; align-items: center; gap: 10px;">
@@ -207,9 +216,7 @@
                  value="{{ predictions.get(match.id).away_goals if has_prediction else '' }}"
                  placeholder="{% if not has_prediction %}--{% else %}0{% endif %}">
             </div>
-            {% if match.is_open() %}
-              <button type="submit" class="submit-btn" style="margin-left: 8px;">Guardar</button>
-            {% endif %}
+            <button type="submit" class="submit-btn" style="margin-left: 8px; {% if not match.is_open() %}background-color: #999; cursor: not-allowed; opacity: 0.6;{% endif %}" {% if not match.is_open() %}disabled{% endif %}>Guardar</button>
           </div>
         </form>
       </div>
@@ -233,22 +240,58 @@ function renderLocalTimes() {
   });
 }
 
-function closeForm(form) {
-  form.querySelectorAll(".prediction-input").forEach(input => {
+function closeForm(card) {
+  // Deshabilitar inputs
+  card.querySelectorAll(".prediction-input").forEach(input => {
     input.disabled = true;
   });
+  
+  // Agregar badge "CERRADO" si no existe
+  const matchTitle = card.querySelector(".match-title");
+  if (matchTitle && !matchTitle.querySelector(".badge-cerrado")) {
+    const badgeContainer = matchTitle.querySelector("div");
+    if (badgeContainer) {
+      const badge = document.createElement("span");
+      badge.className = "badge bg-danger badge-cerrado";
+      badge.style.cssText = "font-size: 0.75em; padding: 4px 8px;";
+      badge.textContent = "CERRADO";
+      // Insertar el badge al inicio del container
+      badgeContainer.insertBefore(badge, badgeContainer.firstChild);
+    }
+  }
+  
+  // Deshabilitar y cambiar estilo del botón
+  const submitBtn = card.querySelector(".submit-btn");
+  if (submitBtn && !submitBtn.disabled) {
+    submitBtn.disabled = true;
+    submitBtn.style.backgroundColor = "#999";
+    submitBtn.style.cursor = "not-allowed";
+    submitBtn.style.opacity = "0.6";
+  }
+  
+  // Ocultar mensaje de "Sin pronóstico" si existe
+  const noPredictionMsg = card.querySelector(".no-prediction-msg");
+  if (noPredictionMsg) {
+    noPredictionMsg.style.display = "none";
+  }
+  
+  // Ocultar botón "Borrar" si existe
+  const deleteBtn = card.querySelector(".delete-prediction-form-inline");
+  if (deleteBtn) {
+    deleteBtn.style.display = "none";
+  }
 }
 
 function renderCountdowns() {
   const now = new Date();
-  document.querySelectorAll(".prediction-card").forEach(form => {
-    const closesAt = new Date(form.dataset.closesUtc);
-    const countdown = form.querySelector(".countdown-inline");
+  document.querySelectorAll(".prediction-card").forEach(card => {
+    const closesAt = new Date(card.dataset.closesUtc);
+    const countdown = card.querySelector(".countdown-inline");
     const diff = closesAt - now;
 
     if (diff <= 0) {
       if (countdown) countdown.style.display = "none";
-      closeForm(form);
+      closeForm(card);
       return;
     }
 
