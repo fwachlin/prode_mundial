@@ -352,41 +352,50 @@ h1, h2, h3{ color: var(--text); }
 /* Tooltip personalizado */
 .country-tooltip::after {
   content: attr(data-country);
-  position: absolute;
-  bottom: 120%;
+  position: fixed;
+  bottom: auto;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -100%);
   background-color: rgba(0, 0, 0, 0.9);
   color: white;
-  padding: 6px 12px;
+  padding: 8px 14px;
   border-radius: 6px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 500;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  max-width: none;
+  width: auto;
+  margin-top: -12px;
 }
 
 /* Flecha del tooltip */
 .country-tooltip::before {
   content: '';
-  position: absolute;
-  bottom: 110%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
+  position: fixed;
+  border: 6px solid transparent;
   border-top-color: rgba(0, 0, 0, 0.9);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  z-index: 1001;
+  z-index: 9999;
+  margin-top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* Mostrar tooltip al hover */
 .country-tooltip:hover::after,
 .country-tooltip:hover::before {
   opacity: 1;
+}
+
+/* Asegurar que las celdas de tabla no limiten el tooltip */
+table td .country-tooltip,
+table th .country-tooltip {
+  overflow: visible;
 }
