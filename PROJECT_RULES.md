@@ -57,7 +57,7 @@ login_manager = LoginManager()
 | Modelo | Propósito | Campos Críticos |
 |--------|-----------|-----------------|
 | `User` | Usuarios del sistema | `email` (unique), `is_admin`, `is_enabled`, `password_hash` |
-| `AllowedEmail` | Emails permitidos para registro | `email` (unique) |
+| `AllowedEmail` | Emails permitidos para registro | `email` (unique), `name` |
 | `Phase` | Fases del mundial | `name`, `order` |
 | `Match` | Partidos del mundial | `home_team`, `away_team`, `kickoff_at`, `closes_at`, `phase_id` |
 | `Prediction` | Pronósticos de usuarios | `user_id`, `match_id`, `home_goals`, `away_goals`, `points_awarded` |
@@ -115,6 +115,29 @@ if not allowed:
 **POR QUÉ:**
 - Si primero verificamos email duplicado, revelamos quién está registrado
 - El orden actual protege privacidad de usuarios existentes
+
+### Asignación de Nombres (NUEVO - Feb 2026)
+
+**REGLA CRÍTICA - NOMBRES ASIGNADOS POR ADMIN:**
+```python
+# El admin define email + nombre en AllowedEmail
+allowed = AllowedEmail(email='user@example.com', name='Juan Pérez')
+
+# En registro, el nombre se toma de AllowedEmail
+allowed = AllowedEmail.query.filter_by(email=email).first()
+name = allowed.name  # ← Nombre asignado por admin
+user = User(name=name, email=email, ...)
+```
+
+**RAZÓN DEL CAMBIO:**
+- Evitar nombres excesivamente largos o estrafalarios
+- Control centralizado de identificación de participantes
+- Experiencia de registro simplificada (solo email + contraseña)
+
+**IMPORTANTE:**
+- ⚠️ El usuario NO puede elegir su nombre al registrarse
+- ⚠️ El admin debe asignar nombre al habilitar email en `/admin/allowed-emails`
+- ⚠️ Modelo `AllowedEmail` requiere campo `name` (NOT NULL)
 
 ### Hash de Contraseñas
 

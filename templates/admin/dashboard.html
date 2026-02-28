@@ -63,7 +63,7 @@
                                     <button type="submit" class="btn btn-sm btn-success">Guardar</button>
                                 </form>
                             {% else %}
-                                <span style="color:#6b7280;font-size:0.9em;">⏳ Esperando kickoff</span>
+                                <span style="color:#6b7280;font-size:0.9em;">⏳ Esperando comienzo</span>
                             {% endif %}
                             
                             <form method="POST" action="{{ url_for('admin.delete_match', match_id=match.id) }}" style="display:inline;">

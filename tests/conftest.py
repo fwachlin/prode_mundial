@@ -141,7 +141,7 @@ def _create_default_phases():
 def allowed_email(app):
     """Email permitido para registro"""
     with app.app_context():
-        email = AllowedEmail(email='test@example.com')
+        email = AllowedEmail(email='test@example.com', name='Test User')
         db.session.add(email)
         db.session.commit()
         email_id = email.id

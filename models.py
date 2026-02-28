@@ -28,9 +28,10 @@ class AllowedEmail(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    name = db.Column(db.String(100), nullable=False)  # Nombre asignado por admin
     
     def __repr__(self):
-        return f"<AllowedEmail {self.email}>"
+        return f"<AllowedEmail {self.email} - {self.name}>"
 
 class Group(db.Model):
     __tablename__ = "groups"

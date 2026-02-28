@@ -101,11 +101,12 @@ class TestAllowedEmailModel:
         """Crear email permitido"""
         with app.app_context():
             from models import db
-            allowed = AllowedEmail(email='user@example.com')
+            allowed = AllowedEmail(email='user@example.com', name='Test User')
             db.session.add(allowed)
             db.session.commit()
             
             assert allowed.email == 'user@example.com'
+            assert allowed.name == 'Test User'
 
 
 class TestPhaseModel:

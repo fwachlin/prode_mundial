@@ -6,7 +6,7 @@
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
   <h1 style="margin-bottom:0;">Gestionar Usuarios</h1>
-  <a href="{{ url_for('admin.allowed_emails') }}" class="btn btn-success">+habilitar nuevo email</a>
+  <a href="{{ url_for('admin.allowed_emails') }}" class="btn btn-success">+ agregar nuevo usuario</a>
 </div>
 
 {% if users %}
@@ -38,7 +38,7 @@
         </tbody>
     </table>
     <div style="margin-top: 24px; text-align: center;">
-      <a href="{{ url_for('admin.dashboard') }}" class="btn btn-success" style="font-size:1.1em; padding:0.5em 2em;">← Volver al Dashboard</a>
+      <a href="{{ url_for('admin.dashboard') }}" class="btn btn-success" style="font-size:1.1em; padding:0.5em 2em;">← Volver al Panel de Administrador</a>
     </div>
 
 <style>

@@ -13,13 +13,12 @@ def register():
         return redirect(url_for('main.index'))
     
     if request.method == 'POST':
-        name = request.form.get('name', '').strip()
         email = request.form.get('email', '').strip().lower()
         password = request.form.get('password', '')
         password_confirm = request.form.get('password_confirm', '')
         
         # Validar campos obligatorios
-        if not name or not email or not password:
+        if not email or not password:
             flash('Todos los campos son requeridos', 'error')
             return redirect(url_for('auth.register'))
         
@@ -28,6 +27,9 @@ def register():
         if not allowed:
             flash(f'El email {email} no está habilitado para registrarse', 'error')
             return redirect(url_for('auth.register'))
+        
+        # Obtener el nombre asignado por el admin
+        name = allowed.name
         
         # SEGUNDO: Validar que el usuario no exista
         if User.query.filter_by(email=email).first():

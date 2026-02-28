@@ -11,7 +11,6 @@ class TestRegistration:
     def test_register_success(self, client, allowed_email):
         """Registro exitoso con email permitido"""
         response = client.post('/auth/register', data={
-            'name': 'New User',
             'email': 'test@example.com',
             'password': 'password123',
             'password_confirm': 'password123'
@@ -19,17 +18,16 @@ class TestRegistration:
         
         assert response.status_code == 302  # Redirect
         
-        # Verificar que el usuario fue creado
+        # Verificar que el usuario fue creado con el nombre del AllowedEmail
         with client.application.app_context():
             user = User.query.filter_by(email='test@example.com').first()
             assert user is not None
-            assert user.name == 'New User'
+            assert user.name == 'Test User'  # Nombre asignado por admin en AllowedEmail
             assert user.is_admin is False
     
     def test_register_email_not_allowed(self, client):
         """Registro falla si email no está permitido"""
         response = client.post('/auth/register', data={
-            'name': 'New User',
             'email': 'notallowed@example.com',
             'password': 'password123',
             'password_confirm': 'password123'
@@ -45,7 +43,6 @@ class TestRegistration:
     def test_register_password_mismatch(self, client, allowed_email):
         """Registro falla si contraseñas no coinciden"""
         response = client.post('/auth/register', data={
-            'name': 'New User',
             'email': 'test@example.com',
             'password': 'password123',
             'password_confirm': 'different456'
@@ -61,7 +58,6 @@ class TestRegistration:
     def test_register_password_too_short(self, client, allowed_email):
         """Registro falla si contraseña es muy corta"""
         response = client.post('/auth/register', data={
-            'name': 'New User',
             'email': 'test@example.com',
             'password': '123',  # Menos de 4 caracteres
             'password_confirm': '123'
@@ -72,7 +68,6 @@ class TestRegistration:
     def test_register_duplicate_email(self, client, regular_user, allowed_email):
         """Registro falla si email ya existe"""
         response = client.post('/auth/register', data={
-            'name': 'Another User',
             'email': 'test@example.com',  # Email ya registrado
             'password': 'password123',
             'password_confirm': 'password123'
@@ -115,7 +110,7 @@ class TestLogin:
         """Login falla si usuario está deshabilitado"""
         with app.app_context():
             # Crear usuario deshabilitado
-            allowed = AllowedEmail(email='disabled@example.com')
+            allowed = AllowedEmail(email='disabled@example.com', name='Disabled User')
             db.session.add(allowed)
             
             user = User(

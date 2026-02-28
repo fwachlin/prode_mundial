@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="admin-container">
-    <a href="{{ url_for('admin.list_matches') }}" style="color: #007bff; text-decoration: none;">← Volver a partidos</a>
+    <a href="{{ url_for('admin.dashboard') }}" style="color: #007bff; text-decoration: none;">← Volver a partidos</a>
     
     <h1>Editar Partido</h1>
     
@@ -30,7 +30,7 @@
         </div>
         
         <div class="form-group">
-            <label for="kickoff_at">Fecha y Hora de Kickoff (UTC):</label>
+            <label for="kickoff_at">Fecha y Hora de Comienzo (UTC):</label>
             <input type="datetime-local" id="kickoff_at" name="kickoff_at" 
                    value="{% if match.kickoff_at %}{{ match.kickoff_at.replace(tzinfo=None).strftime('%Y-%m-%dT%H:%M') }}{% endif %}" required>
             <small>Formato: YYYY-MM-DDTHH:MM</small>
@@ -40,12 +40,12 @@
             <label for="closes_at">Fecha y Hora de Cierre (UTC):</label>
             <input type="datetime-local" id="closes_at" name="closes_at" 
                    value="{% if match.closes_at %}{{ match.closes_at.replace(tzinfo=None).strftime('%Y-%m-%dT%H:%M') }}{% endif %}" required>
-            <small>Típicamente 10 minutos antes del kickoff</small>
+            <small>Típicamente 10 minutos antes del comienzo</small>
         </div>
         
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            <a href="{{ url_for('admin.list_matches') }}" class="btn btn-secondary">Cancelar</a>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 </div>

@@ -85,7 +85,7 @@ def create_match():
         db.session.commit()
         
         flash(f'Partido "{home_team} vs {away_team}" creado exitosamente', 'success')
-        return redirect(url_for('admin.list_matches'))
+        return redirect(url_for('admin.dashboard'))
     
     # GET: Obtener todas las fases para el dropdown
     from models import Phase
@@ -150,7 +150,7 @@ def edit_match(match_id):
         else:
             db.session.commit()
         flash(f'Partido {match.home_team} vs {match.away_team} actualizado', 'success')
-        return redirect(url_for('admin.list_matches'))
+        return redirect(url_for('admin.dashboard'))
     
     return render_template('admin/edit_match.html', match=match)
 
@@ -172,7 +172,7 @@ def delete_match(match_id):
     db.session.commit()
     
     flash(f'Partido "{match_name}" eliminado correctamente', 'success')
-    return redirect(url_for('admin.list_matches'))
+    return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/matches/<int:match_id>/result', methods=['POST'])
 @login_required
@@ -189,18 +189,18 @@ def set_result(match_id):
 
     if now < kickoff:
         flash('No puedes cargar el resultado antes del kickoff', 'error')
-        return redirect(url_for('admin.list_matches'))
+        return redirect(url_for('admin.dashboard'))
 
     try:
         home_goals = int(request.form.get('home_goals', 0))
         away_goals = int(request.form.get('away_goals', 0))
     except ValueError:
         flash('Goles inválidos', 'error')
-        return redirect(url_for('admin.list_matches'))
+        return redirect(url_for('admin.dashboard'))
 
     if home_goals < 0 or away_goals < 0:
         flash('Los goles no pueden ser negativos', 'error')
-        return redirect(url_for('admin.list_matches'))
+        return redirect(url_for('admin.dashboard'))
 
     match.home_goals = home_goals
     match.away_goals = away_goals
@@ -216,7 +216,7 @@ def set_result(match_id):
     backup_on_change("resultado")
 
     flash(f'Resultado: {match.home_team} {home_goals} - {away_goals} {match.away_team}. Puntos calculados.', 'success')
-    return redirect(url_for('admin.list_matches'))
+    return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/matches/<int:match_id>/delete-result', methods=['POST'])
 @login_required
@@ -382,9 +382,11 @@ def delete_comment(comment_id):
 def allowed_emails():
     """Gestionar emails habilitados (sin registrar aún)"""
     if request.method == 'POST':
+        name = request.form.get('name', '').strip()
         email = request.form.get('email', '').strip().lower()
-        if not email:
-            flash('El email es requerido', 'error')
+        
+        if not name or not email:
+            flash('El nombre y el email son requeridos', 'error')
             return redirect(url_for('admin.allowed_emails'))
 
         existing = AllowedEmail.query.filter_by(email=email).first()
@@ -392,9 +394,9 @@ def allowed_emails():
             flash('Ese email ya está habilitado', 'warning')
             return redirect(url_for('admin.allowed_emails'))
 
-        db.session.add(AllowedEmail(email=email))
+        db.session.add(AllowedEmail(email=email, name=name))
         db.session.commit()
-        flash('Email habilitado', 'success')
+        flash(f'Email habilitado para {name}', 'success')
         return redirect(url_for('admin.allowed_emails'))
 
     # Obtener emails habilitados que NO tienen usuario registrado
