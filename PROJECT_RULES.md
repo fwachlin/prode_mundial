@@ -270,7 +270,7 @@ match.home_goals = home_goals
 match.away_goals = away_goals
 
 # Recalcular puntos de TODOS los pronósticos
-for prediction in match.predictions:
+Si el resultado de este ítem fuere menor que -5, solo se restarán hasta 5 puntos.
     prediction.points_awarded = prediction.calculate_points()
 
 db.session.commit()

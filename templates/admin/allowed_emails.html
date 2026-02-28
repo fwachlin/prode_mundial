@@ -4,8 +4,8 @@
 
 {% block content %}
 <div style="max-width: 700px; margin: 0 auto;">
-    <a href="{{ url_for('admin.manage_users') }}" style="color: #007bff; text-decoration: none;">← Volver</a>
-    <h1>Emails habilitados</h1>
+    <a href="{{ url_for('admin.manage_users') }}" class="btn btn-primary" style="background-color:#007bff; border-color:#007bff; color:white; margin-bottom:18px; font-weight:bold; font-size:1.1em; padding:8px 22px;">← Volver</a>
+    <h1>Agregar al jugador:</h1>
 
     <form method="POST" style="margin: 20px 0;">
         <div style="display:flex; gap:10px; margin-bottom: 10px;">
@@ -15,7 +15,7 @@
                    style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px;">
             <button type="submit" class="btn btn-primary">Agregar</button>
         </div>
-        <small style="color:#666;">El admin define el nombre que tendrá el participante al registrarse.</small>
+        
     </form>
 
     {% if emails %}
