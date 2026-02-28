@@ -197,7 +197,7 @@
 <div class="predictions-table-wrapper">
     <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5em;">
         📊 Pronósticos 
-        <a href="{{ url_for('main.glosario') }}" style="font-size: 0.9rem; color: #007bff; text-decoration: none;">(glosario)</a>
+        <a href="{{ url_for('main.glosario') }}" style="font-size: 0.9rem; color: #fff; background-color: #007bff; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-weight: 600;">(glosario)</a>
     </h1>
 
     {% if phase_data %}
@@ -229,8 +229,8 @@
                                         <span style="writing-mode: vertical-rl; text-orientation: mixed; font-size: 10px; color: #999;">a definir</span>
                                     {% else %}
                                         <img src="https://flagcdn.com/24x18/{{ home_iso }}.png" alt="{{ match.home_team }}" style="display: block; margin: 2px auto 4px auto;">
-                                        {{ match.home_team }}<br>vs<br>
-                                        {{ match.away_team }}
+                                        <span class="country-tooltip" data-country="{{ match.home_team|country_name }}">{{ match.home_team }}</span><br>vs<br>
+                                        <span class="country-tooltip" data-country="{{ match.away_team|country_name }}">{{ match.away_team }}</span>
                                         <img src="https://flagcdn.com/24x18/{{ away_iso }}.png" alt="{{ match.away_team }}" style="display: block; margin: 4px auto 2px auto;">
                                     {% endif %}
                                 </th>

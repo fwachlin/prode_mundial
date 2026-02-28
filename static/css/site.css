@@ -336,3 +336,57 @@ footer {
 
 /* Headings */
 h1, h2, h3{ color: var(--text); }
+
+/* ===================================
+   🌍 TOOLTIPS PARA CÓDIGOS DE PAÍSES
+   =================================== */
+
+/* Elemento con tooltip */
+.country-tooltip {
+  position: relative;
+  cursor: help;
+  border-bottom: 1px dotted #666;
+  display: inline-block;
+}
+
+/* Tooltip personalizado */
+.country-tooltip::after {
+  content: attr(data-country);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Flecha del tooltip */
+.country-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1001;
+}
+
+/* Mostrar tooltip al hover */
+.country-tooltip:hover::after,
+.country-tooltip:hover::before {
+  opacity: 1;
+}

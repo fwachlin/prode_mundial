@@ -167,7 +167,11 @@
       {% set closes_utc = closes.strftime('%Y-%m-%dT%H:%M:%S') + 'Z' %}
       <div class="prediction-card {% if not has_prediction %}no-prediction{% endif %}" data-closes-utc="{{ closes_utc }}" style="position: relative;">
         <div class="match-title" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-          <span>{{ match.home_team }} vs {{ match.away_team }}</span>
+          <span>
+            <span class="country-tooltip" data-country="{{ match.home_team|country_name }}">{{ match.home_team }}</span>
+            vs
+            <span class="country-tooltip" data-country="{{ match.away_team|country_name }}">{{ match.away_team }}</span>
+          </span>
           <div style="display: flex; align-items: center; gap: 8px;">
             {% if not match.is_open() %}
               <span class="badge bg-danger" style="font-size: 0.75em; padding: 4px 8px;">CERRADO</span>

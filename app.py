@@ -151,6 +151,30 @@ def country_iso2_filter(country_name):
     # Intentar primero con códigos FIFA, luego con nombres
     return fifa_to_iso2.get(country_name, country_to_iso2.get(country_name, 'xx'))
 
+# Filtro para convertir códigos FIFA a nombres completos de países
+@app.template_filter('country_name')
+def country_name_filter(fifa_code):
+    """Convierte código FIFA de 3 letras a nombre completo del país"""
+    if not fifa_code:
+        return ''
+    
+    fifa_to_name = {
+        'ALG': 'Argelia', 'ARG': 'Argentina', 'AUS': 'Australia', 'AUT': 'Austria',
+        'BEL': 'Bélgica', 'BRA': 'Brasil', 'CAN': 'Canadá', 'CHN': 'China',
+        'CIV': 'Costa de Marfil', 'COL': 'Colombia', 'CPV': 'Cabo Verde', 'CRC': 'Costa Rica',
+        'CRO': 'Croacia', 'CUW': 'Curazao', 'DEN': 'Dinamarca', 'ECU': 'Ecuador',
+        'EGY': 'Egipto', 'ENG': 'Inglaterra', 'ESP': 'España', 'FRA': 'Francia',
+        'GER': 'Alemania', 'GHA': 'Ghana', 'HAI': 'Haití', 'IRN': 'Irán',
+        'ITA': 'Italia', 'JPN': 'Japón', 'JOR': 'Jordania', 'KOR': 'Corea del Sur',
+        'KSA': 'Arabia Saudita', 'MAR': 'Marruecos', 'MEX': 'México', 'NED': 'Países Bajos',
+        'NOR': 'Noruega', 'NZL': 'Nueva Zelanda', 'PAN': 'Panamá', 'PAR': 'Paraguay',
+        'POL': 'Polonia', 'POR': 'Portugal', 'QAT': 'Qatar', 'RSA': 'Sudáfrica',
+        'SCO': 'Escocia', 'SEN': 'Senegal', 'SUI': 'Suiza', 'TUN': 'Túnez',
+        'URU': 'Uruguay', 'USA': 'Estados Unidos', 'UZB': 'Uzbekistán', 'WAL': 'Gales'
+    }
+    
+    return fifa_to_name.get(fifa_code, fifa_code)
+
 # Registrar blueprints
 from auth.routes import auth_bp
 from main.routes import main_bp

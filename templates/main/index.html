@@ -22,7 +22,7 @@
         </div>
         <p class="mb-0 opacity-90">
             <i class="bi bi-calendar-event me-2"></i>
-            Primer partido: <strong>{{ first_match.home_team }} vs {{ first_match.away_team }}</strong>
+            Primer partido: <strong><span class="country-tooltip" data-country="{{ first_match.home_team|country_name }}">{{ first_match.home_team }}</span> vs <span class="country-tooltip" data-country="{{ first_match.away_team|country_name }}">{{ first_match.away_team }}</span></strong>
         </p>
     </div>
     {% endif %}
@@ -88,9 +88,9 @@
                     </small>
                 </div>
                 <h5 class="mb-3 text-center fw-bold">
-                    {{ match.home_team }}
+                    <span class="country-tooltip" data-country="{{ match.home_team|country_name }}">{{ match.home_team }}</span>
                     <span class="text-muted mx-2">vs</span>
-                    {{ match.away_team }}
+                    <span class="country-tooltip" data-country="{{ match.away_team|country_name }}">{{ match.away_team }}</span>
                 </h5>
                 {% if match.stadium %}
                 <p class="text-muted small mb-0 text-center">
