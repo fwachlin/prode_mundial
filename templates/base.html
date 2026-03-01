@@ -23,10 +23,10 @@
 </head>
 <body>
     <!-- Navbar moderna con Bootstrap -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
-        <div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm" style="padding-top: 0.25rem; padding-bottom: 0.25rem;">
+        <div class="container-fluid" style="padding-top: 0; padding-bottom: 0;">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ url_for('main.index') }}">
-                <i class="bi bi-trophy-fill text-warning me-2 fs-4"></i>
+                <img src="{{ url_for('static', filename='images/copa para navbar.png') }}" alt="Copa" style="height: 38px; width: auto; margin-right: 8px;">
                 <span>Prode Mundial 2026</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
