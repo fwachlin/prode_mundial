@@ -85,11 +85,9 @@ def predictions():
         # Si POST pero sin datos válidos, redirigir
         return redirect(url_for('main.predictions'))
 
-    # GET: mostrar todos los partidos (abiertos primero, luego cerrados)
+    # GET: mostrar solo partidos abiertos
     now = datetime.now(timezone.utc)
-    open_matches = Match.query.filter(Match.closes_at > now).order_by(Match.kickoff_at).all()
-    closed_matches = Match.query.filter(Match.closes_at <= now).order_by(Match.kickoff_at.desc()).limit(10).all()
-    matches = open_matches + closed_matches
+    matches = Match.query.filter(Match.closes_at > now).order_by(Match.kickoff_at).all()
     # Obtener pronósticos del usuario actual
     user_predictions = {}
     for prediction in current_user.predictions:
