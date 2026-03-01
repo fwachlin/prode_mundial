@@ -116,7 +116,7 @@
         position: -webkit-sticky;
         position: sticky;
         left: 0;
-        z-index: 10;
+        z-index: 3;
         border-right: 2px solid #999;
         padding: 5px 8px;
         min-width: 150px;
@@ -124,19 +124,22 @@
         width: 150px;
         white-space: normal;
         word-wrap: break-word;
+        overflow: visible;
     }
     
     .predictions-table thead th:first-child {
-        z-index: 40;
+        z-index: 8;
         background-color: #e8e8e8;
         text-align: left;
+        overflow: visible;
     }
     
     .predictions-table thead .result-row th:first-child {
-        z-index: 40;
+        z-index: 8;
         background-color: #f4f4f4;
         text-align: center;
         font-weight: 700;
+        overflow: visible;
     }
     
     .predictions-table tbody td:first-child {
@@ -229,8 +232,8 @@
                                         <span style="writing-mode: vertical-rl; text-orientation: mixed; font-size: 10px; color: #999;">a definir</span>
                                     {% else %}
                                         <img src="https://flagcdn.com/24x18/{{ home_iso }}.png" alt="{{ match.home_team }}" style="display: block; margin: 2px auto 4px auto;">
-                                        <span class="country-tooltip" data-country="{{ match.home_team|country_name }}">{{ match.home_team }}</span><br>vs<br>
-                                        <span class="country-tooltip" data-country="{{ match.away_team|country_name }}">{{ match.away_team }}</span>
+                                        <span title="{{ match.home_team|country_name }}" style="cursor: help; border-bottom: 1px dotted #666;">{{ match.home_team }}</span><br>vs<br>
+                                        <span title="{{ match.away_team|country_name }}" style="cursor: help; border-bottom: 1px dotted #666;">{{ match.away_team }}</span>
                                         <img src="https://flagcdn.com/24x18/{{ away_iso }}.png" alt="{{ match.away_team }}" style="display: block; margin: 4px auto 2px auto;">
                                     {% endif %}
                                 </th>
