@@ -15,7 +15,21 @@ if DATABASE_URL:
     # Render provee DATABASE_URL con postgres://, pero SQLAlchemy necesita postgresql://
     if DATABASE_URL.startswith('postgres://'):
         DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+    
+    # Agregar parámetros SSL para Render PostgreSQL
+    if '?' in DATABASE_URL:
+        DATABASE_URL += '&sslmode=require'
+    else:
+        DATABASE_URL += '?sslmode=require'
+    
     app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_pre_ping': True,
+        'pool_recycle': 300,
+        'connect_args': {
+            'sslmode': 'require'
+        }
+    }
 else:
     # Desarrollo local con SQLite
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
