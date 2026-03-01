@@ -30,6 +30,7 @@
                     <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}" 
                           style="display: inline;"
                           onsubmit="return confirm('⚠️ ADVERTENCIA: ¿Eliminar a {{ user.name }}?\n\nEmail: {{ user.email }}\n\nSe eliminarán todos los datos asociados.\nEsta acción NO SE PUEDE DESHACER.');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <button type="submit" class="btn btn-danger">🗑️ Eliminar</button>
                     </form>
                 </td>

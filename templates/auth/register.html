@@ -14,6 +14,7 @@
                 </div>
                 
                 <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="mb-3">
                         <label for="email" class="form-label">
                             <i class="bi bi-envelope-fill me-2"></i>Email

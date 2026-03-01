@@ -58,6 +58,7 @@
                             <!-- Solo mostrar form si el partido ya comenzó -->
                             {% if match.has_started %}
                                 <form method="POST" action="{{ url_for('admin.set_result', match_id=match.id) }}" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                     <input type="number" name="home_goals" placeholder="Local" min="0" style="width:50px; height:28px; font-size:0.95em;" required>
                                     <input type="number" name="away_goals" placeholder="Visit" min="0" style="width:50px; height:28px; font-size:0.95em;" required>
                                     <button type="submit" class="btn btn-sm btn-success">Guardar</button>
@@ -67,6 +68,7 @@
                             {% endif %}
                             
                             <form method="POST" action="{{ url_for('admin.delete_match', match_id=match.id) }}" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar partido?');">Eliminar</button>
                             </form>
                         </td>

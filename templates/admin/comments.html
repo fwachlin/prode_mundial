@@ -24,6 +24,7 @@
             <form method="POST" action="{{ url_for('admin.delete_comment', comment_id=comment.id) }}" 
                   style="display: inline;"
                   onsubmit="return confirm('¿Eliminar este comentario?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <button type="submit" class="btn btn-danger" style="margin-left: 12px;">🗑️ Eliminar</button>
             </form>
         </div>

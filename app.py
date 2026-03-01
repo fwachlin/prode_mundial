@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_login import LoginManager, current_user
+from flask_wtf.csrf import CSRFProtect
 from models import db, User, Match
 from datetime import datetime, timezone
 import os
@@ -23,7 +24,12 @@ else:
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'tu_clave_secreta_aqui')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Inicializar extensiones
 db.init_app(app)
+
+# Inicializar protección CSRF
+csrf = CSRFProtect(app)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'

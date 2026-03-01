@@ -8,6 +8,7 @@
     <h1>Agregar al jugador:</h1>
 
     <form method="POST" style="margin: 20px 0;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <div style="display:flex; gap:10px; margin-bottom: 10px;">
             <input type="text" name="name" placeholder="Nombre del participante" required
                    style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px;">
@@ -35,6 +36,7 @@
                     <td style="text-align:center; padding:8px; border:1px solid #ddd;">
                         <form method="POST" action="{{ url_for('admin.delete_allowed_email', email_id=e.id) }}"
                               onsubmit="return confirm('¿Eliminar {{ e.email }}?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             <button type="submit" class="btn btn-danger">Eliminar</button>
                         </form>
                     </td>

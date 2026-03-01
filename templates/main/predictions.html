@@ -180,12 +180,14 @@
               <span class="no-prediction-msg">⚠️ Sin pronóstico</span>
             {% elif match.is_open() and has_prediction %}
               <form method="post" action="{{ url_for('main.delete_prediction', match_id=match.id) }}" class="delete-prediction-form-inline" style="display:inline; position: absolute; top: 12px; right: 12px; z-index: 2;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <button type="submit" class="btn btn-link text-danger" style="padding:0 4px; font-size:0.98em;">Borrar</button>
               </form>
             {% endif %}
           </div>
         </div>
         <form method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
           <input type="hidden" name="match_id" value="{{ match.id }}">
           <div class="match-times">
             <div>

@@ -13,12 +13,14 @@
         <strong>⚠️ Resultado cargado:</strong> {{ match.home_goals }} - {{ match.away_goals }}
         <p style="color: #666; font-size: 0.9em; margin: 5px 0;">Los resultados se pueden editar en el <a href="{{ url_for('admin.dashboard') }}" style="color: #007bff; text-decoration: underline;">Panel de control</a></p>
         <form method="POST" action="{{ url_for('admin.delete_result', match_id=match.id) }}" style="margin-top: 10px;" onsubmit="return confirm('¿Estás seguro de borrar el resultado? Esto reseteará los puntos de todas las predicciones.');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <button type="submit" class="btn btn-danger" style="background-color: #dc3545; color: white;">Borrar Resultado</button>
         </form>
     </div>
     {% endif %}
     
     <form method="POST" class="edit-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <div class="form-group">
             <label for="home_team">Equipo Local:</label>
             <input type="text" id="home_team" name="home_team" value="{{ match.home_team }}" required>

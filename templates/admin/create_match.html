@@ -9,6 +9,7 @@
     <h1>Crear Nuevo Partido</h1>
     
     <form method="POST" class="edit-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <div class="form-group">
             <label for="phase_id">Fecha del Mundial:</label>
             <select id="phase_id" name="phase_id" required>
