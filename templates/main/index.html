@@ -7,7 +7,7 @@
 <!-- Hero Section con countdown -->
 <div class="hero-section mb-4" style="background-image: linear-gradient(rgba(26, 71, 42, 0.75), rgba(45, 106, 79, 0.75)), url('{{ url_for('static', filename='images/backgrounds/stadium.jpg') }}'); background-size: cover; background-position: center;">
     <!-- 🖼️ Tu imagen de estadio como fondo -->
-    <h1><i class="bi bi-trophy-fill text-warning"></i> Prode Mundial 2026</h1>
+    <h1><img src="{{ url_for('static', filename='images/worldcup_trophy.png') }}" alt="Copa del Mundo" style="height: 40px; width: auto; vertical-align: middle; margin-right: 8px; filter: drop-shadow(0 2px 8px rgba(255,215,0,0.6));"> Prode Mundial 2026</h1>
     <img src="{{ url_for('static', filename='images/backgrounds/argentina.jpg') }}" 
          alt="Argentina" 
          class="img-fluid rounded-4 shadow-lg mb-2" 
@@ -16,7 +16,7 @@
     
     {% if first_match %}
     <div id="countdown-container" class="bg-white bg-opacity-10 rounded-4 p-4 mb-3">
-        <h2 class="h4 mb-3">🏆 El Mundial comienza en:</h2>
+        <h2 class="h4 mb-3"><img src="{{ url_for('static', filename='images/worldcup_trophy.png') }}" alt="Copa del Mundo" style="height: 32px; width: auto; vertical-align: middle; margin-right: 8px;"> El Mundial comienza en:</h2>
         <div id="mundial-countdown" class="mb-3">
             ⏳ Calculando...
         </div>
