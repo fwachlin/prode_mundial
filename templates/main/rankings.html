@@ -58,14 +58,14 @@
                     {% set is_valid_for_penultimate = (matches_with_result > 0 and (stat.predictions_with_points or 0) == matches_with_result) %}
                     {% set is_penultimate = (loop.index == penultimate_position and penultimate_position > 0) %}
                     {% set is_awarded = is_first or is_second or is_third or is_penultimate %}
-                    <tr style="border-bottom: 1px solid #ddd; {% if is_first %}background-color: #ffd700; font-weight: bold;{% elif is_second %}background-color: #e0e0e0; font-weight: bold;{% elif is_third %}background-color: #cd7f32; color: white; font-weight: bold;{% elif is_penultimate %}background-color: #d4f1d4; font-weight: bold;{% endif %}">
+                    <tr style="border-bottom: 1px solid #ddd; {% if is_first or is_second or is_third or is_penultimate %}background-color: #d4f1d4; font-weight: bold;{% endif %}">
                         <td style="padding: 12px; border: 1px solid #ddd; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% endif %}">
                             {% if is_first %}🥇{% elif is_second %}🥈{% elif is_third %}🥉{% elif is_penultimate %}🎖️{% else %}{{ loop.index }}{% endif %}
                         </td>
                         <td style="padding: 12px; border: 1px solid #ddd; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% endif %}">
                             <strong>{{ stat.name }}</strong>
                         </td>
-                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold; {% if is_third %}color: white;{% elif not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% else %}color: #007bff;{% endif %} font-size: 1.2em;">
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% else %}color: #007bff;{% endif %} font-size: 1.2em;">
                             {{ stat.total_points or 0 }}
                         </td>
                     </tr>
