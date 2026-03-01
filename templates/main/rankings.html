@@ -42,15 +42,22 @@
             </ul>
         </div>
         
-        <table class="rankings-table" style="width: 100%; max-width: 520px; margin: 0 auto; border-collapse: collapse; margin-top: 20px;">
-            <thead>
-                <tr style="background-color: #f0f0f0; border-bottom: 2px solid #007bff;">
-                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">#</th>
-                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Participante</th>
-                    <th style="padding: 12px; text-align: center; border: 1px solid #ddd; color: #007bff; font-weight: bold;">Puntos</th>
-                </tr>
-            </thead>
-            <tbody>
+        <div style="max-width: 520px; margin: 20px auto 0 auto;">
+            <!-- Encabezado fijo -->
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd; border-bottom: none; border-radius: 4px 4px 0 0;">
+                <thead>
+                    <tr style="background-color: #f0f0f0; border-bottom: 2px solid #007bff;">
+                        <th style="padding: 12px; text-align: left; border-right: 1px solid #ddd; width: 15%;">#</th>
+                        <th style="padding: 12px; text-align: left; border-right: 1px solid #ddd; width: 60%;">Participante</th>
+                        <th style="padding: 12px; text-align: center; color: #007bff; font-weight: bold; width: 25%;">Puntos</th>
+                    </tr>
+                </thead>
+            </table>
+            
+            <!-- Cuerpo con scroll -->
+            <div style="max-height: 450px; overflow-y: auto; border: 1px solid #ddd; border-top: none; border-radius: 0 0 4px 4px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tbody>
                 {% for stat in user_stats %}
                     {% set is_first = (loop.index == 1) %}
                     {% set is_second = (loop.index == 2) %}
@@ -59,19 +66,21 @@
                     {% set is_penultimate = (loop.index == penultimate_position and penultimate_position > 0) %}
                     {% set is_awarded = is_first or is_second or is_third or is_penultimate %}
                     <tr style="border-bottom: 1px solid #ddd; {% if is_first or is_second or is_third or is_penultimate %}background-color: #d4f1d4; font-weight: bold;{% endif %}">
-                        <td style="padding: 12px; border: 1px solid #ddd; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% endif %}">
+                        <td style="padding: 12px; border-bottom: 1px solid #ddd; border-right: 1px solid #ddd; text-align: left; width: 15%; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% endif %}">
                             {% if is_first %}🥇{% elif is_second %}🥈{% elif is_third %}🥉{% elif is_penultimate %}🎖️{% else %}{{ loop.index }}{% endif %}
                         </td>
-                        <td style="padding: 12px; border: 1px solid #ddd; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% endif %}">
+                        <td style="padding: 12px; border-bottom: 1px solid #ddd; border-right: 1px solid #ddd; width: 60%; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% endif %}">
                             <strong>{{ stat.name }}</strong>
                         </td>
-                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% else %}color: #007bff;{% endif %} font-size: 1.2em;">
+                        <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: center; font-weight: bold; width: 25%; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% else %}color: #007bff;{% endif %} font-size: 1.2em;">
                             {{ stat.total_points or 0 }}
                         </td>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
     {% else %}
         <p style="text-align: center; color: #666; margin-top: 30px;">
             No hay datos de ranking disponibles
