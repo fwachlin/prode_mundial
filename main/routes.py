@@ -356,6 +356,11 @@ def reglamento():
     """Reglamento del Prode Mundial 2026"""
     return render_template('main/reglamento.html')
 
+@main_bp.route('/azar')
+def azar():
+    """Información sobre el participante Azar"""
+    return render_template('main/azar.html')
+
 @main_bp.route('/glosario')
 def glosario():
     """Glosario de países del Mundial 2026"""

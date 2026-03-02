@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Azar - Prode Mundial 2026{% endblock %}
+
+{% block content %}
+<style>
+    .azar-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2.5rem;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        border: 2px solid #6c757d;
+        border-radius: 8px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #212529;
+    }
+    
+    .azar-container h2 {
+        text-align: center;
+        color: #495057;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .azar-container h2 i {
+        font-size: 2.8rem;
+        color: #6c757d;
+    }
+    
+    .azar-container p {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        margin-bottom: 1.2rem;
+        text-align: justify;
+    }
+
+    .highlight {
+        background-color: #fff3cd;
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+        font-weight: 600;
+    }
+
+    .formula {
+        background-color: #e7f3ff;
+        padding: 1rem;
+        border-left: 4px solid #0d6efd;
+        margin: 1.5rem 0;
+        font-family: 'Courier New', monospace;
+        font-size: 1rem;
+    }
+</style>
+
+<div class="azar-container">
+    <h2><i class="bi bi-dice-3"></i> Azar</h2>
+    
+    <p>
+        <strong>Azar</strong> es un participante cuya entrada fue pagada por los organizadores del Prode. 
+        No es una persona real, sino que sus pronósticos son realizados por un programa matemático.
+    </p>
+
+    <p>
+        El método utilizado es el siguiente: se calculó el promedio de goles por equipo por partido 
+        en todos los Mundiales desde 1998 hasta 2022 (últimos 7 Mundiales). El resultado fue 
+        <span class="highlight">1.25 goles por equipo por partido</span>.
+    </p>
+
+    <p>
+        Luego, para cada uno de los 104 partidos del Mundial 2026, se generan dos números aleatorios 
+        utilizando una <strong>distribución de Poisson</strong> con media μ = 1.25. 
+        Uno de estos números representa los goles del equipo local, y el otro los goles del equipo visitante.
+    </p>
+
+    <div class="formula">
+        <strong>Distribución de Poisson:</strong> P(X = k) = (μ^k × e^(-μ)) / k!<br>
+        donde μ = 1.25 goles por equipo
+    </div>
+
+    <p>
+        De esta manera, Azar hace sus predicciones de forma completamente aleatoria y matemática, 
+        sin ningún conocimiento de fútbol, estadísticas de equipos, lesiones, o cualquier otro factor 
+        que un aficionado o experto consideraría.
+    </p>
+
+    <p>
+        <strong>El objetivo de Azar es simple:</strong> servir como punto de referencia. 
+        Si quedás por debajo de Azar en la tabla de posiciones, significa que... 
+        <em>sabés menos de fútbol que un programa que tira dados virtuales</em>. 😅
+    </p>
+
+    <p style="text-align: center; margin-top: 2rem; font-style: italic; color: #6c757d;">
+        ¡Que gane el mejor... o el más afortunado!
+    </p>
+</div>
+{% endblock %}
