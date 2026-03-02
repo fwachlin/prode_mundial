@@ -367,10 +367,14 @@ def glosario():
     return render_template('main/glosario.html')
 
 @main_bp.route('/tablon', methods=['GET', 'POST'])
-@login_required
 def tablon():
-    """Página del tablón de comentarios"""
+    """Página del tablón de comentarios (visible sin login, pero agregar comentario requiere login)"""
     if request.method == 'POST':
+        # Para agregar comentarios se requiere autenticación
+        if not current_user.is_authenticated:
+            flash('Debes iniciar sesión para publicar comentarios', 'error')
+            return redirect(url_for('auth.login'))
+        
         content = request.form.get('content', '').strip()
         
         if not content:
