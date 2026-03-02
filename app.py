@@ -38,6 +38,9 @@ else:
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'tu_clave_secreta_aqui')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Google Analytics 4
+app.config['GA_MEASUREMENT_ID'] = os.environ.get('GA_MEASUREMENT_ID')
+
 # Deshabilitar caché de templates en desarrollo
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
