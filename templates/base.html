@@ -20,6 +20,17 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}?v=8">
     {% block extra_css %}{% endblock %}
+    
+    <!-- Google Analytics 4 -->
+    {% if config.get('GA_MEASUREMENT_ID') %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ config['GA_MEASUREMENT_ID'] }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ config['GA_MEASUREMENT_ID'] }}');
+    </script>
+    {% endif %}
 </head>
 <body>
     <!-- Navbar moderna con Bootstrap -->

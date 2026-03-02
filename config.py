@@ -6,3 +6,6 @@ class Config:
     SECRET_KEY = "cambiar-mas-adelante"
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(BASE_DIR, "instance", "prode.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
+    # Google Analytics 4 - Opcional
+    GA_MEASUREMENT_ID = os.environ.get('GA_MEASUREMENT_ID')
