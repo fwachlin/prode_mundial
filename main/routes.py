@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, make_response
 from flask_login import login_required, current_user
 from models import db, Match, Prediction, User, Phase, Comment
 from sqlalchemy import func, case
@@ -24,10 +24,18 @@ def index():
     # Obtener el primer partido del Mundial (para el countdown)
     first_match = Match.query.order_by(Match.kickoff_at).first()
     
-    return render_template('main/index.html', 
-                         recent_comments=recent_comments,
-                         next_matches=next_matches,
-                         first_match=first_match)
+    # Crear respuesta con headers anti-caché
+    response = make_response(render_template('main/index.html', 
+                                            recent_comments=recent_comments,
+                                            next_matches=next_matches,
+                                            first_match=first_match))
+    
+    # Headers para prevenir caché en navegadores (móviles y desktop)
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    
+    return response
 
 @main_bp.route('/predictions', methods=['GET', 'POST'])
 @login_required

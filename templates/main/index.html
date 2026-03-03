@@ -38,15 +38,10 @@
 <!-- Vista previa del tablón -->
 {% if recent_comments %}
 <div class="mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="mb-0">
-            <i class="bi bi-chat-dots-fill text-info me-2"></i>
-            Últimos comentarios del tablón
-        </h3>
-        <a href="{{ url_for('main.tablon') }}" class="btn btn-sm btn-outline-primary">
-            Ver todos <i class="bi bi-arrow-right ms-1"></i>
-        </a>
-    </div>
+    <h3 class="mb-4">
+        <i class="bi bi-chat-dots-fill text-info me-2"></i>
+        Últimos comentarios del tablón
+    </h3>
     
     {% for comment in recent_comments %}
     <div class="card mb-2 border-0" style="min-height:unset;">

@@ -45,11 +45,13 @@ app.config['GA_MEASUREMENT_ID'] = os.environ.get('GA_MEASUREMENT_ID')
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
-# Forzar headers anti-caché en desarrollo
+# Headers anti-caché para páginas dinámicas (desarrollo y producción)
 @app.after_request
 def add_no_cache_headers(response):
-    if app.debug:
-        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    # Aplicar headers anti-caché a páginas HTML dinámicas
+    # No aplicar a archivos estáticos (CSS, JS, imágenes)
+    if response.content_type and 'text/html' in response.content_type:
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
     return response
