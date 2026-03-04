@@ -14,7 +14,7 @@
         </a>
         
         {% for p, n in zip(phases, phase_names) %}
-            <a href="{{ url_for('main.rankings_by_phase', phase_id=p.id) }}" class="rankings-nav-btn" style="display: inline-block; {% if p.id == phase.id %}background-color: #007bff;{% else %}background-color: #6c757d;{% endif %} color: white; text-decoration: none; margin: 2px;">
+            <a href="{{ url_for('main.rankings_by_phase', phase_id=p.id) }}" class="rankings-nav-btn" style="display: inline-block; {% if p.id == phase.id %}background-color: #2d6a4f;{% else %}background-color: #6c757d;{% endif %} color: white; text-decoration: none; margin: 2px;">
                 {{ n }}
             </a>
         {% endfor %}
@@ -28,10 +28,10 @@
         <!-- Encabezado fijo -->
         <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd; border-bottom: none; border-radius: 4px 4px 0 0;">
             <thead>
-                <tr style="background-color: #f0f0f0; border-bottom: 2px solid #007bff;">
+                <tr style="background-color: #f0f0f0; border-bottom: 2px solid #2d6a4f;">
                     <th style="padding: 12px; text-align: left; border-right: 1px solid #ddd; width: 15%;">#</th>
                     <th style="padding: 12px; text-align: left; border-right: 1px solid #ddd; width: 60%;">Participante</th>
-                    <th style="padding: 12px; text-align: center; color: #007bff; font-weight: bold; width: 25%;">Puntos</th>
+                    <th style="padding: 12px; text-align: center; color: #2d6a4f; font-weight: bold; width: 25%;">Puntos</th>
                 </tr>
             </thead>
         </table>
@@ -49,7 +49,7 @@
                     <td style="padding: 12px; border-bottom: 1px solid #ddd; border-right: 1px solid #ddd; width: 60%;">
                         <strong>{{ stat.name }}</strong>
                     </td>
-                    <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: center; font-weight: bold; color: #007bff; font-size: 1.2em; width: 25%;">
+                    <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: center; font-weight: bold; color: #2d6a4f; font-size: 1.2em; width: 25%;">
                         {{ stat.total_points or 0 }}
                     </td>
                 </tr>

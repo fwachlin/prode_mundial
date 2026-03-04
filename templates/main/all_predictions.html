@@ -168,24 +168,24 @@
         padding: 6px 8px;
         font-size: 14px;
         font-weight: 600;
-        border: 2px solid #007bff;
+        border: 2px solid #2d6a4f;
         background-color: white;
-        color: #007bff;
+        color: #2d6a4f;
         cursor: pointer;
         border-radius: 8px;
         transition: all 0.3s ease;
     }
     
     .phase-btn:hover {
-        background-color: #f0f8ff;
+        background-color: #e8f5e9;
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,123,255,0.2);
+        box-shadow: 0 4px 8px rgba(45,106,79,0.2);
     }
     
     .phase-btn.active {
-        background-color: #007bff;
+        background-color: #2d6a4f;
         color: white;
-        box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+        box-shadow: 0 4px 12px rgba(45,106,79,0.3);
     }
     
     .phase-content {
@@ -200,7 +200,7 @@
 <div class="predictions-table-wrapper">
     <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5em;">
         📊 Pronósticos 
-        <a href="{{ url_for('main.glosario') }}" style="font-size: 0.9rem; color: #fff; background-color: #007bff; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-weight: 600;">(glosario)</a>
+        <a href="{{ url_for('main.glosario') }}" style="font-size: 0.9rem; color: #fff; background-color: #2d6a4f; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-weight: 600;">(glosario)</a>
     </h1>
 
     {% if phase_data %}

@@ -9,7 +9,7 @@
     
     <!-- Links a rankings por fecha -->
     <div style="margin: 24px 0 0 0; text-align: center;">
-        <a href="{{ url_for('main.rankings') }}" class="rankings-nav-btn" style="display: inline-block; background-color: #007bff; color: white; text-decoration: none; margin: 2px; font-weight: bold;">
+        <a href="{{ url_for('main.rankings') }}" class="rankings-nav-btn" style="display: inline-block; background-color: #2d6a4f; color: white; text-decoration: none; margin: 2px; font-weight: bold;">
             🗂️ General
         </a>
         {% for phase_num in [1, 2, 3, 4] %}
@@ -46,10 +46,10 @@
             <!-- Encabezado fijo -->
             <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd; border-bottom: none; border-radius: 4px 4px 0 0;">
                 <thead>
-                    <tr style="background-color: #f0f0f0; border-bottom: 2px solid #007bff;">
+                    <tr style="background-color: #f0f0f0; border-bottom: 2px solid #2d6a4f;">
                         <th style="padding: 12px; text-align: left; border-right: 1px solid #ddd; width: 15%;">#</th>
                         <th style="padding: 12px; text-align: left; border-right: 1px solid #ddd; width: 60%;">Participante</th>
-                        <th style="padding: 12px; text-align: center; color: #007bff; font-weight: bold; width: 25%;">Puntos</th>
+                        <th style="padding: 12px; text-align: center; color: #2d6a4f; font-weight: bold; width: 25%;">Puntos</th>
                     </tr>
                 </thead>
             </table>
@@ -72,7 +72,7 @@
                         <td style="padding: 12px; border-bottom: 1px solid #ddd; border-right: 1px solid #ddd; width: 60%; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% endif %}">
                             <strong>{{ stat.name }}</strong>
                         </td>
-                        <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: center; font-weight: bold; width: 25%; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% else %}color: #007bff;{% endif %} font-size: 1.2em;">
+                        <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: center; font-weight: bold; width: 25%; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% else %}color: #2d6a4f;{% endif %} font-size: 1.2em;">
                             {{ stat.total_points or 0 }}
                         </td>
                     </tr>
