@@ -8,7 +8,7 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    """Registrar nuevo usuario"""
+    """Registrar nuevo usuario o completar registro pre-creado por admin"""
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     
@@ -31,10 +31,8 @@ def register():
         # Obtener el nombre asignado por el admin
         name = allowed.name
         
-        # SEGUNDO: Validar que el usuario no exista
-        if User.query.filter_by(email=email).first():
-            flash('Este email ya está registrado', 'error')
-            return redirect(url_for('auth.register'))
+        # SEGUNDO: Verificar si el usuario ya existe (pre-creado por admin)
+        existing_user = User.query.filter_by(email=email).first()
         
         # TERCERO: Validar que las contraseñas coincidan
         if password != password_confirm:
@@ -46,18 +44,27 @@ def register():
             flash('La contraseña debe tener al menos 4 caracteres', 'error')
             return redirect(url_for('auth.register'))
         
-        # Crear usuario
         try:
-            user = User(name=name, email=email, is_enabled=True)
-            user.set_password(password)
+            if existing_user:
+                # Usuario pre-creado por admin, solo establecer contraseña
+                if existing_user.password_hash:
+                    flash('Este email ya completó el registro', 'error')
+                    return redirect(url_for('auth.login'))
+                
+                existing_user.set_password(password)
+                flash('¡Registro completado! Ahora puedes iniciar sesión', 'success')
+            else:
+                # Usuario nuevo (flujo normal)
+                user = User(name=name, email=email, is_enabled=True)
+                user.set_password(password)
+                db.session.add(user)
+                flash('¡Registro exitoso! Ahora puedes iniciar sesión', 'success')
             
-            db.session.add(user)
             db.session.commit()
             
-            # 🔒 BACKUP AUTOMÁTICO después de crear usuario
+            # 🔒 BACKUP AUTOMÁTICO después de crear/actualizar usuario
             backup_on_change("usuario")
             
-            flash('¡Registro exitoso! Ahora puedes iniciar sesión', 'success')
             return redirect(url_for('auth.login'))
         except Exception as e:
             db.session.rollback()
@@ -78,7 +85,16 @@ def login():
         
         user = User.query.filter_by(email=email).first()
         
-        if not user or not user.check_password(password):
+        if not user:
+            flash('Email o contraseña incorrectos', 'error')
+            return redirect(url_for('auth.login'))
+        
+        # Si el usuario no tiene contraseña, debe completar el registro
+        if not user.password_hash:
+            flash('Debes completar tu registro primero', 'error')
+            return redirect(url_for('auth.register'))
+        
+        if not user.check_password(password):
             flash('Email o contraseña incorrectos', 'error')
             return redirect(url_for('auth.login'))
         

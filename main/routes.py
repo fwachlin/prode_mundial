@@ -298,7 +298,7 @@ def rankings_by_match(match_id):
 def all_predictions():
     """Ver todos los pronósticos en tabla por fase"""
     phases = Phase.query.order_by(Phase.order).all()
-    users = User.query.filter_by(is_admin=False).order_by(User.name).all()
+    users = User.query.filter_by(is_admin=False).order_by(User.id).all()
 
     # precargar pronósticos
     predictions = Prediction.query.all()

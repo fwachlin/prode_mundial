@@ -305,12 +305,24 @@ def delete_user(user_id):
         flash('No puedes eliminar admins', 'error')
         return redirect(url_for('admin.manage_users'))
     
+    # Guardar email antes de eliminar
+    user_email = user.email
+    user_name = user.name
+    
     # Eliminar pronósticos asociados primero
     Prediction.query.filter_by(user_id=user_id).delete()
+    
+    # Eliminar usuario
     db.session.delete(user)
+    
+    # Eliminar también de allowed_emails
+    allowed_email = AllowedEmail.query.filter_by(email=user_email).first()
+    if allowed_email:
+        db.session.delete(allowed_email)
+    
     db.session.commit()
     
-    flash(f'Usuario {user.name} eliminado', 'success')
+    flash(f'Usuario {user_name} eliminado', 'success')
     return redirect(url_for('admin.manage_users'))
 
 @admin_bp.route('/users/<int:user_id>/edit', methods=['GET', 'POST'])
@@ -380,7 +392,7 @@ def delete_comment(comment_id):
 @login_required
 @admin_required
 def allowed_emails():
-    """Gestionar emails habilitados (sin registrar aún)"""
+    """Agregar nuevo jugador (crea usuario sin contraseña)"""
     if request.method == 'POST':
         name = request.form.get('name', '').strip()
         email = request.form.get('email', '').strip().lower()
@@ -389,15 +401,33 @@ def allowed_emails():
             flash('El nombre y el email son requeridos', 'error')
             return redirect(url_for('admin.allowed_emails'))
 
-        existing = AllowedEmail.query.filter_by(email=email).first()
-        if existing:
-            flash('Ese email ya está habilitado', 'warning')
+        # Verificar si el email ya existe
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash(f'El email {email} ya está registrado', 'warning')
+            return redirect(url_for('admin.allowed_emails'))
+        
+        existing_allowed = AllowedEmail.query.filter_by(email=email).first()
+        if existing_allowed:
+            flash('Ese email ya está en la lista', 'warning')
             return redirect(url_for('admin.allowed_emails'))
 
+        # 1. Agregar a allowed_emails
         db.session.add(AllowedEmail(email=email, name=name))
+        
+        # 2. Crear usuario SIN contraseña (pendiente de completar registro)
+        new_user = User(
+            email=email,
+            name=name,
+            is_admin=False,
+            is_enabled=True,
+            password_hash=None  # Sin contraseña aún
+        )
+        db.session.add(new_user)
+        
         db.session.commit()
-        flash(f'Email habilitado para {name}', 'success')
-        return redirect(url_for('admin.allowed_emails'))
+        flash(f'Usuario {name} agregado. Debe completar el registro para establecer su contraseña.', 'success')
+        return redirect(url_for('admin.manage_users'))
 
     # Obtener emails habilitados que NO tienen usuario registrado
     allowed = db.session.query(AllowedEmail).outerjoin(
