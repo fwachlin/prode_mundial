@@ -1,0 +1,90 @@
+# Ignorar archivos innecesarios en el contenedor Docker
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Base de datos local (SQLite)
+instance/
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Backups
+backups/
+*.sql
+
+# Git
+.git/
+.gitignore
+.github/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración local
+.env
+.env.local
+
+# Documentación
+*.md
+!README.md
+
+# Scripts de utilidad/prueba
+test_*.py
+debug_*.py
+check_*.py
+ver_*.py
+verificar_*.py
+fix_*.py
+crear_*.py
+agregar_*.py
+carga_*.py
+generar_*.py
+sync_*.py
+backup_*.py
+restaurar_*.py
+revertir_*.py
+simulate_*.py
+make_*.py
+create_*.py
+load_*.py
+init_*.py
+add_*.py
+backfill_*.py
+recalc_*.py
+upload_*.py
+migrate_*.py
+clean_*.py
+delete_*.py
+list_*.py
+rename_*.py
+reemplazar_*.py
+
+# Archivos de texto generados
+*.txt
+!requirements.txt
+
+# Archivos SAL (backups)
+*.sal

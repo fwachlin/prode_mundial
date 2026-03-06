@@ -1,0 +1,24 @@
+# fly.toml - Configuración para Fly.io
+# Prode Mundial 2026
+
+app = "prode-mundial-2026"
+primary_region = "mia"  # Miami (cercano a Argentina/Latinoamérica)
+
+[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+[[vm]]
+  memory = '256mb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[[statics]]
+  guest_path = "/app/static"
+  url_prefix = "/static/"
