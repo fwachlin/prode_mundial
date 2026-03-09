@@ -348,6 +348,31 @@ document.addEventListener("DOMContentLoaded", () => {
             card.classList.remove('no-prediction');
           }
           
+          // Ocultar mensaje "Sin pronóstico"
+          const noPredictionMsg = card.querySelector('.no-prediction-msg');
+          if (noPredictionMsg) {
+            noPredictionMsg.style.display = 'none';
+          }
+          
+          // Crear botón "Borrar" si no existe
+          const matchTitle = card.querySelector('.match-title > div');
+          if (matchTitle && !card.querySelector('.delete-prediction-form-inline')) {
+            const matchId = formData.get('match_id');
+            const deleteForm = document.createElement('form');
+            deleteForm.method = 'post';
+            deleteForm.action = `/predictions/delete/${matchId}`;
+            deleteForm.className = 'delete-prediction-form-inline';
+            deleteForm.style.cssText = 'display:inline; position: absolute; top: 12px; right: 12px; z-index: 2;';
+            deleteForm.innerHTML = `
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+              <button type="submit" class="btn btn-link text-danger" style="padding:0 4px; font-size:0.98em;">Borrar</button>
+            `;
+            card.appendChild(deleteForm);
+            
+            // Configurar manejador AJAX para el nuevo botón
+            setupDeleteHandlers();
+          }
+          
           // Mensaje temporal de éxito
           if (submitBtn) {
             submitBtn.textContent = '✓ Guardado';
@@ -375,6 +400,77 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+  
+  // Función para interceptar borrado de pronósticos
+  function setupDeleteHandlers() {
+    document.querySelectorAll('.delete-prediction-form-inline').forEach(form => {
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault(); // Prevenir comportamiento por defecto
+        
+        const deleteBtn = this.querySelector('button');
+        const card = this.closest('.prediction-card');
+        
+        // Deshabilitar botón temporalmente
+        if (deleteBtn) {
+          deleteBtn.disabled = true;
+          deleteBtn.textContent = 'Borrando...';
+        }
+        
+        try {
+          const response = await fetch(this.action, {
+            method: 'POST',
+            body: new FormData(this)
+          });
+          
+          if (response.ok) {
+            // Remover el formulario de borrar
+            this.remove();
+            
+            // Limpiar inputs
+            const homeInput = card.querySelector('input[name="home_goals"]');
+            const awayInput = card.querySelector('input[name="away_goals"]');
+            if (homeInput) homeInput.value = '';
+            if (awayInput) awayInput.value = '';
+            
+            // Agregar clase "no-prediction" (borde amarillo)
+            if (card && !card.classList.contains('no-prediction')) {
+              card.classList.add('no-prediction');
+            }
+            
+            // Mostrar mensaje "Sin pronóstico"
+            const noPredictionMsg = card.querySelector('.no-prediction-msg');
+            if (noPredictionMsg) {
+              // Si existe, solo mostrarlo
+              noPredictionMsg.style.display = '';
+            } else {
+              // Si no existe, crearlo
+              const matchTitle = card.querySelector('.match-title > div');
+              if (matchTitle) {
+                const noPredMsg = document.createElement('span');
+                noPredMsg.className = 'no-prediction-msg';
+                noPredMsg.textContent = '⚠️ Sin pronóstico';
+                matchTitle.appendChild(noPredMsg);
+              }
+            }
+          } else {
+            throw new Error('Error al borrar');
+          }
+        } catch (error) {
+          // Restaurar botón en caso de error
+          if (deleteBtn) {
+            deleteBtn.textContent = 'Error';
+            setTimeout(() => {
+              deleteBtn.textContent = 'Borrar';
+              deleteBtn.disabled = false;
+            }, 2000);
+          }
+        }
+      });
+    });
+  }
+  
+  // Configurar manejadores iniciales
+  setupDeleteHandlers();
 });
 </script>
 {% endblock %}
