@@ -371,13 +371,23 @@ def azar():
 
 @main_bp.route('/glosario')
 def glosario():
-    """Glosario de países del Mundial 2026 - Genera dinámicamente desde FIFA_COUNTRIES (211 países)"""
+    """Glosario de países del Mundial 2026 - Solo equipos participantes en partidos cargados"""
     from fifa_countries import FIFA_COUNTRIES
     
-    # Convertir a lista ordenada por código FIFA
+    # Obtener códigos únicos de equipos desde los partidos
+    all_matches = Match.query.all()
+    team_codes = set()
+    for match in all_matches:
+        if match.home_team:
+            team_codes.add(match.home_team)
+        if match.away_team:
+            team_codes.add(match.away_team)
+    
+    # Filtrar solo los equipos participantes y ordenar
     countries = [
         {'code': code, 'iso2': iso2, 'name': name}
         for code, (iso2, name) in sorted(FIFA_COUNTRIES.items())
+        if code in team_codes
     ]
     
     return render_template('main/glosario.html', countries=countries)
