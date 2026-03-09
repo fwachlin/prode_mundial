@@ -211,6 +211,7 @@
                  max="99"
                  {% if not match.is_open() %}disabled{% endif %}
                  value="{{ predictions.get(match.id).home_goals if has_prediction else '' }}"
+                 data-original-value="{{ predictions.get(match.id).home_goals if has_prediction else '' }}"
                  placeholder="{% if not has_prediction %}--{% else %}0{% endif %}">
               <span class="vs-text">-</span>
                <input type="number"
@@ -220,6 +221,7 @@
                  max="99"
                  {% if not match.is_open() %}disabled{% endif %}
                  value="{{ predictions.get(match.id).away_goals if has_prediction else '' }}"
+                 data-original-value="{{ predictions.get(match.id).away_goals if has_prediction else '' }}"
                  placeholder="{% if not has_prediction %}--{% else %}0{% endif %}">
             </div>
             <button type="submit" class="submit-btn" style="margin-left: 8px; {% if not match.is_open() %}background-color: #999; cursor: not-allowed; opacity: 0.6;{% endif %}" {% if not match.is_open() %}disabled{% endif %}>Guardar</button>
@@ -321,6 +323,23 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCountdowns();
   setInterval(renderCountdowns, 1000);
   
+  // Detectar cambios en pronósticos para indicar visualmente cambios sin guardar
+  document.querySelectorAll('.prediction-input').forEach(input => {
+    input.addEventListener('input', function() {
+      const originalValue = this.getAttribute('data-original-value');
+      const currentValue = this.value;
+      
+      // Comparar valor actual con original
+      if (currentValue !== originalValue) {
+        // Cambio sin guardar -> fondo rojo claro
+        this.style.backgroundColor = '#ffcccc';
+      } else {
+        // Valor igual al original -> fondo blanco
+        this.style.backgroundColor = '#fff';
+      }
+    });
+  });
+  
   // Interceptar submit de formularios de pronósticos para evitar scroll hacia arriba
   document.querySelectorAll('.prediction-card form:not(.delete-prediction-form-inline)').forEach(form => {
     form.addEventListener('submit', async function(e) {
@@ -371,6 +390,18 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // Configurar manejador AJAX para el nuevo botón
             setupDeleteHandlers();
+          }
+          
+          // Actualizar valores originales y restaurar fondos blancos
+          const homeInput = this.querySelector('input[name="home_goals"]');
+          const awayInput = this.querySelector('input[name="away_goals"]');
+          if (homeInput) {
+            homeInput.setAttribute('data-original-value', homeInput.value);
+            homeInput.style.backgroundColor = '#fff';
+          }
+          if (awayInput) {
+            awayInput.setAttribute('data-original-value', awayInput.value);
+            awayInput.style.backgroundColor = '#fff';
           }
           
           // Mensaje temporal de éxito
@@ -426,11 +457,19 @@ document.addEventListener("DOMContentLoaded", () => {
             // Remover el formulario de borrar
             this.remove();
             
-            // Limpiar inputs
+            // Limpiar inputs y restaurar valores originales
             const homeInput = card.querySelector('input[name="home_goals"]');
             const awayInput = card.querySelector('input[name="away_goals"]');
-            if (homeInput) homeInput.value = '';
-            if (awayInput) awayInput.value = '';
+            if (homeInput) {
+              homeInput.value = '';
+              homeInput.setAttribute('data-original-value', '');
+              homeInput.style.backgroundColor = '#fff';
+            }
+            if (awayInput) {
+              awayInput.value = '';
+              awayInput.setAttribute('data-original-value', '');
+              awayInput.style.backgroundColor = '#fff';
+            }
             
             // Agregar clase "no-prediction" (borde amarillo)
             if (card && !card.classList.contains('no-prediction')) {
