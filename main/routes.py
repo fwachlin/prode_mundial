@@ -371,8 +371,16 @@ def azar():
 
 @main_bp.route('/glosario')
 def glosario():
-    """Glosario de países del Mundial 2026"""
-    return render_template('main/glosario.html')
+    """Glosario de países del Mundial 2026 - Genera dinámicamente desde FIFA_COUNTRIES (211 países)"""
+    from fifa_countries import FIFA_COUNTRIES
+    
+    # Convertir a lista ordenada por código FIFA
+    countries = [
+        {'code': code, 'iso2': iso2, 'name': name}
+        for code, (iso2, name) in sorted(FIFA_COUNTRIES.items())
+    ]
+    
+    return render_template('main/glosario.html', countries=countries)
 
 @main_bp.route('/tablon', methods=['GET', 'POST'])
 def tablon():
