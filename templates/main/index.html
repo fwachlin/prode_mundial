@@ -16,7 +16,7 @@
     
     {% if first_match %}
     <div id="countdown-container" class="bg-white bg-opacity-10 rounded-4 p-4 mb-3">
-        <h2 class="h4 mb-3"><img src="{{ url_for('static', filename='images/worldcup_trophy.png') }}" alt="Copa del Mundo" style="height: 32px; width: auto; vertical-align: middle; margin-right: 8px;"> El Mundial comienza en:</h2>
+        <h2 class="h4 mb-3">El Mundial comienza en:</h2>
         <div id="mundial-countdown" class="mb-3">
             ⏳ Calculando...
         </div>
@@ -133,19 +133,19 @@ function updateMundialCountdown() {
                 <div class="d-flex justify-content-center gap-3 flex-wrap">
                     <div class="text-center">
                         <div class="fs-1 fw-bold">${days}</div>
-                        <div class="small opacity-75">días</div>
+                        <div class="h4 opacity-75">días</div>
                     </div>
                     <div class="text-center">
                         <div class="fs-1 fw-bold">${hours}</div>
-                        <div class="small opacity-75">horas</div>
+                        <div class="h4 opacity-75">horas</div>
                     </div>
                     <div class="text-center">
                         <div class="fs-1 fw-bold">${minutes}</div>
-                        <div class="small opacity-75">min</div>
+                        <div class="h4 opacity-75">min</div>
                     </div>
                     <div class="text-center">
                         <div class="fs-1 fw-bold">${seconds}</div>
-                        <div class="small opacity-75">seg</div>
+                        <div class="h4 opacity-75">seg</div>
                     </div>
                 </div>
             `;
