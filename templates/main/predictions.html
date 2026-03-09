@@ -320,6 +320,61 @@ document.addEventListener("DOMContentLoaded", () => {
   renderLocalTimes();
   renderCountdowns();
   setInterval(renderCountdowns, 1000);
+  
+  // Interceptar submit de formularios de pronósticos para evitar scroll hacia arriba
+  document.querySelectorAll('.prediction-card form:not(.delete-prediction-form-inline)').forEach(form => {
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault(); // Prevenir comportamiento por defecto
+      
+      const formData = new FormData(this);
+      const submitBtn = this.querySelector('.submit-btn');
+      
+      // Deshabilitar botón temporalmente
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Guardando...';
+      }
+      
+      try {
+        const response = await fetch('{{ url_for("main.predictions") }}', {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (response.ok) {
+          // Mostrar mensaje de éxito sin recargar
+          const card = this.closest('.prediction-card');
+          if (card && card.classList.contains('no-prediction')) {
+            card.classList.remove('no-prediction');
+          }
+          
+          // Mensaje temporal de éxito
+          if (submitBtn) {
+            submitBtn.textContent = '✓ Guardado';
+            submitBtn.style.backgroundColor = '#28a745';
+            setTimeout(() => {
+              submitBtn.textContent = 'Guardar';
+              submitBtn.style.backgroundColor = '';
+              submitBtn.disabled = false;
+            }, 2000);
+          }
+        } else {
+          throw new Error('Error al guardar');
+        }
+      } catch (error) {
+        // Restaurar botón en caso de error
+        if (submitBtn) {
+          submitBtn.textContent = 'Error';
+          submitBtn.style.backgroundColor = '#dc3545';
+          setTimeout(() => {
+            submitBtn.textContent = 'Guardar';
+            submitBtn.style.backgroundColor = '';
+            submitBtn.disabled = false;
+          }, 2000);
+        }
+      }
+    });
+  });
 });
 </script>
 {% endblock %}
