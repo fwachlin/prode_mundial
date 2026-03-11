@@ -222,7 +222,7 @@
                 <table class="predictions-table">
                     <thead>
                         <tr>
-                            <th>Participante</th>
+                            <th></th>
                             {% for match in block.matches %}
                                 {% set home_iso = match.home_team|country_iso2 %}
                                 {% set away_iso = match.away_team|country_iso2 %}
@@ -232,8 +232,8 @@
                                         <span style="writing-mode: vertical-rl; text-orientation: mixed; font-size: 10px; color: #999;">a definir</span>
                                     {% else %}
                                         <img src="https://flagcdn.com/24x18/{{ home_iso }}.png" alt="{{ match.home_team }}" style="display: block; margin: 2px auto 4px auto;">
-                                        <span title="{{ match.home_team|country_name }}" style="cursor: help; border-bottom: 1px dotted #666;">{{ match.home_team }}</span><br>vs<br>
-                                        <span title="{{ match.away_team|country_name }}" style="cursor: help; border-bottom: 1px dotted #666;">{{ match.away_team }}</span>
+                                        <span title="{{ match.home_team|country_name }}" style="cursor: help;">{{ match.home_team }}</span><br>
+                                        <span title="{{ match.away_team|country_name }}" style="cursor: help;">{{ match.away_team }}</span>
                                         <img src="https://flagcdn.com/24x18/{{ away_iso }}.png" alt="{{ match.away_team }}" style="display: block; margin: 4px auto 2px auto;">
                                     {% endif %}
                                 </th>
