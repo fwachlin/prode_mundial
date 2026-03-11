@@ -231,29 +231,30 @@ def rankings_by_phase(phase_id):
         phase_name = 'Fecha 4'
     
 
-    # Obtener puntajes de usuarios SOLO para esta fase
-    user_stats = (
-        db.session.query(
-            User.id,
-            User.name,
-            User.email,
+    # Obtener todos los usuarios no-admin
+    all_users = User.query.filter_by(is_admin=False).all()
+    
+    # Para cada usuario, calcular su puntaje en esta fase
+    from collections import namedtuple
+    StatWithPoints = namedtuple('StatWithPoints', ['id', 'name', 'email', 'total_predictions', 'total_points', 'predictions_with_points'])
+    
+    user_stats = []
+    for user in all_users:
+        # Contar predicciones y puntos SOLO de esta fase
+        stats = db.session.query(
             func.count(Prediction.id).label('total_predictions'),
             func.sum(Prediction.points_awarded).label('total_points')
-        )
-        .join(Prediction, User.id == Prediction.user_id)
-        .join(Match, Prediction.match_id == Match.id)
-        .filter(Match.phase_id == phase_id, User.is_admin == False)
-        .group_by(User.id)
-        .order_by(func.coalesce(func.sum(Prediction.points_awarded), 0).desc(), User.name)
-        .all()
-    )
-
-    # Si no hay user_stats (ej. fecha 4 sin partidos jugados), mostrar todos los usuarios no-admin con 0 puntos
-    if not user_stats:
-        users = User.query.filter_by(is_admin=False).order_by(User.name).all()
-        from collections import namedtuple
-        StatWithPoints = namedtuple('StatWithPoints', ['id', 'name', 'email', 'total_predictions', 'total_points', 'predictions_with_points'])
-        user_stats = [StatWithPoints(u.id, u.name, u.email, 0, 0, 0) for u in users]
+        ).join(Match, Prediction.match_id == Match.id)\
+         .filter(Prediction.user_id == user.id, Match.phase_id == phase_id)\
+         .first()
+        
+        total_preds = stats.total_predictions or 0
+        total_pts = stats.total_points or 0
+        
+        user_stats.append(StatWithPoints(user.id, user.name, user.email, total_preds, total_pts, total_preds))
+    
+    # Ordenar por puntos descendente, luego por nombre
+    user_stats.sort(key=lambda x: (-x.total_points, x.name))
 
     # Obtener todas las fases para el menú
     phases = Phase.query.order_by(Phase.order).all()
