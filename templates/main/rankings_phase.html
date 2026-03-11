@@ -12,6 +12,8 @@
         margin-top: 20px;
         position: relative;
         border-radius: 8px;
+        display: flex;
+        flex-direction: column;
     }
     
     .rankings-table {
@@ -25,10 +27,14 @@
         position: sticky;
         top: 0;
         z-index: 100;
-        background-color: #f0f0f0;
+        background-color: rgba(255, 255, 255, 0.98);
+        display: table;
+        width: 100%;
     }
     
     .rankings-table tbody {
+        display: table;
+        width: 100%;
         background-color: rgba(255, 255, 255, 0.95);
     }
 </style>
@@ -59,9 +65,9 @@
             <table class="rankings-table">
                 <thead>
                     <tr style="background-color: #f0f0f0; border-bottom: 2px solid #2d6a4f;">
-                        <th style="padding: 6px; text-align: left; border-right: 1px solid #ddd; width: 15%; background-color: #f0f0f0; position: sticky; top: 0; z-index: 100;">#</th>
-                        <th style="padding: 6px; text-align: left; border-right: 1px solid #ddd; width: 60%; background-color: #f0f0f0; position: sticky; top: 0; z-index: 100;">Participante</th>
-                        <th style="padding: 6px; text-align: center; color: #2d6a4f; font-weight: bold; width: 25%; background-color: #f0f0f0; position: sticky; top: 0; z-index: 100;">Puntos</th>
+                        <th style="padding: 6px; text-align: left; border-right: 1px solid #ddd; width: 15%; background-color: #f0f0f0;">#</th>
+                        <th style="padding: 6px; text-align: left; border-right: 1px solid #ddd; width: 60%; background-color: #f0f0f0;">Participante</th>
+                        <th style="padding: 6px; text-align: center; color: #2d6a4f; font-weight: bold; width: 25%; background-color: #f0f0f0;">Puntos</th>
                     </tr>
                 </thead>
                 <tbody>
