@@ -1,0 +1,30 @@
+name: Mantener Supabase Activo
+
+on:
+  schedule:
+    # Ejecutar cada 3 días a las 3:00 AM UTC
+    - cron: '0 3 */3 * *'
+  workflow_dispatch: # Permite ejecutar manualmente desde GitHub
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+      
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Instalar dependencias
+        run: |
+          pip install sqlalchemy psycopg2-binary
+      
+      - name: Ejecutar keep-alive
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          python keep_alive_db.py
