@@ -56,10 +56,24 @@
                             <i class="bi bi-bar-chart-fill me-1"></i>Posiciones
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.all_predictions') }}">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-list-check me-1"></i>Pronósticos
                         </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('main.all_predictions', phase=1) }}">
+                                <i class="bi bi-calendar-check me-2"></i>Fecha 1
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.all_predictions', phase=2) }}">
+                                <i class="bi bi-calendar-check me-2"></i>Fecha 2
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.all_predictions', phase=3) }}">
+                                <i class="bi bi-calendar-check me-2"></i>Fecha 3
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.all_predictions', phase=4) }}">
+                                <i class="bi bi-calendar-check me-2"></i>Fecha 4
+                            </a></li>
+                        </ul>
                     </li>
                     {% if current_user.is_authenticated and not current_user.is_admin %}
                         <li class="nav-item">
@@ -188,24 +202,24 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-5">
+    <footer class="bg-dark text-white py-2 mt-3">
         <div class="container">
             <div class="row">
                 <!-- Oficiales -->
-                <div class="col-md-4 mb-3">
-                    <h6 class="text-warning mb-3"><i class="bi bi-shield-check"></i> Oficiales</h6>
+                <div class="col-md-4 mb-2">
+                    <h6 class="text-warning mb-1"><i class="bi bi-shield-check"></i> Oficiales</h6>
                     <ul class="list-unstyled">
-                        <li class="mb-2">
+                        <li class="mb-1">
                             <a href="https://www.fifa.com" target="_blank" class="text-white-50 text-decoration-none hover-link">
                                 <i class="bi bi-globe2"></i> FIFA.com
                             </a>
                         </li>
-                        <li class="mb-2">
+                        <li class="mb-1">
                             <a href="https://www.fifa.com/fifaplus/es/tournaments/mens/worldcup/canadamexicousa2026" target="_blank" class="text-white-50 text-decoration-none hover-link">
                                 <i class="bi bi-trophy"></i> Mundial 2026
                             </a>
                         </li>
-                        <li class="mb-2">
+                        <li class="mb-1">
                             <a href="https://www.conmebol.com" target="_blank" class="text-white-50 text-decoration-none hover-link">
                                 <i class="bi bi-flag"></i> CONMEBOL
                             </a>
@@ -214,20 +228,20 @@
                 </div>
                 
                 <!-- Información y Estadísticas -->
-                <div class="col-md-4 mb-3">
-                    <h6 class="text-warning mb-3"><i class="bi bi-graph-up"></i> Info & Estadísticas</h6>
+                <div class="col-md-4 mb-2">
+                    <h6 class="text-warning mb-1"><i class="bi bi-graph-up"></i> Info & Estadísticas</h6>
                     <ul class="list-unstyled">
-                        <li class="mb-2">
+                        <li class="mb-1">
                             <a href="https://www.transfermarkt.com" target="_blank" class="text-white-50 text-decoration-none hover-link">
                                 <i class="bi bi-bar-chart"></i> Transfermarkt
                             </a>
                         </li>
-                        <li class="mb-2">
+                        <li class="mb-1">
                             <a href="https://www.sofascore.com" target="_blank" class="text-white-50 text-decoration-none hover-link">
                                 <i class="bi bi-activity"></i> SofaScore
                             </a>
                         </li>
-                        <li class="mb-2">
+                        <li class="mb-1">
                             <a href="https://www.espn.com.ar/futbol/" target="_blank" class="text-white-50 text-decoration-none hover-link">
                                 <i class="bi bi-newspaper"></i> ESPN Deportes
                             </a>
@@ -236,20 +250,20 @@
                 </div>
                 
                 <!-- Otros -->
-                <div class="col-md-4 mb-3">
-                    <h6 class="text-warning mb-3"><i class="bi bi-lightbulb"></i> Otros</h6>
+                <div class="col-md-4 mb-2">
+                    <h6 class="text-warning mb-1"><i class="bi bi-lightbulb"></i> Otros</h6>
                     <ul class="list-unstyled">
-                        <li class="mb-2">
+                        <li class="mb-1">
                             <a href="https://www.fifa.com/fifa-world-ranking/men" target="_blank" class="text-white-50 text-decoration-none hover-link">
                                 <i class="bi bi-list-ol"></i> Ranking FIFA
                             </a>
                         </li>
-                        <li class="mb-2">
+                        <li class="mb-1">
                             <a href="https://www.goal.com/es" target="_blank" class="text-white-50 text-decoration-none hover-link">
                                 <i class="bi bi-megaphone"></i> Goal.com
                             </a>
                         </li>
-                        <li class="mb-2">
+                        <li class="mb-1">
                             <a href="https://www.flashscore.com.ar/" target="_blank" class="text-white-50 text-decoration-none hover-link">
                                 <i class="bi bi-stopwatch"></i> FlashScore
                             </a>
@@ -258,14 +272,14 @@
                 </div>
             </div>
             
-            <hr class="border-secondary my-3">
+            <hr class="border-secondary my-2">
             
             <div class="text-center">
-                <p class="mb-2">
+                <p class="mb-1">
                     <img src="{{ url_for('static', filename='images/copa para navbar.png') }}" alt="Copa" style="height: 24px; width: auto; vertical-align: middle; margin-right: 8px;">
                     Prode Mundial 2026
                 </p>
-                <p class="text-muted small mb-0">
+                <p class="text-muted mb-0" style="font-size: 0.8rem;">
                     <i class="bi bi-envelope-fill text-warning"></i> <strong class="text-white">Contacto:</strong> 
                     <a href="mailto:ddc@fcaglp.unlp.edu.ar" class="text-white-50 text-decoration-none hover-link">ddc@fcaglp.unlp.edu.ar</a>, 
                     <a href="mailto:fwachlin@gmail.com" class="text-white-50 text-decoration-none hover-link">fwachlin@gmail.com</a>

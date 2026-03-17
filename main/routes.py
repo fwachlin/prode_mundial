@@ -298,6 +298,9 @@ def rankings_by_match(match_id):
 @main_bp.route('/all-predictions')
 def all_predictions():
     """Ver todos los pronósticos en tabla por fase"""
+    # Obtener parámetro de fase desde la URL (por defecto 1)
+    selected_phase_num = request.args.get('phase', 1, type=int)
+    
     phases = Phase.query.order_by(Phase.order).all()
     users = User.query.filter_by(is_admin=False).order_by(User.id).all()
 
@@ -305,60 +308,73 @@ def all_predictions():
     predictions = Prediction.query.all()
     pred_map = {(p.user_id, p.match_id): p for p in predictions}
 
-    phase_data = []
+    # Buscar la fase seleccionada
+    selected_phase = None
     for phase in phases:
-        matches = Match.query.filter_by(phase_id=phase.id).order_by(Match.kickoff_at).all()
-        if not matches:
-            continue
-
-        # Calcular porcentaje de aciertos (batacazo) para cada partido
-        batacazo_percentages = []
-        total_participants = len(users)
-        for match in matches:
-            if match.home_goals is None or match.away_goals is None or total_participants == 0:
-                batacazo_percentages.append(None)
-                continue
-            match_result = None
-            if match.home_goals > match.away_goals:
-                match_result = 'home'
-            elif match.home_goals < match.away_goals:
-                match_result = 'away'
-            else:
-                match_result = 'draw'
-
-            # Contar cuántos usuarios acertaron el ganador/empate
-            correct_count = 0
-            for user in users:
-                p = pred_map.get((user.id, match.id))
-                if not p:
+        if phase.order == selected_phase_num:
+            selected_phase = phase
+            break
+    
+    # Si no se encuentra, usar la primera fase
+    if not selected_phase and phases:
+        selected_phase = phases[0]
+    
+    # Solo procesar la fase seleccionada
+    phase_data = None
+    if selected_phase:
+        matches = Match.query.filter_by(phase_id=selected_phase.id).order_by(Match.kickoff_at).all()
+        
+        if matches:
+            # Calcular porcentaje de aciertos (batacazo) para cada partido
+            batacazo_percentages = []
+            total_participants = len(users)
+            for match in matches:
+                if match.home_goals is None or match.away_goals is None or total_participants == 0:
+                    batacazo_percentages.append(None)
                     continue
-                # Solo cuenta si el usuario pronosticó
-                if p.home_goals > p.away_goals:
-                    user_result = 'home'
-                elif p.home_goals < p.away_goals:
-                    user_result = 'away'
+                match_result = None
+                if match.home_goals > match.away_goals:
+                    match_result = 'home'
+                elif match.home_goals < match.away_goals:
+                    match_result = 'away'
                 else:
-                    user_result = 'draw'
-                if user_result == match_result:
-                    correct_count += 1
-            percent = (correct_count / total_participants) * 100 if total_participants > 0 else 0
-            batacazo_percentages.append(percent)
+                    match_result = 'draw'
 
-        # Reemplazar nombre de fase 4
-        phase_name = phase.name
-        if phase_name.strip().lower().startswith('fecha 4'):
-            phase_name = 'Fecha 4'
+                # Contar cuántos usuarios acertaron el ganador/empate
+                correct_count = 0
+                for user in users:
+                    p = pred_map.get((user.id, match.id))
+                    if not p:
+                        continue
+                    # Solo cuenta si el usuario pronosticó
+                    if p.home_goals > p.away_goals:
+                        user_result = 'home'
+                    elif p.home_goals < p.away_goals:
+                        user_result = 'away'
+                    else:
+                        user_result = 'draw'
+                    if user_result == match_result:
+                        correct_count += 1
+                percent = (correct_count / total_participants) * 100 if total_participants > 0 else 0
+                batacazo_percentages.append(percent)
 
-        phase_data.append({
-            'phase': phase,
-            'phase_name': phase_name,
-            'matches': matches,
-            'users': users,
-            'pred_map': pred_map,
-            'batacazo_percentages': batacazo_percentages
-        })
+            # Reemplazar nombre de fase 4
+            phase_name = selected_phase.name
+            if phase_name.strip().lower().startswith('fecha 4'):
+                phase_name = 'Fecha 4'
 
-    return render_template('main/all_predictions.html', phase_data=phase_data)
+            phase_data = {
+                'phase': selected_phase,
+                'phase_name': phase_name,
+                'matches': matches,
+                'users': users,
+                'pred_map': pred_map,
+                'batacazo_percentages': batacazo_percentages
+            }
+
+    return render_template('main/all_predictions.html', 
+                         phase_data=phase_data, 
+                         selected_phase=selected_phase_num)
 
 @main_bp.route('/reglamento')
 def reglamento():

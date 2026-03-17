@@ -5,7 +5,17 @@
 {% block content %}
 <!-- Cerrar el container de Bootstrap y usar ancho completo -->
 </div>
-<div class="container-fluid px-3">
+<!-- Override del margen superior del container -->
+<style>
+    /* Reducir espacio superior en esta página */
+    body > .container {
+        margin-top: 0.5rem !important;
+        margin-bottom: 0 !important;
+        flex-grow: 0 !important;
+        flex-shrink: 0 !important;
+    }
+</style>
+<div class="container-fluid px-3" style="flex-grow: 0; flex-shrink: 0;">
 
 <style>
     .predictions-table-wrapper {
@@ -17,7 +27,7 @@
         overflow-y: auto;
         max-height: 70vh;
         border: 1px solid #ddd;
-        margin-top: 20px;
+        margin-top: 3px;
         position: relative;
         border-radius: 8px;
         max-height: 70vh;
@@ -156,151 +166,106 @@
         font-weight: 600;
     }
     
-    /* Botones de selección de fecha */
-    .phase-buttons {
-        display: flex;
-        gap: 4px;
-        margin: 30px 0 20px 0;
-        flex-wrap: wrap;
-    }
-    
-    .phase-btn {
-        padding: 6px 8px;
-        font-size: 14px;
-        font-weight: 600;
-        border: 2px solid #2d6a4f;
-        background-color: white;
-        color: #2d6a4f;
-        cursor: pointer;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-    
-    .phase-btn:hover {
-        background-color: #e8f5e9;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(45,106,79,0.2);
-    }
-    
-    .phase-btn.active {
-        background-color: #2d6a4f;
-        color: white;
-        box-shadow: 0 4px 12px rgba(45,106,79,0.3);
-    }
-    
-    .phase-content {
-        display: none;
-    }
-    
-    .phase-content.active {
-        display: block;
+    /* Estilo para la celda de nombre de fecha */
+    .phase-name-cell {
+        background-color: #2d6a4f !important;
+        color: white !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        padding: 10px 5px !important;
     }
 </style>
 
 <div class="predictions-table-wrapper">
-    <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5em;">
+    <h1 style="font-size: 1.5rem; font-weight: 700; margin-top: 0.25rem; margin-bottom: 0.5rem;">
         📊 Pronósticos 
         <a href="{{ url_for('main.glosario') }}" style="font-size: 0.9rem; color: #fff; background-color: #2d6a4f; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-weight: 600;">(glosario)</a>
     </h1>
 
     {% if phase_data %}
-        <!-- Botones de selección de fecha -->
-        <div class="phase-buttons">
-            {% for block in phase_data %}
-                <button class="phase-btn {% if loop.first %}active{% endif %}" 
-                        onclick="showPhase({{ loop.index0 }})">
-                    {{ block.phase_name }}
-                </button>
-            {% endfor %}
-        </div>
-
-        <!-- Contenido de cada fecha -->
-        {% for block in phase_data %}
-            <div class="phase-content {% if loop.first %}active{% endif %}" id="phase-{{ loop.index0 }}">
-
-                <div class="predictions-table-container">
-                <table class="predictions-table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            {% for match in block.matches %}
-                                {% set home_iso = match.home_team|country_iso2 %}
-                                {% set away_iso = match.away_team|country_iso2 %}
-                                {% set is_placeholder = (home_iso == 'xx' and away_iso == 'xx') %}
-                                <th>
-                                    {% if is_placeholder %}
-                                        <span style="writing-mode: vertical-rl; text-orientation: mixed; font-size: 10px; color: #999;">a definir</span>
-                                    {% else %}
-                                        <img src="https://flagcdn.com/24x18/{{ home_iso }}.png" alt="{{ match.home_team }}" style="display: block; margin: 2px auto 4px auto;">
-                                        <span title="{{ match.home_team|country_name }}" style="cursor: help;">{{ match.home_team }}</span><br>
-                                        <span title="{{ match.away_team|country_name }}" style="cursor: help;">{{ match.away_team }}</span>
-                                        <img src="https://flagcdn.com/24x18/{{ away_iso }}.png" alt="{{ match.away_team }}" style="display: block; margin: 4px auto 2px auto;">
-                                    {% endif %}
-                                </th>
-                            {% endfor %}
-                        </tr>
-                        <!-- Fila de resultados reales -->
-                        <tr class="result-row">
-                            <th>Resultado</th>
-                            {% for match in block.matches %}
-                                <th>
-                                    {% if match.home_goals is not none %}
-                                        {{ match.home_goals }} - {{ match.away_goals }}
-                                    {% else %}
-                                        &nbsp;
-                                    {% endif %}
-                                </th>
-                            {% endfor %}
-                        </tr>
-                        <!-- Fila de porcentaje de aciertos (Batacazo) -->
-                         <tr class="result-row" style="background: #e0f7fa; font-size: 0.95em; border-bottom: 5px solid #1976d2;">
-                             <th>Batacazo</th>
-                             {% for percent in block.batacazo_percentages %}
-                                 <th style="{% if percent is not none and percent < 25 %}background-color: #43a047; color: #fff; font-weight: 700;{% endif %}">
-                                     {% if percent is not none %}
-                                         {{ percent|int }}%
-                                     {% else %}
-                                         &nbsp;
-                                     {% endif %}
-                                 </th>
-                             {% endfor %}
-                         </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in block.users %}
-                        <tr>
-                            <td>{{ user.name }}</td>
-                            {% for match in block.matches %}
-                                {% set p = block.pred_map.get((user.id, match.id)) %}
-                                {% if p and match.home_goals is not none %}
-                                    {% set exact = (p.home_goals == match.home_goals) and (p.away_goals == match.away_goals) %}
-                                    {% set user_result = 'home' if p.home_goals > p.away_goals else ('away' if p.home_goals < p.away_goals else 'draw') %}
-                                    {% set match_result = 'home' if match.home_goals > match.away_goals else ('away' if match.home_goals < match.away_goals else 'draw') %}
-                                    {% set winner = (user_result == match_result) %}
+        <div class="predictions-table-container">
+            <table class="predictions-table">
+                <thead>
+                    <tr>
+                        <th class="phase-name-cell">{{ phase_data.phase_name }}</th>
+                        {% for match in phase_data.matches %}
+                            {% set home_iso = match.home_team|country_iso2 %}
+                            {% set away_iso = match.away_team|country_iso2 %}
+                            {% set is_placeholder = (home_iso == 'xx' and away_iso == 'xx') %}
+                            <th>
+                                {% if is_placeholder %}
+                                    <span style="writing-mode: vertical-rl; text-orientation: mixed; font-size: 10px; color: #999;">a definir</span>
                                 {% else %}
-                                    {% set exact = false %}
-                                    {% set winner = false %}
+                                    <img src="https://flagcdn.com/24x18/{{ home_iso }}.png" alt="{{ match.home_team }}" style="display: block; margin: 2px auto 4px auto;">
+                                    <span title="{{ match.home_team|country_name }}" style="cursor: help;">{{ match.home_team }}</span><br>
+                                    <span title="{{ match.away_team|country_name }}" style="cursor: help;">{{ match.away_team }}</span>
+                                    <img src="https://flagcdn.com/24x18/{{ away_iso }}.png" alt="{{ match.away_team }}" style="display: block; margin: 4px auto 2px auto;">
                                 {% endif %}
-                                <td style="{% if p and match.home_goals is not none %}
-                                               {% if exact %}background-color: #4caf50; color: white; font-weight: 700;
-                                               {% elif winner %}background-color: #ffc107; color: #000; font-weight: 700;
-                                               {% else %}background-color: #f44336; color: white; font-weight: 700;
-                                               {% endif %}
-                                           {% endif %}">
-                                    {% if p %}
-                                        {{ p.home_goals }} - {{ p.away_goals }}
-                                    {% else %}
-                                        —
-                                    {% endif %}
-                                </td>
-                            {% endfor %}
-                        </tr>
+                            </th>
                         {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                    </tr>
+                    <!-- Fila de resultados reales -->
+                    <tr class="result-row">
+                        <th>Resultado</th>
+                        {% for match in phase_data.matches %}
+                            <th>
+                                {% if match.home_goals is not none %}
+                                    {{ match.home_goals }} - {{ match.away_goals }}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                    <!-- Fila de porcentaje de aciertos (Batacazo) -->
+                     <tr class="result-row" style="background: #e0f7fa; font-size: 0.95em; border-bottom: 5px solid #1976d2;">
+                         <th>Batacazo</th>
+                         {% for percent in phase_data.batacazo_percentages %}
+                             <th style="{% if percent is not none and percent < 25 %}background-color: #43a047; color: #fff; font-weight: 700;{% endif %}">
+                                 {% if percent is not none %}
+                                     {{ percent|int }}%
+                                 {% else %}
+                                     &nbsp;
+                                 {% endif %}
+                             </th>
+                         {% endfor %}
+                     </tr>
+                </thead>
+                <tbody>
+                    {% for user in phase_data.users %}
+                    <tr>
+                        <td>{{ user.name }}</td>
+                        {% for match in phase_data.matches %}
+                            {% set p = phase_data.pred_map.get((user.id, match.id)) %}
+                            {% if p and match.home_goals is not none %}
+                                {% set exact = (p.home_goals == match.home_goals) and (p.away_goals == match.away_goals) %}
+                                {% set user_result = 'home' if p.home_goals > p.away_goals else ('away' if p.home_goals < p.away_goals else 'draw') %}
+                                {% set match_result = 'home' if match.home_goals > match.away_goals else ('away' if match.home_goals < match.away_goals else 'draw') %}
+                                {% set winner = (user_result == match_result) %}
+                            {% else %}
+                                {% set exact = false %}
+                                {% set winner = false %}
+                            {% endif %}
+                            <td style="{% if p and match.home_goals is not none %}
+                                           {% if exact %}background-color: #4caf50; color: white; font-weight: 700;
+                                           {% elif winner %}background-color: #ffc107; color: #000; font-weight: 700;
+                                           {% else %}background-color: #f44336; color: white; font-weight: 700;
+                                           {% endif %}
+                                       {% endif %}">
+                                {% if p %}
+                                    {{ p.home_goals }} - {{ p.away_goals }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-        {% endfor %}
     {% else %}
         <p style="color: #666;">No hay pronósticos disponibles.</p>
     {% endif %}
@@ -308,27 +273,5 @@
 <!-- Fin del predictions-table-wrapper -->
 </div>
 <!-- Fin del container-fluid -->
-
-<script>
-    function showPhase(phaseIndex) {
-        // Ocultar todos los contenidos
-        const contents = document.querySelectorAll('.phase-content');
-        contents.forEach(content => {
-            content.classList.remove('active');
-        });
-        
-        // Desactivar todos los botones
-        const buttons = document.querySelectorAll('.phase-btn');
-        buttons.forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        // Mostrar el contenido seleccionado
-        document.getElementById('phase-' + phaseIndex).classList.add('active');
-        
-        // Activar el botón seleccionado
-        buttons[phaseIndex].classList.add('active');
-    }
-</script>
 
 {% endblock %}
