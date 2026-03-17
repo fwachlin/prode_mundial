@@ -229,6 +229,11 @@ body {
 footer {
   margin-top: auto;
   background: #212529 !important;
+  padding-bottom: 0.25rem !important;
+}
+
+footer .container {
+  padding-bottom: 0 !important;
 }
 
 /* Footer - Reducción máxima de espaciado vertical */
@@ -253,10 +258,19 @@ footer ul li a {
   line-height: 1.1;
 }
 
+footer .text-center {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
 footer .text-center p {
   line-height: 1.1;
   margin-bottom: 0 !important;
   padding: 2px 0;
+}
+
+footer .text-center p:last-child {
+  padding-bottom: 0 !important;
 }
 
 footer .text-center p:first-child {
