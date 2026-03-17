@@ -231,31 +231,50 @@ footer {
   background: #212529 !important;
 }
 
-/* Footer - Reducción de espaciado vertical */
+/* Footer - Reducción máxima de espaciado vertical */
 footer h6 {
-  font-size: 0.9rem;
-  line-height: 1.2;
+  font-size: 0.85rem;
+  line-height: 1.1;
+  margin-bottom: 2px !important;
+}
+
+footer ul {
+  margin-bottom: 0 !important;
 }
 
 footer ul li {
-  line-height: 1.3;
+  line-height: 1.1;
+  margin-bottom: 0 !important;
+  padding: 1px 0;
 }
 
 footer ul li a {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  line-height: 1.1;
 }
 
 footer .text-center p {
-  line-height: 1.3;
+  line-height: 1.1;
+  margin-bottom: 0 !important;
+  padding: 2px 0;
 }
 
 footer .text-center p:first-child {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 footer hr {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+footer .row {
+  margin-bottom: 0 !important;
+}
+
+footer .col-md-4 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
 }
 
 /* Alerts mejorados */
