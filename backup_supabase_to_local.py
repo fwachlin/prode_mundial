@@ -111,8 +111,8 @@ def backup_supabase_to_local():
                 # Crear diccionario con los datos
                 row_dict = dict(zip(columns, row))
                 
-                # Construir query INSERT
-                cols = ', '.join(row_dict.keys())
+                # Construir query INSERT con columnas escapadas
+                cols = ', '.join([f'"{k}"' for k in row_dict.keys()])
                 placeholders = ', '.join([f':{k}' for k in row_dict.keys()])
                 insert_query = f"INSERT INTO {table} ({cols}) VALUES ({placeholders})"
                 
