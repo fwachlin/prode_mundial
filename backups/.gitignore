@@ -1,0 +1,4 @@
+# Ignorar todos los backups JSON para no subir datos sensibles a git
+*
+!.gitignore
+!README.md
