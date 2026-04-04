@@ -42,19 +42,6 @@
 <div style="max-width: 600px; margin: 0 auto; background-color: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
     <h1 style="font-size:1.4rem; font-weight:700; margin-bottom:10px; text-align:center;">🏆 Tabla de posiciones (general)</h1>
     
-    
-    <!-- Links a rankings por fecha -->
-    <div style="margin: 24px 0 0 0; text-align: center;">
-        <a href="{{ url_for('main.rankings') }}" class="rankings-nav-btn" style="display: inline-block; background-color: #2d6a4f; color: white; text-decoration: none; margin: 2px; font-weight: bold;">
-            🗂️ General
-        </a>
-        {% for phase_num in [1, 2, 3, 4] %}
-            <a href="{{ url_for('main.rankings_by_phase', phase_id=phase_num) }}" class="rankings-nav-btn" style="display: inline-block; background-color: #6c757d; color: white; text-decoration: none; margin: 2px;">
-                {% if phase_num == 4 %}Fecha 4{% else %}Fecha {{ phase_num }}{% endif %}
-            </a>
-        {% endfor %}
-    </div>
-    
     {% if user_stats %}
         {# Calcular anteúltimo válido (usuarios que pronosticaron TODOS los partidos con resultado hasta ahora) #}
         {% set matches_played = matches_with_result or 0 %}
