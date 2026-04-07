@@ -4,17 +4,23 @@
 
 {% block content %}
 <div style="max-width: 800px; margin: 0 auto;">
-    <h2>📢 Tablón de Comentarios</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="margin: 0;">Comentarios</h2>
+        {% if not current_user.is_authenticated %}
+        <p style="margin: 0; color: #000000;">
+            <a href="{{ url_for('auth.login') }}" style="color: var(--primary);">Inicia sesión</a> para dejar tu comentario
+        </p>
+        {% endif %}
+    </div>
     
-    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
-        <p style="margin: 0; color: #991b1b;"><strong>⚠️ Normas:</strong></p>
-        <p style="margin: 8px 0 0; color: #991b1b; font-size: 0.95em;">
-            Los comentarios deben ser respetuosos. Los administradores se reservan el derecho a eliminar cualquier comentario que consideren inapropiado. Máximo 500 caracteres por comentario.
+    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 8px 12px; margin-bottom: 16px;">
+        <p style="margin: 0; color: #991b1b; font-size: 0.95em;">
+            <strong>⚠️ Normas:</strong> Los comentarios deben ser respetuosos. Los administradores se reservan el derecho a eliminar cualquier comentario que consideren inapropiado. Máximo 500 caracteres por comentario.
         </p>
     </div>
 
     {% if current_user.is_authenticated %}
-    <div style="background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 12px; padding: 12px; margin-bottom: 20px;">
+    <div style="background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 12px; padding: 12px; margin-bottom: 16px;">
         <form method="POST">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <textarea name="content" placeholder="Escribe tu comentario aquí..." 
@@ -26,13 +32,7 @@
             </div>
         </form>
     </div>
-    {% else %}
-    <p style="text-align: center; color: #6b7280;">
-        <a href="{{ url_for('auth.login') }}" style="color: var(--primary);">Inicia sesión</a> para dejar tu comentario
-    </p>
     {% endif %}
-
-    <h3>Comentarios ({{ comments|length }})</h3>
     
     {% if comments %}
         {% for comment in comments %}
