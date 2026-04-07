@@ -364,6 +364,25 @@ def edit_user(user_id):
     
     return render_template('admin/edit_user.html', user=user)
 
+@admin_bp.route('/users/<int:user_id>/reset-password', methods=['POST'])
+@login_required
+@admin_required
+def reset_user_password(user_id):
+    """Resetear contraseña de usuario a valor por defecto"""
+    user = User.query.get_or_404(user_id)
+    
+    # No permitir resetear contraseña de admins
+    if user.is_admin:
+        flash('No puedes resetear contraseña de admins', 'error')
+        return redirect(url_for('admin.manage_users'))
+    
+    # Establecer contraseña por defecto
+    user.set_password('olvidadizo1234')
+    db.session.commit()
+    
+    flash(f'Contraseña de {user.name} reseteada a: olvidadizo1234', 'success')
+    return redirect(url_for('admin.manage_users'))
+
 # ==================== RUTAS DE COMENTARIOS ====================
 
 @admin_bp.route('/comments')

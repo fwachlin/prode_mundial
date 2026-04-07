@@ -27,6 +27,12 @@
                 <td>{{ user.email }}</td>
                 <td class="actions">
                     <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-secondary">✏️ Editar</a>
+                    <form method="POST" action="{{ url_for('admin.reset_user_password', user_id=user.id) }}" 
+                          style="display: inline;"
+                          onsubmit="return confirm('🔑 ¿Resetear contraseña de {{ user.name }}?\n\nSe establecerá: olvidadizo1234\n\nEl usuario podrá cambiarla después.');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button type="submit" class="btn btn-warning">🔑 Resetear</button>
+                    </form>
                     <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}" 
                           style="display: inline;"
                           onsubmit="return confirm('⚠️ ADVERTENCIA: ¿Eliminar a {{ user.name }}?\n\nEmail: {{ user.email }}\n\nSe eliminarán todos los datos asociados.\nEsta acción NO SE PUEDE DESHACER.');">
@@ -80,6 +86,14 @@
   font-size: 0.92em;
   border-radius: 7px;
   line-height: 1.1;
+}
+.btn-warning {
+  background-color: #f59e0b;
+  color: white;
+  border: none;
+}
+.btn-warning:hover {
+  background-color: #d97706;
 }
 </style>
 {% else %}
