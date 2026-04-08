@@ -115,9 +115,15 @@
     </div>
 
     <div class="back-button-container">
+        {% if request.args.get('from') == 'predictions' %}
+        <a href="{{ url_for('main.predictions') }}" class="btn-back">
+            ← Volver a Mis Pronósticos
+        </a>
+        {% else %}
         <a href="{{ url_for('main.all_predictions') }}" class="btn-back">
             ← Volver a Pronósticos
         </a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
