@@ -17,8 +17,12 @@ import os
 import sys
 import shutil
 from datetime import datetime
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
+
+# Cargar variables de entorno desde .env
+load_dotenv()
 
 def backup_supabase_to_local():
     """Copia todos los datos de Supabase a la base de datos local"""
@@ -97,19 +101,31 @@ def backup_supabase_to_local():
     
     for table in tables_order:
         try:
+            # Obtener columnas de la tabla local
+            local_columns_result = local_session.execute(text(f"PRAGMA table_info({table})"))
+            local_columns = {row[1] for row in local_columns_result.fetchall()}  # row[1] es el nombre de columna
+            
             # Obtener datos de Supabase
             result = supabase_session.execute(text(f"SELECT * FROM {table}"))
             rows = result.fetchall()
-            columns = result.keys()
+            supabase_columns = result.keys()
             
             if not rows:
                 print(f"   ⚠️  Tabla {table}: 0 filas")
                 continue
             
+            # Filtrar solo columnas que existen en ambas bases de datos
+            common_columns = [col for col in supabase_columns if col in local_columns]
+            
+            if len(common_columns) < len(supabase_columns):
+                ignored = set(supabase_columns) - set(common_columns)
+                print(f"   ℹ️  Tabla {table}: ignorando columnas {ignored}")
+            
             # Insertar en local
             for row in rows:
-                # Crear diccionario con los datos
-                row_dict = dict(zip(columns, row))
+                # Crear diccionario con SOLO las columnas comunes
+                full_dict = dict(zip(supabase_columns, row))
+                row_dict = {k: v for k, v in full_dict.items() if k in common_columns}
                 
                 # Construir query INSERT con columnas escapadas
                 cols = ', '.join([f'"{k}"' for k in row_dict.keys()])
