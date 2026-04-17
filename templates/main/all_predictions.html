@@ -129,11 +129,12 @@
         z-index: 3;
         border-right: 2px solid #999;
         padding: 2px 5px;
-        min-width: 180px;
-        max-width: 200px;
-        width: 180px;
+        min-width: 220px !important;
+        max-width: 220px !important;
+        width: 220px !important;
         white-space: nowrap;
         overflow: visible;
+        box-sizing: border-box;
     }
     
     .predictions-table thead th:first-child {
@@ -141,6 +142,7 @@
         background-color: #e8e8e8;
         text-align: left;
         overflow: visible;
+        padding: 2px 5px !important;
     }
     
     .predictions-table thead .result-row th:first-child {
@@ -149,11 +151,13 @@
         text-align: center;
         font-weight: 700;
         overflow: visible;
+        padding: 2px 5px !important;
     }
     
     .predictions-table tbody td:first-child {
         background-color: #f9f9f9;
         font-weight: 600;
+        padding: 2px 5px !important;
     }
     
     .predictions-table tbody td {
@@ -175,6 +179,10 @@
         text-align: center !important;
         vertical-align: middle !important;
         padding: 10px 5px !important;
+        width: 220px !important;
+        min-width: 220px !important;
+        max-width: 220px !important;
+        box-sizing: border-box !important;
     }
 </style>
 
