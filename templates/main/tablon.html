@@ -41,7 +41,7 @@
                 <div style="flex: 1;">
                     <p style="margin: 0; color: var(--text); line-height: 1.5;">
                         {{ comment.content }} 
-                        <span style="color: #6b7280; font-size: 0.9em;">({{ comment.user.name }}, {{ comment.created_at.strftime('%d/%m/%Y %H:%M') }})</span>
+                        <span style="color: #6b7280; font-size: 0.9em;">({{ comment.user.name }}, {{ comment.created_at|hora_argentina }})</span>
                     </p>
                 </div>
                 

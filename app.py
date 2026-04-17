@@ -2,7 +2,7 @@ from flask import Flask
 from flask_login import LoginManager, current_user
 from flask_wtf.csrf import CSRFProtect
 from models import db, User, Match
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from fifa_countries import get_fifa_code, get_country_iso2, get_country_name
 import os
 
@@ -93,6 +93,16 @@ def country_iso2_filter(fifa_code):
 def country_name_filter(fifa_code):
     """Convierte código FIFA a nombre completo del país en español (211 países)"""
     return get_country_name(fifa_code)
+
+# Filtro para convertir UTC a hora argentina (UTC-3)
+@app.template_filter('hora_argentina')
+def hora_argentina_filter(utc_datetime):
+    """Convierte datetime UTC a hora legal argentina (UTC-3) y formatea como 'dd/mm/yyyy HH:MM HLA'"""
+    if utc_datetime is None:
+        return ''
+    # Convertir a hora argentina (UTC-3)
+    argentina_time = utc_datetime - timedelta(hours=3)
+    return argentina_time.strftime('%d/%m/%Y %H:%M HLA')
 
 # Registrar blueprints
 from auth.routes import auth_bp
