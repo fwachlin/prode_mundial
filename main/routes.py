@@ -435,7 +435,7 @@ def tablon():
         flash('Comentario publicado', 'success')
         return redirect(url_for('main.tablon'))
     
-    # Obtener últimos 10 comentarios (más recientes primero)
-    comments = Comment.query.order_by(Comment.created_at.desc()).limit(10).all()
+    # Obtener todos los comentarios (más recientes primero)
+    comments = Comment.query.order_by(Comment.created_at.desc()).all()
     
     return render_template('main/tablon.html', comments=comments)
