@@ -8,14 +8,43 @@
 <div class="hero-section mb-4" style="background-image: linear-gradient(rgba(26, 71, 42, 0.75), rgba(45, 106, 79, 0.75)), url('{{ url_for('static', filename='images/backgrounds/stadium.jpg') }}'); background-size: cover; background-position: center;">
     <!-- 🖼️ Tu imagen de estadio como fondo -->
     <h1><img src="{{ url_for('static', filename='images/worldcup_trophy.png') }}" alt="Copa del Mundo" style="height: 40px; width: auto; vertical-align: middle; margin-right: 8px; filter: drop-shadow(0 2px 8px rgba(255,215,0,0.6));"> El Prode del Obser</h1>
-    <img src="{{ url_for('static', filename='images/backgrounds/argentina.jpg') }}" 
-         alt="Argentina" 
-         class="img-fluid rounded-4 shadow-lg mb-2" 
-         style="max-width: 600px; width: 90%;">
-
     
+    <!-- Contenedor con foto y ganadores -->
+    <div class="row g-3 align-items-start justify-content-center">
+        <!-- Columna izquierda: Foto de Argentina -->
+        <div class="col-md-6 text-center">
+            <img src="{{ url_for('static', filename='images/backgrounds/argentina.jpg') }}" 
+                 alt="Argentina" 
+                 class="img-fluid rounded-4 shadow-lg" 
+                 style="max-width: 500px; width: 100%;">
+        </div>
+        
+        <!-- Columna derecha: Ganadores -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-lg" style="background-color: rgba(255, 255, 255, 0.95);">
+                <div class="card-body p-4">
+                    <h3 class="mb-3 text-center" style="color: #1a472a; font-weight: 700;">
+                        <i class="bi bi-trophy-fill text-warning me-2"></i>
+                        Ganadores
+                    </h3>
+                    <div class="mb-3 pb-3" style="border-bottom: 2px solid #e0e0e0;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong style="color: #2d6a4f; font-size: 1.05rem;">Primera fecha:</strong>
+                                <span style="color: #1a472a; font-size: 1rem; display: block; margin-top: 0.25rem;">
+                                    Alejo Rimassa
+                                </span>
+                            </div>
+                            <span class="badge bg-success" style="font-size: 0.95rem;">$120.000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {% if first_match %}
-    <div id="countdown-container" class="bg-white bg-opacity-10 rounded-4 p-4 mb-3">
+    <div id="countdown-container" class="bg-white bg-opacity-10 rounded-4 p-4 mb-3 mt-3">
         <h2 class="h4 mb-3">El Mundial comienza en:</h2>
         <div id="mundial-countdown" class="mb-3">
             ⏳ Calculando...
