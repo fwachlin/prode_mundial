@@ -43,48 +43,22 @@
         background-color: rgba(255, 255, 255, 0.95);
     }
     
-    /* Thead fijo */
+    /* Thead sticky como bloque entero: todas las filas quedan fijas juntas al hacer scroll */
     .predictions-table thead {
         position: sticky;
         top: 0;
-        z-index: 100;
+        z-index: 5;
         background-color: rgba(255, 255, 255, 0.98);
-        display: table;
-        width: 100%;
-    }
-    
-    /* Tbody con scroll */
-    .predictions-table tbody {
-        display: table;
-        width: 100%;
-        background-color: rgba(255, 255, 255, 0.95);
-    }
-    
-    /* Hacer que las filas se comporten como tabla */
-    .predictions-table thead tr {
-        display: table;
-        width: 100%;
-        table-layout: fixed;
     }
 
-    /* Fijar las 3 primeras filas del thead */
-    .predictions-table thead tr {
-        position: sticky;
-        top: 0;
-        z-index: 2;
-    }
-    .predictions-table thead tr.result-row:nth-of-type(2) {
-        top: 75px;
-    }
-    .predictions-table thead tr.result-row:nth-of-type(3) {
-        top: 101px;
-    }
+    /* Línea separadora debajo del encabezado (box-shadow es más confiable que border en thead sticky) */
+    .predictions-table thead tr:last-child th {
+        border-bottom: 4px solid #2d6a4f !important;
     }
     
-    .predictions-table tbody tr {
-        display: table;
-        width: 100%;
-        table-layout: fixed;
+    /* Tbody */
+    .predictions-table tbody {
+        background-color: rgba(255, 255, 255, 0.95);
     }
     
     /* Encabezados - Primera fila (partidos) */
@@ -138,7 +112,7 @@
     }
     
     .predictions-table thead th:first-child {
-        z-index: 8;
+        z-index: 9 !important;
         background-color: #e8e8e8;
         text-align: left;
         overflow: visible;
@@ -146,7 +120,7 @@
     }
     
     .predictions-table thead .result-row th:first-child {
-        z-index: 8;
+        z-index: 9 !important;
         background-color: #f4f4f4;
         text-align: center;
         font-weight: 700;
