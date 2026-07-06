@@ -15,8 +15,12 @@ import os
 import sys
 import json
 from datetime import datetime
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, text, inspect
 from sqlalchemy.orm import sessionmaker
+
+# Cargar variables de entorno desde .env
+load_dotenv()
 
 def export_supabase_to_json():
     """Exporta todos los datos de Supabase a archivos JSON"""
