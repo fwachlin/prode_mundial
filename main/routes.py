@@ -215,10 +215,23 @@ def rankings():
     
     # Calcular cuántos partidos tienen resultado cargado hasta ahora
     matches_with_result = Match.query.filter(Match.home_goals.isnot(None)).count()
-    
+
+    # Calcular IDs de anteúltimos con manejo de empates:
+    # - Si N usuarios empatan en último, todos son "últimos"
+    # - El anteúltimo es quien queda justo encima; si M empatan ahí, todos se resaltan
+    valid_stats = [s for s in user_stats if matches_with_result > 0 and (s.predictions_with_points or 0) == matches_with_result]
+    penultimate_ids = set()
+    if len(valid_stats) >= 2:
+        last_points = min((s.total_points or 0) for s in valid_stats)
+        non_last = [s for s in valid_stats if (s.total_points or 0) > last_points]
+        if non_last:
+            penultimate_points = min((s.total_points or 0) for s in non_last)
+            penultimate_ids = {s.id for s in non_last if (s.total_points or 0) == penultimate_points}
+
     return render_template('main/rankings.html', 
                          user_stats=user_stats,
                          matches_with_result=matches_with_result,
+                         penultimate_ids=penultimate_ids,
                          zip=zip)
 
 @main_bp.route('/rankings/phase/<int:phase_id>')

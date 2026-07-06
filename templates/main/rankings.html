@@ -43,17 +43,7 @@
     <h1 style="font-size:1.4rem; font-weight:700; margin-bottom:10px; text-align:center;">🏆 Tabla de posiciones (general)</h1>
     
     {% if user_stats %}
-        {# Calcular anteúltimo válido (usuarios que pronosticaron TODOS los partidos con resultado hasta ahora) #}
-        {% set matches_played = matches_with_result or 0 %}
-        {# Un usuario es válido si tiene pronósticos CON PUNTOS igual a partidos finalizados #}
-        {% set valid_users = [] %}
-        {% for stat in user_stats %}
-            {% if matches_played > 0 and (stat.predictions_with_points or 0) == matches_played %}
-                {% set _ = valid_users.append(loop.index) %}
-            {% endif %}
-        {% endfor %}
-        {% set total_valid = valid_users|length %}
-        {% set penultimate_position = valid_users[total_valid - 2] if total_valid >= 2 else -1 %}
+        {# penultimate_ids viene calculado desde el route con manejo correcto de empates #}
         
         <div style="background-color: #fff9e6; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
             <strong>🏆 Premios:</strong>
@@ -79,7 +69,7 @@
                     {% set is_second = (loop.index == 2) %}
                     {% set is_third = (loop.index == 3) %}
                     {% set is_valid_for_penultimate = (matches_with_result > 0 and (stat.predictions_with_points or 0) == matches_with_result) %}
-                    {% set is_penultimate = (loop.index == penultimate_position and penultimate_position > 0) %}
+                    {% set is_penultimate = (stat.id in penultimate_ids) %}
                     {% set is_awarded = is_first or is_second or is_third or is_penultimate %}
                     <tr style="{% if is_first or is_second or is_third or is_penultimate %}background-color: #d4f1d4; font-weight: bold;{% endif %}">
                         <td style="padding: 4px 6px; border-bottom: 1px solid #ddd; border-right: 1px solid #ddd; text-align: left; width: 15%; {% if not is_valid_for_penultimate and matches_with_result > 0 %}color: #dc3545;{% endif %}">
